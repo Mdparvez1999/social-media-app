@@ -1,5 +1,6 @@
 import "reflect-metadata";
 import express, { Application, Request, Response, NextFunction } from "express";
+import cookieParser from "cookie-parser";
 
 import { AppDataSource } from "./config/DB_Connection";
 import authRouter from "./routes/auth.routes";
@@ -18,6 +19,7 @@ AppDataSource.initialize()
   });
 
 // Middlewares
+app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 

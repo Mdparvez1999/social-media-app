@@ -72,7 +72,7 @@ export const userLogin = asyncHandler(
     const correctPassword = await comparePassword(password, user.password);
 
     if (!correctPassword) {
-      return new AppError("Invalid credentials", 400);
+      return next(new AppError("Invalid credentials", 400));
     }
 
     genrateToken(user.id, res);
@@ -102,7 +102,7 @@ export const forgotPassword = asyncHandler(
     const user: Users | null = await userRepository.findOneBy({ email });
 
     if (!user) {
-      return new AppError("User not found", 404);
+      return next(new AppError("User not found", 404));
     }
 
     const forgotPasswordToken: string = crypto.randomBytes(20).toString("hex");
@@ -140,7 +140,7 @@ export const resetPassword = asyncHandler(
     });
 
     if (!user) {
-      return new AppError("User not found", 404);
+      return next(new AppError("User not found", 404));
     }
 
     const hashedPassword = await hashPassword(password);
