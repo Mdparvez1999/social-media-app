@@ -9,8 +9,16 @@ export const auth = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const token = req.cookies.jwt;
 
+    if (!token) {
+      return next(new AppError("unauthorized", 401));
+    }
+
     const verifiedToken = verify(token, process.env.JWT_SECRET as string);
 
+    if (!verifiedToken) {
+      return next(new AppError("unauthorized", 401));
+    }
+    
     const payLoad = verifiedToken as JwtPayload;
 
     const userRepsitory = AppDataSource.getRepository(Users);

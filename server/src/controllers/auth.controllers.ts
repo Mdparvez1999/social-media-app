@@ -6,7 +6,7 @@ import {
   loginSchema,
   registerSchema,
   resetPasswordSchema,
-} from "../validation/authValidation/auth.validation";
+} from "../validation/auth.validation";
 import { Users } from "../entities/auth/user.entity";
 import { comparePassword, hashPassword } from "../utils/auth.utils";
 import { genrateToken } from "../utils/jwt.utils";
