@@ -35,6 +35,12 @@ export class Users {
   role!: string;
 
   @Column({
+    type: "boolean",
+    default: false,
+  })
+  isPrivate!: boolean;
+
+  @Column({
     type: "text",
     nullable: true,
   })

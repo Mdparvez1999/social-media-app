@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { asyncHandler } from "../utils/asyncHandler";
 import { verify, JwtPayload } from "jsonwebtoken";
 import { AppDataSource } from "../config/DB_Connection";
-import { Users } from "../entities/auth/user.entity";
+import { Users } from "../entities/user/user.entity";
 import { AppError } from "../utils/AppError";
 
 export const auth = asyncHandler(
@@ -18,7 +18,7 @@ export const auth = asyncHandler(
     if (!verifiedToken) {
       return next(new AppError("unauthorized", 401));
     }
-    
+
     const payLoad = verifiedToken as JwtPayload;
 
     const userRepsitory = AppDataSource.getRepository(Users);

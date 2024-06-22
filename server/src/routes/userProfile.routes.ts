@@ -1,17 +1,21 @@
 import { Router } from "express";
-import {
-  changePassword,
-  getUserProfile,
-  updateUserProfile,
-} from "../controllers/userProfile.controller";
+import { UserProfileController } from "../controllers/userProfile.controller";
 import { auth } from "../middlewares/auth.Middleware";
 
 const router = Router();
 
-router.get("/profile", auth, getUserProfile);
+const userProfileController = new UserProfileController();
 
-router.put("/profile", auth, updateUserProfile);
+router.get("/profile", auth, userProfileController.getUserProfile);
 
-router.put("/profile/change-password", auth, changePassword);
+router.put("/profile", auth, userProfileController.updateUserProfile);
+
+router.patch("/profile/private", auth, userProfileController.privateProfile);
+
+router.put(
+  "/profile/change-password",
+  auth,
+  userProfileController.changePassword
+);
 
 export default router;

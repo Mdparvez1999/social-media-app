@@ -1,11 +1,13 @@
 import { Router } from "express";
-import { deleteUser, getAllUsers } from "../controllers/admin.controllers";
+import { AdminController } from "../controllers/admin.controllers";
 import { auth, isAdmin } from "../middlewares/auth.Middleware";
 
 const router = Router();
 
-router.get("/users", auth, isAdmin, getAllUsers);
+const adminController = new AdminController();
 
-router.delete("/user/:id", auth, isAdmin, deleteUser);
+router.get("/users", auth, isAdmin, adminController.getAllUsers);
+
+router.delete("/user/:id", auth, isAdmin, adminController.deleteUser);
 
 export default router;
