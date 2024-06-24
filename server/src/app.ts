@@ -6,6 +6,7 @@ import { AppDataSource } from "./config/DB_Connection";
 import authRouter from "./routes/auth.routes";
 import userRouter from "./routes/userProfile.routes";
 import adminRouter from "./routes/admin.routes";
+import postRouter from "./routes/post.routes";
 import { errorHandler } from "./middlewares/error.middleware";
 
 // create express app
@@ -29,6 +30,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/api/auth", authRouter);
 app.use("/api/user", userRouter);
 app.use("/api/admin", adminRouter);
+app.use("/api/users/post", postRouter);
 
 app.get("/test", (req: Request, res: Response, next: NextFunction) => {
   res.send("Hello World!");

@@ -3,3 +3,6 @@ server/node_modules
 
 # env
 server/.env
+
+# uploaded images
+/server/src/uploads/

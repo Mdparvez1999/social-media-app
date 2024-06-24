@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { asyncHandler } from "../utils/asyncHandler";
 import { AppDataSource } from "../config/DB_Connection";
-import { Users } from "../entities/user/user.entity";
+import { Users } from "../entities/user.entity";
 import {
   changePasswordSchema,
   updateProfileSchema,

@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { asyncHandler } from "../utils/asyncHandler";
 import { verify, JwtPayload } from "jsonwebtoken";
 import { AppDataSource } from "../config/DB_Connection";
-import { Users } from "../entities/user/user.entity";
+import { Users } from "../entities/user.entity";
 import { AppError } from "../utils/AppError";
 
 export const auth = asyncHandler(

@@ -7,7 +7,7 @@ import {
   registerSchema,
   resetPasswordSchema,
 } from "../validation/auth.validation";
-import { Users } from "../entities/user/user.entity";
+import { Users } from "../entities/user.entity";
 import { comparePassword, hashPassword } from "../utils/auth.utils";
 import { genrateToken } from "../utils/jwt.utils";
 import crypto from "crypto";
@@ -29,15 +29,19 @@ export class AuthController {
         return next(error);
       }
 
-      const { userName, email, DOB, password } = value;
+      const { userName, email, DOB, password, gender } = value;
 
-      const hashedPassword = await hashPassword(password);
+      const profilePicName: string | undefined = req.file?.filename;
+
+      const hashedPassword: string = await hashPassword(password);
 
       const newUser = this.userRepository.create({
         userName,
         email,
         DOB,
         password: hashedPassword,
+        profilePic: profilePicName,
+        gender,
       });
 
       await this.userRepository.save(newUser);

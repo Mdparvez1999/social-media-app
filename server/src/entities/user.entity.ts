@@ -1,5 +1,12 @@
-import { Entity, Column, PrimaryGeneratedColumn, BeforeInsert } from "typeorm";
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  BeforeInsert,
+  OneToMany,
+} from "typeorm";
 import { v4 as uuidv4 } from "uuid";
+import { PostLike } from "./postLike.entity";
 
 @Entity()
 export class Users {
@@ -35,10 +42,33 @@ export class Users {
   role!: string;
 
   @Column({
+    type: "text",
+    nullable: true,
+  })
+  profilePic!: string | null;
+
+  @Column({
+    nullable: false,
+  })
+  gender!: string;
+
+  @Column({
     type: "boolean",
     default: false,
   })
   isPrivate!: boolean;
+
+  @Column({
+    type: "boolean",
+    default: true,
+  })
+  isActive!: boolean;
+
+  @Column({
+    type: "text",
+    nullable: true,
+  })
+  bio!: string | null;
 
   @Column({
     type: "text",
@@ -51,6 +81,9 @@ export class Users {
     nullable: true,
   })
   forgotPasswordExpiry!: Date | null;
+
+  @OneToMany(() => PostLike, (postlike) => postlike.user)
+  postLikes!: PostLike[];
 
   @BeforeInsert()
   addId() {

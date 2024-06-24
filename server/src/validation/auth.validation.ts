@@ -6,6 +6,11 @@ export const registerSchema = joi.object({
   DOB: joi.string().required(),
   password: joi.string().required().min(8).max(15),
   role: joi.string().default("user"),
+  gender: joi.string().required(),
+  isPrivate: joi.boolean().default(false),
+  profilePic: joi.string(),
+  isActive: joi.boolean().default(true),
+  bio: joi.string(),
   forgotPasswordToken: joi.string(),
   forgotPasswordExpiry: joi.date(),
 });
