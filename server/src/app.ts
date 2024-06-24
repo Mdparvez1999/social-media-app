@@ -7,6 +7,7 @@ import authRouter from "./routes/auth.routes";
 import userRouter from "./routes/userProfile.routes";
 import adminRouter from "./routes/admin.routes";
 import postRouter from "./routes/post.routes";
+import commentRouter from "./routes/comments.routes";
 import { errorHandler } from "./middlewares/error.middleware";
 
 // create express app
@@ -31,6 +32,7 @@ app.use("/api/auth", authRouter);
 app.use("/api/user", userRouter);
 app.use("/api/admin", adminRouter);
 app.use("/api/users/post", postRouter);
+app.use("/api/post/comments", commentRouter);
 
 app.get("/test", (req: Request, res: Response, next: NextFunction) => {
   res.send("Hello World!");

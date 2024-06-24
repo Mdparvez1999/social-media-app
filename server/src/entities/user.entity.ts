@@ -7,6 +7,8 @@ import {
 } from "typeorm";
 import { v4 as uuidv4 } from "uuid";
 import { PostLike } from "./postLike.entity";
+import { Comments } from "./comments.entity";
+import { Post } from "./post.entity";
 
 @Entity()
 export class Users {
@@ -82,8 +84,14 @@ export class Users {
   })
   forgotPasswordExpiry!: Date | null;
 
+  @OneToMany(() => Post, (post) => post.user, { cascade: true })
+  posts!: Post[];
+
   @OneToMany(() => PostLike, (postlike) => postlike.user)
   postLikes!: PostLike[];
+
+  @OneToMany(() => Comments, (comment) => comment.user)
+  comments!: Comments[];
 
   @BeforeInsert()
   addId() {

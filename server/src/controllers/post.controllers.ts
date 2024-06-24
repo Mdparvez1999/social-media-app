@@ -6,6 +6,7 @@ import { Post } from "../entities/post.entity";
 import { PostFile } from "../entities/postFile.entity";
 import { AppError } from "../utils/AppError";
 import { PostLike } from "../entities/postLike.entity";
+import { Users } from "../entities/user.entity";
 
 export class PostControllers {
   private postRepository = AppDataSource.getRepository(Post);
@@ -13,6 +14,8 @@ export class PostControllers {
   private postFileRepository = AppDataSource.getRepository(PostFile);
 
   private postLikeRepository = AppDataSource.getRepository(PostLike);
+
+  private user = AppDataSource.getRepository(Users);
 
   public createPost = asyncHandler(
     async (
@@ -32,10 +35,18 @@ export class PostControllers {
 
       const userId: string = res.locals.user.id;
 
+      const user: Users | null = await this.user.findOneBy({
+        id: userId,
+      });
+
+      if (!user) {
+        return next(new AppError("user not found", 404));
+      }
+
       const newPost = new Post();
 
       newPost.caption = caption;
-      newPost.userId = userId;
+      newPost.user = user;
 
       await this.postRepository.save(newPost);
 
@@ -54,20 +65,21 @@ export class PostControllers {
       return res.status(201).json({
         success: true,
         message: "Post created successfully",
-        data: newPost,
       });
     }
   );
 
   public updatePostCaption = asyncHandler(
     async (req: Request, res: Response, next: NextFunction) => {
-      const id: string = req.params.id;
+      const postId: string = req.params.id;
 
       const userId: string = res.locals.user.id;
 
-      const post: Post | null = await this.postRepository.findOneBy({
-        id,
-        userId,
+      const post: Post | null = await this.postRepository.findOne({
+        where: {
+          id: postId,
+          user: { id: userId },
+        },
       });
 
       if (!post) {
@@ -80,7 +92,7 @@ export class PostControllers {
         .createQueryBuilder()
         .update(Post)
         .set({ caption })
-        .where("id =:id AND userId = :userId", { id, userId })
+        .where("id = :postId AND user.id = :userId", { postId, userId })
         .returning("*")
         .execute();
 
@@ -96,13 +108,13 @@ export class PostControllers {
 
   public deletePost = asyncHandler(
     async (req: Request, res: Response, next: NextFunction) => {
-      const id: string = req.params.id;
+      const postId: string = req.params.id;
 
       const userId: string = res.locals.user.id;
 
-      const post: Post | null = await this.postRepository.findOneBy({
-        id,
-        userId,
+      const post: Post | null = await this.postRepository.findOne({
+        where: { id: postId, user: { id: userId } },
+        relations: { files: true },
       });
 
       if (!post) {
@@ -110,9 +122,14 @@ export class PostControllers {
       }
 
       await AppDataSource.transaction(async (transactionalEntityManager) => {
-        await transactionalEntityManager.delete(PostFile, { post });
+        await transactionalEntityManager.delete(PostFile, {
+          post: { id: postId },
+        });
 
-        await transactionalEntityManager.delete(Post, { id, userId });
+        await transactionalEntityManager.delete(Post, {
+          id: postId,
+          user: { id: userId },
+        });
       });
 
       return res.status(200).json({
@@ -127,7 +144,7 @@ export class PostControllers {
       const userId: string = res.locals.user.id;
 
       const allPosts = await this.postRepository.find({
-        where: { userId },
+        where: { user: { id: userId } },
         relations: { files: true },
       });
 
@@ -156,12 +173,12 @@ export class PostControllers {
 
   public getPostById = asyncHandler(
     async (req: Request, res: Response, next: NextFunction) => {
-      const id: string = req.params.id;
+      const postId: string = req.params.id;
 
       const userId: string = res.locals.user.id;
 
       const post: Post | null = await this.postRepository.findOne({
-        where: { id, userId },
+        where: { id: postId, user: { id: userId } },
         relations: { files: true },
       });
 

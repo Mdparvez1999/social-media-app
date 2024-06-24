@@ -6,21 +6,18 @@ import {
   OneToMany,
   CreateDateColumn,
   UpdateDateColumn,
+  ManyToOne,
 } from "typeorm";
 import { v4 as uuidv4 } from "uuid";
 import { PostFile } from "./postFile.entity";
 import { Comments } from "./comments.entity";
 import { PostLike } from "./postLike.entity";
+import { Users } from "./user.entity";
 
 @Entity()
 export class Post {
   @PrimaryGeneratedColumn("uuid")
   id!: string;
-
-  @Column({
-    nullable: false,
-  })
-  userId!: string;
 
   @Column({
     type: "text",
@@ -37,6 +34,9 @@ export class Post {
     default: 0,
   })
   commentCount!: number;
+
+  @ManyToOne(() => Users, (user) => user.posts, { onDelete: "CASCADE" })
+  user!: Users;
 
   @OneToMany(() => PostFile, (postfile) => postfile.post, { cascade: true })
   files!: PostFile[];
