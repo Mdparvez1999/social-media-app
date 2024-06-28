@@ -7,6 +7,8 @@ import { PostFile } from "../entities/postFile.entity";
 import { AppError } from "../utils/AppError";
 import { PostLike } from "../entities/postLike.entity";
 import { Users } from "../entities/user.entity";
+import { UserUtils } from "../utils/user.utils";
+import { PostUtils } from "../utils/post.utils";
 
 export class PostControllers {
   private postRepository = AppDataSource.getRepository(Post);
@@ -35,13 +37,9 @@ export class PostControllers {
 
       const userId: string = res.locals.user.id;
 
-      const user: Users | null = await this.user.findOneBy({
-        id: userId,
-      });
-
-      if (!user) {
-        return next(new AppError("user not found", 404));
-      }
+      const user: Users | null = (await UserUtils.findUserById(
+        userId
+      )) as Users;
 
       const newPost = new Post();
 
@@ -75,16 +73,7 @@ export class PostControllers {
 
       const userId: string = res.locals.user.id;
 
-      const post: Post | null = await this.postRepository.findOne({
-        where: {
-          id: postId,
-          user: { id: userId },
-        },
-      });
-
-      if (!post) {
-        return next(new AppError("Post not found", 404));
-      }
+      await PostUtils.ensurePostWithPostIdAndUserIdExists(postId, userId);
 
       const caption: string = req.body.caption;
 
@@ -112,13 +101,15 @@ export class PostControllers {
 
       const userId: string = res.locals.user.id;
 
-      const post: Post | null = await this.postRepository.findOne({
-        where: { id: postId, user: { id: userId } },
-        relations: { files: true },
-      });
+      const user: Users | null = await UserUtils.findUserById(userId);
 
-      if (!post) {
-        return next(new AppError("Post not found", 404));
+      const post: Post | null = await PostUtils.findPostWithPostIdAndUserId(
+        postId,
+        userId
+      );
+
+      if (post.user.id !== userId && user.role !== "admin") {
+        return next(new AppError("unauthorized", 401));
       }
 
       await AppDataSource.transaction(async (transactionalEntityManager) => {
@@ -177,14 +168,10 @@ export class PostControllers {
 
       const userId: string = res.locals.user.id;
 
-      const post: Post | null = await this.postRepository.findOne({
-        where: { id: postId, user: { id: userId } },
-        relations: { files: true },
-      });
-
-      if (!post) {
-        return next(new AppError("Post not found", 404));
-      }
+      const post: Post | null = await PostUtils.findPostWithPostIdAndUserId(
+        postId,
+        userId
+      );
 
       return res.status(200).json({
         success: true,
@@ -198,15 +185,11 @@ export class PostControllers {
     async (req: Request, res: Response, next: NextFunction) => {
       const postId: string = req.params.id;
 
-      const post: Post | null = await this.postRepository.findOneBy({
-        id: postId,
-      });
-
-      if (!post) {
-        return next(new AppError("Post not found", 404));
-      }
+      const post: Post | null = await PostUtils.findPostById(postId);
 
       const userId: string = res.locals.user.id;
+
+      const user: Users | null = await UserUtils.findUserById(userId);
 
       const alreadyLiked = await this.postLikeRepository.findOneBy({
         post: { id: postId },
@@ -225,7 +208,7 @@ export class PostControllers {
 
       postLike.isLiked = true;
       postLike.post = post;
-      postLike.user = res.locals.user;
+      postLike.user = user;
 
       await this.postLikeRepository.save(postLike);
 
@@ -246,13 +229,7 @@ export class PostControllers {
 
       const userId: string = res.locals.user.id;
 
-      const post = await this.postRepository.findOneBy({
-        id: postId,
-      });
-
-      if (!post) {
-        return next(new AppError("Post not found", 404));
-      }
+      const post: Post | null = await PostUtils.findPostById(postId);
 
       const likedPost = await this.postLikeRepository.findOneBy({
         post: { id: postId },
@@ -284,13 +261,7 @@ export class PostControllers {
     async (req: Request, res: Response, next: NextFunction) => {
       const postId = req.params.id;
 
-      const post = await this.postRepository.findOneBy({
-        id: postId,
-      });
-
-      if (!post) {
-        return next(new AppError("Post not found", 404));
-      }
+      await PostUtils.checkPostExists(postId);
 
       const postLikes = await this.postLikeRepository.find({
         where: { post: { id: postId } },

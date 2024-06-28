@@ -6,11 +6,12 @@ import { AppError } from "../utils/AppError";
 import { Users } from "../entities/user.entity";
 import { commentSchema } from "../validation/comments.validation";
 import { Post } from "../entities/post.entity";
+import { UserUtils } from "../utils/user.utils";
+import { PostUtils } from "../utils/post.utils";
 
 export class CommentsController {
   private postRepository = AppDataSource.getRepository(Post);
   private commentRepository = AppDataSource.getRepository(Comments);
-  private userRepository = AppDataSource.getRepository(Users);
 
   public writeComment = asyncHandler(
     async (req: Request, res: Response, next: NextFunction) => {
@@ -24,23 +25,11 @@ export class CommentsController {
 
       const postId: string = req.params.id;
 
-      const post: Post | null = await this.postRepository.findOneBy({
-        id: postId,
-      });
-
-      if (!post) {
-        return next(new AppError("post not found", 404));
-      }
+      const post: Post | null = (await PostUtils.findPostById(postId)) as Post;
 
       const userId: string = res.locals.user.id;
 
-      const user: Users | null = await this.userRepository.findOneBy({
-        id: userId,
-      });
-
-      if (!user) {
-        return next(new AppError("user not found", 404));
-      }
+      const user: Users | null = await UserUtils.findUserById(userId);
 
       const newComment = new Comments();
 
@@ -75,26 +64,19 @@ export class CommentsController {
 
       const userId: string = res.locals.user.id;
 
-      const user: Users | null = await this.userRepository.findOneBy({
-        id: userId,
-      });
+      const user: Users | null = await UserUtils.findUserById(userId);
 
-      if (!user) {
-        return next(new AppError("user not found", 404));
+      const commentToEdit = await PostUtils.findCommentByUserIdAndCommentId(
+        userId,
+        commentId
+      );
+
+      if (commentToEdit.user.id !== userId && user.role !== "admin") {
+        return next(new AppError("unauthorized", 401));
       }
-
-      const commentToEdit = await this.commentRepository.findOne({
-        where: { id: commentId, user: { id: userId } },
-        relations: { user: true },
-      });
-
-      if (!commentToEdit) {
-        return next(new AppError("comment not found", 404));
-      }
-
       const result = await this.commentRepository
         .createQueryBuilder()
-        .update(commentToEdit)
+        .update(Comments)
         .set({ comment: comment })
         .where("id= :id AND userId= :userId", {
           id: commentId,
@@ -118,23 +100,10 @@ export class CommentsController {
       const commentId: string = req.params.id;
       const userId: string = res.locals.user.id;
 
-      const user: Users | null = await this.userRepository.findOneBy({
-        id: userId,
-      });
-
-      if (!user) {
-        return next(new AppError("user not found", 404));
-      }
+      const user: Users | null = await UserUtils.findUserById(userId);
 
       const commentToDelete: Comments | null =
-        await this.commentRepository.findOne({
-          where: { id: commentId },
-          relations: ["user", "post"],
-        });
-
-      if (!commentToDelete) {
-        return next(new AppError("comment not found", 404));
-      }
+        await PostUtils.findCommentByCommentId(commentId);
 
       if (
         commentToDelete.user.id !== userId &&
@@ -161,13 +130,7 @@ export class CommentsController {
     async (req: Request, res: Response, next: NextFunction) => {
       const postId: string = req.params.id;
 
-      const post: Post | null = await this.postRepository.findOneBy({
-        id: postId,
-      });
-
-      if (!post) {
-        return next(new AppError("post not found", 404));
-      }
+      await PostUtils.checkPostExists(postId);
 
       const comments: Comments[] = await this.commentRepository.find({
         where: { post: { id: postId } },

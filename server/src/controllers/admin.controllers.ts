@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { asyncHandler } from "../utils/asyncHandler";
 import { AppDataSource } from "../config/DB_Connection";
 import { Users } from "../entities/user.entity";
-import { AppError } from "../utils/AppError";
+import { UserUtils } from "../utils/user.utils";
 
 export class AdminController {
   private userRepository = AppDataSource.getRepository(Users);
@@ -40,11 +40,7 @@ export class AdminController {
     async (req: Request, res: Response, next: NextFunction) => {
       const id: string = req.params.id;
 
-      const user: Users | null = await this.userRepository.findOneBy({ id });
-
-      if (!user) {
-        return next(new AppError("user not found", 404));
-      }
+      const user: Users | null = await UserUtils.findUserById(id);
 
       await this.userRepository.delete({ id });
 

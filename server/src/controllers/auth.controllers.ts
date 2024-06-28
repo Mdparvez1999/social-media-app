@@ -8,11 +8,15 @@ import {
   resetPasswordSchema,
 } from "../validation/auth.validation";
 import { Users } from "../entities/user.entity";
-import { comparePassword, hashPassword } from "../utils/auth.utils";
-import { genrateToken } from "../utils/jwt.utils";
-import crypto from "crypto";
+import {
+  comparePassword,
+  hashPassword,
+  genForgotPasswordToken,
+} from "../helpers/auth.helper";
+import { genrateToken } from "../helpers/jwt.helpers";
 import { AppError } from "../utils/AppError";
 import { asyncHandler } from "../utils/asyncHandler";
+import { UserUtils } from "../utils/user.utils";
 
 export class AuthController {
   private userRepository = AppDataSource.getRepository(Users);
@@ -68,11 +72,7 @@ export class AuthController {
 
       const { email, password } = value;
 
-      const user = await this.userRepository.findOneBy({ email });
-
-      if (!user) {
-        return next(new AppError("user not found", 404));
-      }
+      const user = await UserUtils.findUserByEmail(email);
 
       const correctPassword = await comparePassword(password, user.password);
 
@@ -104,15 +104,9 @@ export class AuthController {
 
       const { email } = value;
 
-      const user: Users | null = await this.userRepository.findOneBy({ email });
+      const user: Users | null = await UserUtils.findUserByEmail(email);
 
-      if (!user) {
-        return next(new AppError("User not found", 404));
-      }
-
-      const forgotPasswordToken: string = crypto
-        .randomBytes(20)
-        .toString("hex");
+      const forgotPasswordToken: string = genForgotPasswordToken();
 
       user.forgotPasswordToken = forgotPasswordToken;
       user.forgotPasswordExpiry = new Date(Date.now() + 10 * 60 * 1000);
@@ -142,13 +136,7 @@ export class AuthController {
 
       const token: string = req.params.token;
 
-      const user: Users | null = await this.userRepository.findOneBy({
-        forgotPasswordToken: token,
-      });
-
-      if (!user) {
-        return next(new AppError("User not found", 404));
-      }
+      const user: Users | null = await UserUtils.findUserByFPToken(token);
 
       const hashedPassword = await hashPassword(password);
 

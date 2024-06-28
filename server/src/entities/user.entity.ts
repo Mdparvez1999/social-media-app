@@ -9,6 +9,8 @@ import { v4 as uuidv4 } from "uuid";
 import { PostLike } from "./postLike.entity";
 import { Comments } from "./comments.entity";
 import { Post } from "./post.entity";
+import { Follower } from "./follower.entity";
+import { FollowRequest } from "./followRequest.entity";
 
 @Entity()
 export class Users {
@@ -87,11 +89,37 @@ export class Users {
   @OneToMany(() => Post, (post) => post.user, { cascade: true })
   posts!: Post[];
 
-  @OneToMany(() => PostLike, (postlike) => postlike.user)
+  @OneToMany(() => PostLike, (postlike) => postlike.user, { cascade: true })
   postLikes!: PostLike[];
 
-  @OneToMany(() => Comments, (comment) => comment.user)
+  @OneToMany(() => Comments, (comment) => comment.user, { cascade: true })
   comments!: Comments[];
+
+  @OneToMany(() => Follower, (follower) => follower.followers, {
+    cascade: true,
+  })
+  followers!: Follower[];
+
+  @OneToMany(() => Follower, (follower) => follower.following, {
+    cascade: true,
+  })
+  following!: Follower[];
+
+  @OneToMany(
+    () => FollowRequest,
+    (followRequest) => followRequest.requestedUser,
+    { cascade: true }
+  )
+  sentFollowRequest!: FollowRequest[];
+
+  @OneToMany(
+    () => FollowRequest,
+    (followRequest) => followRequest.recievedUser,
+    {
+      cascade: true,
+    }
+  )
+  recievedFollowRequest!: FollowRequest[];
 
   @BeforeInsert()
   addId() {

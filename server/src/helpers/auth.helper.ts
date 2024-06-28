@@ -1,4 +1,5 @@
 import { compare, genSalt, hash } from "bcrypt";
+import crypto from "crypto";
 
 export const hashPassword = async (password: string): Promise<string> => {
   const salt = await genSalt(10);
@@ -11,4 +12,8 @@ export const comparePassword = async (
   dbPassword: string
 ): Promise<boolean> => {
   return await compare(password, dbPassword);
+};
+
+export const genForgotPasswordToken = (): string => {
+  return crypto.randomBytes(20).toString("hex");
 };

@@ -19,7 +19,7 @@ export class PostFile {
   @Column()
   type!: string;
 
-  @ManyToOne(() => Post, (post) => post.files)
+  @ManyToOne(() => Post, (post) => post.files, { onDelete: "CASCADE" })
   post!: Post;
 
   @BeforeInsert()

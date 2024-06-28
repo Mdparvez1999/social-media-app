@@ -1,21 +1,41 @@
 import express from "express";
 import { UserProfileController } from "../controllers/userProfile.controller";
 import { auth } from "../middlewares/auth.Middleware";
+import { profilePicUpload } from "../config/multer.config";
 
 const router: express.Router = express.Router();
 
 const userProfileController = new UserProfileController();
 
-router.get("/profile", auth, userProfileController.getUserProfile);
+router.get("/", auth, userProfileController.getUserProfile);
 
-router.put("/profile", auth, userProfileController.updateUserProfile);
+router.patch("/username", auth, userProfileController.updateUserName);
 
-router.patch("/profile/private", auth, userProfileController.privateProfile);
+router.patch("/email", auth, userProfileController.updateEmail);
 
-router.put(
-  "/profile/change-password",
+router.patch("/DOB", auth, userProfileController.updateDOB);
+
+router.patch("/bio", auth, userProfileController.updateBio);
+
+router.patch("/gender", auth, userProfileController.updateGender);
+
+router.patch(
+  "/profilePic",
   auth,
-  userProfileController.changePassword
+  profilePicUpload.single("profilePic"),
+  userProfileController.updateProfilePic
 );
+
+router.put("/change-password", auth, userProfileController.changePassword);
+
+router.patch("/private", auth, userProfileController.privateProfile);
+
+router.patch("/public", auth, userProfileController.publicProfile);
+
+router.patch("/deactivate", auth, userProfileController.deActivateProfile);
+
+router.patch("/reactivate", auth, userProfileController.reActivateProfile);
+
+router.delete("/", auth, userProfileController.deleteProfile);
 
 export default router;
