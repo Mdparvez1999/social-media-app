@@ -9,6 +9,7 @@ import { PostLike } from "../entities/postLike.entity";
 import { Users } from "../entities/user.entity";
 import { UserUtils } from "../utils/user.utils";
 import { PostUtils } from "../utils/post.utils";
+import { NotificationUtils } from "../utils/notification.utils";
 
 export class PostControllers {
   private postRepository = AppDataSource.getRepository(Post);
@@ -63,6 +64,7 @@ export class PostControllers {
       return res.status(201).json({
         success: true,
         message: "Post created successfully",
+        data: newPost,
       });
     }
   );
@@ -214,6 +216,10 @@ export class PostControllers {
 
       post.likeCount = post.likeCount + 1;
       await this.postRepository.save(post);
+
+      const type = "like";
+      const message = `${user.userName} liked your post`;
+      await NotificationUtils.createNotification(type, message, post.user.id);
 
       return res.status(200).json({
         success: true,

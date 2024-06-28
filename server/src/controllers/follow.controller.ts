@@ -7,10 +7,9 @@ import { FollowRequest } from "../entities/followRequest.entity";
 import { Follower } from "../entities/follower.entity";
 import { FollowUtils } from "../utils/follow.utils";
 import { UserUtils } from "../utils/user.utils";
+import { NotificationUtils } from "../utils/notification.utils";
 
 export class FollowController {
-  private userRepository = AppDataSource.getRepository(Users);
-
   private followerRepository = AppDataSource.getRepository(Follower);
 
   private followRequestRepository = AppDataSource.getRepository(FollowRequest);
@@ -42,6 +41,11 @@ export class FollowController {
 
         await this.followRequestRepository.save(followRequest);
 
+        const type = "followRequest";
+        const message = `${reqSenderUser.userName} sent you a request`;
+
+        await NotificationUtils.createNotification(type, message, recieverId);
+
         return res.status(200).json({
           status: "success",
           message: "request sent successfully",
@@ -57,6 +61,10 @@ export class FollowController {
 
       await this.followerRepository.save(follower);
 
+      const type = "follow";
+      const message = `${reqSenderUser.userName} followed you`;
+      await NotificationUtils.createNotification(type, message, recieverId);
+
       return res.status(200).json({
         status: "success",
         message: "followed successfully",
@@ -69,6 +77,8 @@ export class FollowController {
       const followRequestId: string = req.params.id;
 
       const userId: string = res.locals.user.id;
+
+      const user: Users | null = await UserUtils.findUserById(userId);
 
       const followRequest: FollowRequest | null =
         (await FollowUtils.getPendingFollowRequestByUserId(
@@ -91,6 +101,14 @@ export class FollowController {
         followRequest.status = "accepted";
         await entityTransactionalManager.save(followRequest);
       });
+
+      const type = "follow";
+      const message = `${user.userName} accepted your request`;
+      await NotificationUtils.createNotification(
+        type,
+        message,
+        followRequest.requestedUser.id
+      );
 
       return res.status(200).json({
         status: "success",
@@ -142,19 +160,19 @@ export class FollowController {
 
   public cancelFollowRequest = asyncHandler(
     async (req: Request, res: Response, next: NextFunction) => {
-      const currentUser = res.locals.user;
+      const userId = res.locals.user.id;
+
+      const user: Users | null = await UserUtils.findUserById(userId);
+
       const followRequestId: string = req.params.id;
 
       const followRequest: FollowRequest | null =
         (await FollowUtils.getPendingFollowRequestByUserId(
-          currentUser.id,
+          user.id,
           followRequestId
         )) as FollowRequest;
 
-      if (
-        followRequest.requestedUser.id !== currentUser.id &&
-        currentUser.role !== "admin"
-      ) {
+      if (followRequest.requestedUser.id !== user.id && user.role !== "admin") {
         return next(new AppError("unauthorized", 401));
       }
       await this.followRequestRepository.remove(followRequest);
@@ -168,20 +186,19 @@ export class FollowController {
 
   public declineFollowRequest = asyncHandler(
     async (req: Request, res: Response, next: NextFunction) => {
-      const currentUser = res.locals.user;
+      const userId = res.locals.user.id;
+
+      const user: Users | null = await UserUtils.findUserById(userId);
 
       const followRequestId: string = req.params.id;
 
       const followRequest: FollowRequest | null =
         (await FollowUtils.getPendingFollowRequestByReceiverId(
-          currentUser.id,
+          user.id,
           followRequestId
         )) as FollowRequest;
 
-      if (
-        followRequest.recievedUser.id !== currentUser.id &&
-        currentUser.role !== "admin"
-      ) {
+      if (followRequest.recievedUser.id !== user.id && user.role !== "admin") {
         return next(new AppError("unauthorized", 401));
       }
 

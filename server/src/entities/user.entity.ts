@@ -11,6 +11,7 @@ import { Comments } from "./comments.entity";
 import { Post } from "./post.entity";
 import { Follower } from "./follower.entity";
 import { FollowRequest } from "./followRequest.entity";
+import { Notifications } from "./notification.entity";
 
 @Entity()
 export class Users {
@@ -120,6 +121,11 @@ export class Users {
     }
   )
   recievedFollowRequest!: FollowRequest[];
+
+  @OneToMany(() => Notifications, (notification) => notification.user, {
+    cascade: true,
+  })
+  notifications!: Notifications[];
 
   @BeforeInsert()
   addId() {

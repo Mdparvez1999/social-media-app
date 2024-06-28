@@ -8,6 +8,7 @@ import { commentSchema } from "../validation/comments.validation";
 import { Post } from "../entities/post.entity";
 import { UserUtils } from "../utils/user.utils";
 import { PostUtils } from "../utils/post.utils";
+import { NotificationUtils } from "../utils/notification.utils";
 
 export class CommentsController {
   private postRepository = AppDataSource.getRepository(Post);
@@ -41,6 +42,10 @@ export class CommentsController {
 
       post.commentCount += 1;
       await this.postRepository.save(post);
+
+      const type = "comment";
+      const message = `${user.userName} commented on your post`;
+      await NotificationUtils.createNotification(type, message, post.user.id);
 
       res.status(201).json({
         success: true,

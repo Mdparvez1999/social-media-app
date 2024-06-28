@@ -5,8 +5,6 @@ import { AppError } from "./AppError";
 import { Follower } from "../entities/follower.entity";
 
 export class FollowUtils {
-  private static userRepository = AppDataSource.getRepository(Users);
-
   private static followRequestRepository =
     AppDataSource.getRepository(FollowRequest);
 
@@ -52,10 +50,10 @@ export class FollowUtils {
     const followRequest = await this.followRequestRepository.findOne({
       where: {
         id: followRequestId,
-        requestedUser: { id: userId },
+        recievedUser: { id: userId },
         status: "pending",
       },
-      relations: ["requestedUser", "receivedUser"],
+      relations: ["requestedUser", "recievedUser"],
     });
 
     if (!followRequest) {

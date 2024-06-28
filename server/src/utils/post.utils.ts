@@ -8,7 +8,10 @@ export class PostUtils {
   private static commentRepository = AppDataSource.getRepository(Comments);
 
   public static async findPostById(id: string): Promise<Post> {
-    const post = await this.postRepository.findOneBy({ id });
+    const post = await this.postRepository.findOne({
+      where: { id },
+      relations: { user: true },
+    });
 
     if (!post) {
       throw new AppError("post not found", 404);
