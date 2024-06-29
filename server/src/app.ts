@@ -2,7 +2,9 @@ import "reflect-metadata";
 import express, { Application, Request, Response, NextFunction } from "express";
 import cookieParser from "cookie-parser";
 
+import helmet from "helmet";
 import { AppDataSource } from "./config/DB_Connection";
+import CORS from "cors";
 import authRouter from "./routes/auth.routes";
 import userProfileRouter from "./routes/userProfile.routes";
 import adminRouter from "./routes/admin.routes";
@@ -12,9 +14,13 @@ import followRouter from "./routes/follow.routes";
 import notificationRouter from "./routes/notification.routes";
 import { errorHandler } from "./middlewares/error.middleware";
 import { auth } from "./middlewares/auth.Middleware";
+import { apiLimiter } from "./config/rate_Limit.cofig";
 
 // create express app
 export const app: Application = express();
+
+// security middlewares
+app.use(helmet());
 
 // database connection
 AppDataSource.initialize()
@@ -25,10 +31,21 @@ AppDataSource.initialize()
     console.log(error);
   });
 
-// Middlewares
+// global middlewares
+app.use(
+  CORS({
+    origin: "http://localhost:3000",
+    credentials: true,
+  })
+);
+
+// data parsing Middlewares
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// rate limiter
+app.use("/api", apiLimiter);
 
 // Routes
 app.use("/api/auth", authRouter);
