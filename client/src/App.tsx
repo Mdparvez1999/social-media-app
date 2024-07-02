@@ -1,28 +1,32 @@
-import "./App.sass";
 import Hero from "./pages/hero/Hero";
 import Home from "./pages/home/Home";
 import { Routes, Route } from "react-router-dom";
 import Search from "./pages/search/Search";
-import CreatePost from "./pages/create post/CreatePost";
 import Notifications from "./pages/notifications/Notifications";
 import Profile from "./pages/profile/Profile";
 import Chats from "./pages/chats/Chats";
+import Signup from "./components/auth/signup/Signup";
+import Login from "./components/auth/login/Login";
+import { useAuthContext } from "./contexts/AuthContext";
+import { Box } from "@chakra-ui/react";
 
 function App() {
+  const { currentUser } = useAuthContext();
   return (
     <>
-      <div className="app_div">
+      <Box>
         <Routes>
-          <Route path="/app" element={<Hero />}>
+          <Route path="/signup" element={<Signup />} />
+          <Route path="/login" loader element={<Login />} />
+          <Route path="/app" element={currentUser ? <Hero /> : <Login />}>
             <Route path="home" element={<Home />} />
             <Route path="search" element={<Search />} />
-            <Route path="createpost" element={<CreatePost />} />
             <Route path="notifications" element={<Notifications />} />
             <Route path="profile" element={<Profile />} />
             <Route path="chats" element={<Chats />} />
           </Route>
         </Routes>
-      </div>
+      </Box>
     </>
   );
 }

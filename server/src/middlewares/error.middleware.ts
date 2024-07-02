@@ -20,7 +20,7 @@ export const errorHandler = (
   res: Response,
   next: NextFunction
 ) => {
-  // console.log("error handler : ", err);
+  console.log("error handler : ", err);
   err.statusCode = err.statusCode || 500;
   err.status = err.status || "error";
 

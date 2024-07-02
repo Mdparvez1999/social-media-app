@@ -1,11 +1,11 @@
-import "./Navbar.sass";
+import { Box, Heading } from "@chakra-ui/react";
 
 const Logo = () => {
   return (
     <>
-      <div className="logo_div">
-        <h1>LOGO</h1>
-      </div>
+      <Box width={"100%"} margin={"30px"} textAlign={"center"}>
+        <Heading size={"lg"}>LOGO</Heading>
+      </Box>
     </>
   );
 };

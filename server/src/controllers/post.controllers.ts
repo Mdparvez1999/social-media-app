@@ -30,6 +30,10 @@ export class PostControllers {
 
       const files = req.files as Express.Multer.File[];
 
+      if (!files || files.length === 0) {
+        return next(new AppError("please write something", 400));
+      }
+
       if (error) {
         return next(error);
       }

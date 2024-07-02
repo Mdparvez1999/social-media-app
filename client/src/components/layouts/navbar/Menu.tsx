@@ -1,58 +1,175 @@
 import { Link } from "react-router-dom";
-import { FaHome, FaSearch } from "react-icons/fa";
+import { FaHome, FaSearch, FaUserCircle } from "react-icons/fa";
 import { GoPlusCircle } from "react-icons/go";
 import { IoNotifications } from "react-icons/io5";
 import { BsChatSquareDotsFill } from "react-icons/bs";
-import { FaUserCircle } from "react-icons/fa";
+import { FiLogOut } from "react-icons/fi";
+import { toast } from "react-toastify";
+import useLogout from "../../../hooks/auth/useLogout";
+import {
+  Box,
+  ListItem,
+  UnorderedList,
+  useDisclosure,
+  Link as ChakraLink,
+} from "@chakra-ui/react";
+import CreatePost from "../../../pages/create post/CreatePost";
 
 const Menu = () => {
+  const { isOpen, onClose, onOpen } = useDisclosure();
+
+  const { logoutUser } = useLogout();
+  const handleLogout = async (
+    e: React.MouseEvent<HTMLAnchorElement, MouseEvent>
+  ) => {
+    e.preventDefault();
+    try {
+      await logoutUser();
+    } catch (error) {
+      toast.error("Something went wrong");
+    }
+  };
   return (
     <>
-      <div className="menu_div">
-        <ul>
-          <li>
-            <Link to={"/app/home"}>
-              <FaHome className="icons" />
+      <Box width={"100%"} height={"100%"}>
+        <UnorderedList
+          display={"flex"}
+          flexDirection={"column"}
+          listStyleImage={"none"}
+          padding={"8px"}
+          listStyleType={"none"}
+          _hover={{ cursor: "pointer" }}
+        >
+          <ListItem width={"100%"} padding={"10px"} mb={"14px"}>
+            <ChakraLink
+              as={Link}
+              to={"/app/home"}
+              display={"flex"}
+              alignItems={"center"}
+              color={"black"}
+              fontSize={"1.2rem"}
+              textAlign={"center"}
+              _hover={{ textDecoration: "none" }}
+            >
+              <Box mr={"18px"}>
+                <FaHome size={"1.5rem"} />
+              </Box>
               <span>Home</span>
-            </Link>
-          </li>
+            </ChakraLink>
+          </ListItem>
 
-          <li>
-            <Link to={"/app/search"}>
-              <FaSearch className="icons" />
+          <ListItem width={"100%"} padding={"10px"} mb={"14px"}>
+            <ChakraLink
+              as={Link}
+              to={"/app/search"}
+              display={"flex"}
+              alignItems={"center"}
+              color={"black"}
+              fontSize={"1.2rem"}
+              textAlign={"center"}
+              _hover={{ textDecoration: "none" }}
+            >
+              <Box mr={"18px"}>
+                <FaSearch size={"1.5rem"} />
+              </Box>
               Search
-            </Link>
-          </li>
+            </ChakraLink>
+          </ListItem>
 
-          <li>
-            <Link to={"/app/createpost"}>
-              <GoPlusCircle className="icons" />
+          <ListItem width={"100%"} padding={"10px"} mb={"14px"}>
+            <ChakraLink
+              as={Link}
+              to={"#"}
+              onClick={onOpen}
+              display={"flex"}
+              alignItems={"center"}
+              color={"black"}
+              fontSize={"1.2rem"}
+              textAlign={"center"}
+              _hover={{ textDecoration: "none" }}
+            >
+              <Box mr={"18px"}>
+                <GoPlusCircle size={"1.5rem"} />
+              </Box>
               Create Post
-            </Link>
-          </li>
+            </ChakraLink>
+          </ListItem>
 
-          <li>
-            <Link to={"/app/notifications"}>
-              <IoNotifications className="icons" />
+          <ListItem width={"100%"} padding={"10px"} mb={"14px"}>
+            <ChakraLink
+              as={Link}
+              to={"/app/notifications"}
+              display={"flex"}
+              alignItems={"center"}
+              color={"black"}
+              fontSize={"1.2rem"}
+              textAlign={"center"}
+              _hover={{ textDecoration: "none" }}
+            >
+              <Box mr={"18px"}>
+                <IoNotifications size={"1.5rem"} />
+              </Box>
               Notifications
-            </Link>
-          </li>
+            </ChakraLink>
+          </ListItem>
 
-          <li>
-            <Link to={"/app/profile"}>
-              <FaUserCircle className="icons" />
-              Profile
-            </Link>
-          </li>
-
-          <li>
-            <Link to={"/app/chats"}>
-              <BsChatSquareDotsFill className="icons" />
+          <ListItem width={"100%"} padding={"10px"} mb={"14px"}>
+            <ChakraLink
+              as={Link}
+              to={"/app/chats"}
+              display={"flex"}
+              alignItems={"center"}
+              color={"black"}
+              fontSize={"1.2rem"}
+              textAlign={"center"}
+              _hover={{ textDecoration: "none" }}
+            >
+              <Box mr={"18px"}>
+                <BsChatSquareDotsFill size={"1.5rem"} />
+              </Box>
               Chats
-            </Link>
-          </li>
-        </ul>
-      </div>
+            </ChakraLink>
+          </ListItem>
+
+          <ListItem width={"100%"} padding={"10px"} mb={"14px"}>
+            <ChakraLink
+              as={Link}
+              to={"/app/profile"}
+              display={"flex"}
+              alignItems={"center"}
+              color={"black"}
+              fontSize={"1.2rem"}
+              textAlign={"center"}
+              _hover={{ textDecoration: "none" }}
+            >
+              <Box mr={"18px"}>
+                <FaUserCircle size={"1.5rem"} />
+              </Box>
+              Profile
+            </ChakraLink>
+          </ListItem>
+
+          <ListItem width={"100%"} padding={"10px"} mb={"14px"}>
+            <ChakraLink
+              as={Link}
+              to={"/login"}
+              onClick={handleLogout}
+              display={"flex"}
+              alignItems={"center"}
+              color={"black"}
+              fontSize={"1.2rem"}
+              textAlign={"center"}
+              _hover={{ textDecoration: "none" }}
+            >
+              <Box mr={"18px"}>
+                <FiLogOut size={"1.5rem"} />
+              </Box>
+              Logout
+            </ChakraLink>
+          </ListItem>
+        </UnorderedList>
+      </Box>
+      <CreatePost isOpen={isOpen} onClose={onClose} />
     </>
   );
 };

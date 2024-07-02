@@ -30,7 +30,7 @@ export class Users {
   email!: string;
 
   @Column({
-    nullable: false,
+    nullable: true,
   })
   DOB!: Date;
 
@@ -53,7 +53,7 @@ export class Users {
   profilePic!: string | null;
 
   @Column({
-    nullable: false,
+    nullable: true,
   })
   gender!: string;
 

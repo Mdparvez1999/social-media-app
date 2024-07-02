@@ -152,4 +152,18 @@ export class AuthController {
       });
     }
   );
+
+  public userLogout = asyncHandler(
+    async (
+      req: Request,
+      res: Response,
+      next: NextFunction
+    ): Promise<Response | Error | void> => {
+      res.clearCookie("jwt");
+      return res.status(200).json({
+        success: true,
+        message: "user logged out successfully",
+      });
+    }
+  );
 }
