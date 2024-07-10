@@ -9,7 +9,6 @@ import { setPosts } from "../../redux-store/features/post/postsSlice";
 const CurrentUserPosts = () => {
   const dispatch = useAppDispatch();
   const currentUserPosts = useAppSelector((state) => state.posts.posts);
-  console.log(currentUserPosts);
 
   useEffect(() => {
     const fetchCurrentUserPosts = async () => {

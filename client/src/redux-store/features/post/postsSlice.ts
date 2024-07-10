@@ -25,6 +25,11 @@ export interface PostState {
   likeCount: number;
   files: File[];
   postlikes: PostLikes[];
+  user: {
+    id: string;
+    profilePic: string;
+    userName: string;
+  };
   createdAt: Date;
   updatedAt: Date;
 }
@@ -52,9 +57,18 @@ const postSlice = createSlice({
     deletePost: (state, acction: PayloadAction<string>) => {
       state.posts = state.posts.filter((post) => post.id !== acction.payload);
     },
+    editPostCaption: (
+      state,
+      action: PayloadAction<{ id: string | undefined; caption: string }>
+    ) => {
+      if (state.singlePost && state.singlePost.id === action.payload.id) {
+        state.singlePost.caption = action.payload.caption;
+      }
+    },
   },
 });
 
-export const { setPosts, setSinglePost, deletePost } = postSlice.actions;
+export const { setPosts, setSinglePost, deletePost, editPostCaption } =
+  postSlice.actions;
 
 export default postSlice.reducer;

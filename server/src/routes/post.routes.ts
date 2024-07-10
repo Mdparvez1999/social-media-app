@@ -16,7 +16,7 @@ router.post(
 
 router.get("/get-all", auth, postController.getAllPosts);
 
-router.put("/update-post/:id", auth, postController.updatePostCaption);
+router.put("/update/:id", auth, postController.updatePostCaption);
 
 router.delete("/delete/:id", auth, postController.deletePost);
 

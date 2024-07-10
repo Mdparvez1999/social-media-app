@@ -13,6 +13,8 @@ const Comments = ({ postId }: propsType) => {
 
   const comments = useAppSelector((state) => state.comments.comments);
 
+  const post = useAppSelector((state) => state.posts.singlePost);
+
   useEffect(() => {
     const getComments = async () => {
       if (postId) {
@@ -34,11 +36,17 @@ const Comments = ({ postId }: propsType) => {
       overflowY={"auto"}
       css={{ "&::-webkit-scrollbar": { display: "none" } }}
     >
-      {comments.length === 0 && (
-        <Heading fontSize={"1.1rem"} fontWeight={"500"} textAlign={"center"}>
-          No comments yet
-        </Heading>
-      )}
+      <Box display={"flex"} alignItems={"center"} gap={"14px"} mb={"14px"}>
+        <Avatar src={post?.user?.profilePic} size={"sm"} />
+        <Box>
+          <Heading fontSize={"1.1rem"} mb={"5px"}>
+            {post?.user?.userName}
+          </Heading>
+          <Heading fontSize={"0.9rem"} fontWeight={"500"}>
+            {post?.caption}
+          </Heading>
+        </Box>
+      </Box>
       {comments?.map((comment) => (
         <Box
           key={comment.id}
@@ -47,10 +55,10 @@ const Comments = ({ postId }: propsType) => {
           alignItems={"center"}
           mb={"20px"}
         >
-          <Box display={"flex"} alignItems={"center"} gap={"16px"}>
+          <Box display={"flex"} alignItems={"center"} gap={"14px"}>
             <Avatar src={comment?.user?.profilePic} size={"sm"} />
             <Box>
-              <Heading fontSize={"1.1rem"} mb={"6px"}>
+              <Heading fontSize={"1.1rem"} mb={"5px"}>
                 {comment?.user?.userName}
               </Heading>
               <Heading fontSize={"0.9rem"} fontWeight={"500"}>
