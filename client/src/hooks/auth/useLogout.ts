@@ -1,10 +1,10 @@
 import { toast } from "react-toastify";
-import { useAuthContext } from "../../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { useAppDispatch } from "../hooks";
+import { logoutCurrentUser } from "../../redux-store/features/auth/authSlice";
 
 const useLogout = () => {
-  const { setCurrentUser } = useAuthContext();
-
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
   const logoutUser = async () => {
@@ -19,13 +19,9 @@ const useLogout = () => {
         throw new Error(data.error);
       }
 
-      localStorage.removeItem("userData");
+      dispatch(logoutCurrentUser());
 
-      setCurrentUser(null);
-
-      toast.success(data.message, {
-        position: "top-center",
-      });
+      toast.success(data.message);
 
       navigate("/login");
     } catch (error) {

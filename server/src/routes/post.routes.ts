@@ -18,13 +18,13 @@ router.get("/get-all", auth, postController.getAllPosts);
 
 router.put("/update-post/:id", auth, postController.updatePostCaption);
 
-router.delete("/delete-post/:id", auth, postController.deletePost);
+router.delete("/delete/:id", auth, postController.deletePost);
 
-router.get("/get-post/:id", auth, postController.getPostById);
+router.get("/:id", auth, postController.getPostById);
 
-router.post("/like-post/:id", auth, postController.likePost);
+router.post("/like/:id", auth, postController.likePost);
 
-router.post("/unlike-post/:id", auth, postController.unlikePost);
+router.post("/unlike/:id", auth, postController.unlikePost);
 
 router.get("/post-likes/:id", auth, postController.getPostLikes);
 

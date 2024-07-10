@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { useAuthContext } from "../../contexts/AuthContext";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import { useAppDispatch } from "../hooks";
+import { setCurrentUser } from "../../redux-store/features/auth/authSlice";
 
 interface loginDataType {
   email: string;
@@ -9,8 +10,7 @@ interface loginDataType {
 }
 
 const useLogin = () => {
-  const { setCurrentUser } = useAuthContext();
-
+  const dispatch = useAppDispatch();
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
@@ -35,9 +35,7 @@ const useLogin = () => {
         throw new Error(data.message);
       }
 
-      localStorage.setItem("userData", JSON.stringify(data));
-
-      setCurrentUser(data);
+      dispatch(setCurrentUser(data.user));
 
       toast.success(data.message);
 

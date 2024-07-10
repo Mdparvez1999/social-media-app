@@ -14,7 +14,7 @@ export class PostFile {
   id!: string;
 
   @Column()
-  path!: string;
+  fileName!: string;
 
   @Column()
   type!: string;

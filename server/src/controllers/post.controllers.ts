@@ -56,7 +56,7 @@ export class PostControllers {
       const postFiles = files.map((file) => {
         const postFile = new PostFile();
 
-        postFile.path = file.path;
+        postFile.fileName = file.filename;
         postFile.type = file.mimetype.split("/")[1];
         postFile.post = newPost;
 
@@ -156,7 +156,7 @@ export class PostControllers {
       const posts = allPosts.map((post) => {
         return {
           ...post,
-          files: post.files.map((file) => file.path),
+          files: post.files.map((file) => file.fileName),
         };
       });
 
@@ -228,7 +228,17 @@ export class PostControllers {
       return res.status(200).json({
         success: true,
         message: "Post liked successfully",
-        data: postLike,
+        data: {
+          id: postLike.id,
+          isLiked: postLike.isLiked,
+          liked_at: postLike.liked_at,
+          post: post.id,
+          user: {
+            id: user.id,
+            userName: user.userName,
+            profilePic: user.profilePic,
+          },
+        },
       });
     }
   );

@@ -15,6 +15,7 @@ import notificationRouter from "./routes/notification.routes";
 import { errorHandler } from "./middlewares/error.middleware";
 import { auth } from "./middlewares/auth.Middleware";
 import { apiLimiter } from "./config/rate_Limit.cofig";
+import path from "path";
 
 // create express app
 export const app: Application = express();
@@ -44,8 +45,10 @@ app.use(cookieParser());
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ limit: "50mb", extended: true }));
 
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
 // rate limiter
-app.use("/api", apiLimiter);
+// app.use("/api", apiLimiter);
 
 // Routes
 app.use("/api/auth", authRouter);

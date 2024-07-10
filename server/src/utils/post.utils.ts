@@ -48,7 +48,7 @@ export class PostUtils {
   ): Promise<Post> {
     const post = await this.postRepository.findOne({
       where: { id: postId, user: { id: userId } },
-      relations: { user: true },
+      relations: ["files", "postlikes", "user"],
     });
 
     if (!post) {

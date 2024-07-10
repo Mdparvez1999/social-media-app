@@ -35,9 +35,18 @@ export class UserProfileController {
     async (req: Request, res: Response, next: NextFunction) => {
       const userId: string = res.locals.user.id;
 
-      const user: Users | null = await this.userRepsitory.findOneBy({
-        id: userId,
-      });
+      const user: Users | null = await this.userRepsitory.findOne({
+        where: {
+          id: userId,
+        },
+        relations: [
+          "posts",
+          "comments",
+          "followers",
+          "following",
+          "notifications",
+        ],
+      });      
 
       if (!user) {
         return next(new AppError("user not found", 404));
@@ -50,12 +59,14 @@ export class UserProfileController {
           email: user.email,
           DOB: user.DOB,
           password: "********",
-          role: user.role,
           isPrivate: user.isPrivate,
           profilePic: user.profilePic,
           gender: user.gender,
           isActive: user.isActive,
           bio: user.bio,
+          postsCount : user.posts.length,
+          followersCount : user.followers.length,
+          followingCount : user.following.length,
         },
       });
     }

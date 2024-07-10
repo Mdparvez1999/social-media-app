@@ -85,7 +85,12 @@ export class AuthController {
       return res.status(200).json({
         success: true,
         message: "login successfull",
-        data: user,
+        user: {
+          id: user.id,
+          userName: user.userName,
+          email: user.email,
+          DOB: user.DOB,
+        },
       });
     }
   );

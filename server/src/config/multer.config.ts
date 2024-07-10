@@ -1,5 +1,6 @@
 import { Request } from "express";
 import multer from "multer";
+import path from "path";
 
 const profilePicStorage = multer.diskStorage({
   destination: function (
@@ -15,7 +16,10 @@ const profilePicStorage = multer.diskStorage({
     file: Express.Multer.File,
     cb: (error: Error | null, filename: string) => void
   ) {
-    cb(null, `${Date.now()}${file.originalname}`);
+    cb(
+      null,
+      file.fieldname + "_" + Date.now() + path.extname(file.originalname)
+    );
   },
 });
 
@@ -35,7 +39,10 @@ const postFilesStorage = multer.diskStorage({
     file: Express.Multer.File,
     cb: (error: Error | null, filename: string) => void
   ) {
-    cb(null, `${Date.now()}${file.originalname}`);
+    cb(
+      null,
+      file.fieldname + "_" + Date.now() + path.extname(file.originalname)
+    );
   },
 });
 

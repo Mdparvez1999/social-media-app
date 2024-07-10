@@ -7,7 +7,6 @@ import {
   Center,
   Link as ChakraLink,
 } from "@chakra-ui/react";
-import "./Signup.sass";
 import { Link } from "react-router-dom";
 import { FcGoogle } from "react-icons/fc";
 import { toast } from "react-toastify";

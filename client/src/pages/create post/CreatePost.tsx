@@ -71,6 +71,9 @@ const CreatePost = ({ isOpen, onClose }: createPostProps) => {
       await createPost(formData);
       setPreviewFiles([]);
       onClose();
+      setTimeout(() => {
+        window.location.assign("/app/profile");
+      }, 2000);
     } catch (error) {
       toast.error("Something went wrong");
     }

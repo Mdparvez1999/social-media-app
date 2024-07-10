@@ -1,6 +1,5 @@
 import Feed from "../../components/feed/Feed";
 import Suggestion from "../../components/suggestions/Suggestion";
-import "./home.sass";
 
 const Home = () => {
   return (

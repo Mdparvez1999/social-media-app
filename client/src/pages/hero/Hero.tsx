@@ -1,15 +1,15 @@
 import { Outlet } from "react-router-dom";
 import Navbar from "../../components/layouts/navbar/Navbar";
-import "./Hero.sass";
+import { Box } from "@chakra-ui/react";
 
 const Hero = () => {
   return (
-    <div className="hero_block">
+    <Box display={"flex"}>
       <div>
         <Navbar />
       </div>
       <Outlet />
-    </div>
+    </Box>
   );
 };
 

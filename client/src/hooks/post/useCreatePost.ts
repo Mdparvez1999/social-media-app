@@ -13,10 +13,6 @@ const useCreatePost = (): useCreatePostReturnType => {
   const navigate = useNavigate();
 
   const createPost = async (createPostData: FormData) => {
-    createPostData.forEach((value, key) => {
-      console.log(key, value);
-    });
-
     try {
       setLoading(true);
 

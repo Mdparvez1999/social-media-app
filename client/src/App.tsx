@@ -7,11 +7,12 @@ import Profile from "./pages/profile/Profile";
 import Chats from "./pages/chats/Chats";
 import Signup from "./components/auth/signup/Signup";
 import Login from "./components/auth/login/Login";
-import { useAuthContext } from "./contexts/AuthContext";
 import { Box } from "@chakra-ui/react";
+import { useAppSelector } from "./hooks/hooks";
 
 function App() {
-  const { currentUser } = useAuthContext();
+  const currentUser = useAppSelector((state) => state.auth.currentUser);
+
   return (
     <>
       <Box>

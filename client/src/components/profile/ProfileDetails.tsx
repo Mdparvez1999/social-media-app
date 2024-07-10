@@ -1,0 +1,73 @@
+import { Avatar, Box, Button, Text, WrapItem } from "@chakra-ui/react";
+import { useAppSelector } from "../../hooks/hooks";
+
+const ProfileDetails = () => {
+  const userProfile = useAppSelector((state) => state.profile.profile);
+
+  return (
+    <Box
+      width={"70%"}
+      minHeight={"45vh"}
+      display={"flex"}
+      justifyContent={"space-evenly"}
+      padding={"35px"}
+      mx={"80px"}
+    >
+      <Box
+        display={"flex"}
+        alignItems={"center"}
+        justifyContent={"center"}
+        margin={"15px"}
+      >
+        <WrapItem>
+          <Avatar size={"2xl"} src={userProfile?.profilePic} />
+        </WrapItem>
+      </Box>
+      <Box
+        display={"flex"}
+        flexDirection={"column"}
+        width={"100%"}
+        minHeight={"100%"}
+        padding={"15px"}
+        mx={"35px"}
+      >
+        <Box
+          display={"flex"}
+          justifyContent={"flex-start"}
+          gap={"200px"}
+          alignItems={"center"}
+          mb={"20px"}
+        >
+          <h1>{userProfile?.userName}</h1>
+          <Button>Edit Profile</Button>
+        </Box>
+        <Box
+          display={"flex"}
+          justifyContent={"flex-start"}
+          gap={"60px"}
+          alignItems={"center"}
+          mb={"30px"}
+        >
+          <h1>{userProfile?.postsCount} posts</h1>
+          <h1>{userProfile?.followersCount} followers</h1>
+          <h1>{userProfile?.followingCount} following</h1>
+        </Box>
+        <Box
+          display={"flex"}
+          justifyContent={"flex-start"}
+          alignItems={"center"}
+        >
+          <h1>Full Name</h1>
+        </Box>
+        <Box mt={"20px"}>
+          <Text>Bio</Text>
+          <Text fontSize={"18px"}>
+            {userProfile?.bio ? userProfile.bio : "add bio"}
+          </Text>
+        </Box>
+      </Box>
+    </Box>
+  );
+};
+
+export default ProfileDetails;
