@@ -8,7 +8,7 @@ const EditEmail = () => {
   const dispatch = useAppDispatch();
   const profile = useAppSelector((state) => state.profile.profile);
 
-  const [email, setEmail] = useState<string | null>(profile?.bio || "");
+  const [email, setEmail] = useState<string | null>(profile?.email || "");
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;

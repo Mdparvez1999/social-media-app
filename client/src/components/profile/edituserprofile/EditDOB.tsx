@@ -8,14 +8,14 @@ const EditDOB = () => {
   const dispatch = useAppDispatch();
   const profile = useAppSelector((state) => state.profile.profile);
 
-  const [DOB, setDOB] = useState<string | null>(profile?.bio || "");
+  const [DOB, setDOB] = useState<string | null>(profile?.DOB || "");
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;
     setDOB(value);
   };
 
-  const handleUpdateBio = async () => {
+  const handleUpdateDOB = async () => {
     try {
       const response = await fetch("/api/user/profile/DOB", {
         method: "PATCH",
@@ -28,7 +28,7 @@ const EditDOB = () => {
 
       const data = await response.json();
 
-      dispatch(updateDOB(data.bio));
+      dispatch(updateDOB(data.DOB));
 
       toast.success(data.message);
     } catch (error) {
@@ -44,7 +44,7 @@ const EditDOB = () => {
         </Text>
         <Box width="100%" display={"flex"} justifyContent={"space-between"}>
           <Input type="date" width={"85%"} onChange={handleChange} />
-          <Button onClick={handleUpdateBio}>Submit</Button>
+          <Button onClick={handleUpdateDOB}>Submit</Button>
         </Box>
       </Box>
     </>

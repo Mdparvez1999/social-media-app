@@ -77,6 +77,11 @@ const profileSlice = createSlice({
         state.profile.DOB = action.payload;
       }
     },
+    updateGender: (state, action: PayloadAction<string>) => {
+      if (state.profile) {
+        state.profile.gender = action.payload;
+      }
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(fetchProfile.fulfilled, (state, action) => {
@@ -85,7 +90,12 @@ const profileSlice = createSlice({
   },
 });
 
-export const { updateProfilePic, updateBio, updateEmail, updateDOB } =
-  profileSlice.actions;
+export const {
+  updateProfilePic,
+  updateBio,
+  updateEmail,
+  updateDOB,
+  updateGender,
+} = profileSlice.actions;
 
 export default profileSlice.reducer;
