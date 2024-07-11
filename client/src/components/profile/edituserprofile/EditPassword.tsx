@@ -1,6 +1,15 @@
-import { Box, Button, Heading, Input, Text } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  Heading,
+  Input,
+  Text,
+  useDisclosure,
+} from "@chakra-ui/react";
+import ChangePasswordModal from "./ChangePasswordModal";
 
 const EditPassword = () => {
+  const { isOpen, onOpen, onClose } = useDisclosure();
   return (
     <>
       <Box
@@ -20,11 +29,13 @@ const EditPassword = () => {
             Password
           </Text>
           <Box width="100%" display={"flex"} justifyContent={"space-between"}>
-            <Input width={"75%"} value="********" />
-            <Button>Change Password</Button>
+            <Input width={"75%"} defaultValue="********" />
+            <Button onClick={onOpen}>Change Password</Button>
           </Box>
         </Box>
       </Box>
+
+      <ChangePasswordModal isOpen={isOpen} onClose={onClose} />
     </>
   );
 };
