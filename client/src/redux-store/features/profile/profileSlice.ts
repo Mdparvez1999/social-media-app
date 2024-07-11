@@ -67,6 +67,11 @@ const profileSlice = createSlice({
         state.profile.bio = action.payload;
       }
     },
+    updateEmail: (state, action: PayloadAction<string>) => {
+      if (state.profile) {
+        state.profile.email = action.payload;
+      }
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(fetchProfile.fulfilled, (state, action) => {
@@ -75,6 +80,7 @@ const profileSlice = createSlice({
   },
 });
 
-export const { updateProfilePic, updateBio } = profileSlice.actions;
+export const { updateProfilePic, updateBio, updateEmail } =
+  profileSlice.actions;
 
 export default profileSlice.reducer;
