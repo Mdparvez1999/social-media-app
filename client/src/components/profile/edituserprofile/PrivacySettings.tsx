@@ -1,4 +1,5 @@
-import { Box, Heading, Switch, Text } from "@chakra-ui/react";
+import { Box, Heading, Text } from "@chakra-ui/react";
+import PrivacySettingConfirm from "./PrivacySettingConfirm";
 
 const PrivacySettings = () => {
   return (
@@ -29,7 +30,7 @@ const PrivacySettings = () => {
           <Text fontSize={"1.2rem"} fontWeight={"500"}>
             Private account
           </Text>
-          <Switch size={"lg"} />
+          <PrivacySettingConfirm />
         </Box>
       </Box>
     </>

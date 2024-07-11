@@ -135,7 +135,7 @@ export class UserProfileController {
         .execute();
 
       if (!result) {
-        return next(new AppError("failed to update", 500));
+        return next(new AppError("failed to update", 400));
       }
 
       const updatedUser: Users = result.raw[0];
@@ -169,7 +169,7 @@ export class UserProfileController {
         .execute();
 
       if (!result) {
-        return next(new AppError("failed to update", 500));
+        return next(new AppError("failed to update", 400));
       }
 
       const updatedUser: Users = result.raw[0];
@@ -203,7 +203,7 @@ export class UserProfileController {
         .execute();
 
       if (!result) {
-        return next(new AppError("failed to update", 500));
+        return next(new AppError("failed to update", 400));
       }
 
       const updatedUser: Users = result.raw[0];
@@ -283,11 +283,24 @@ export class UserProfileController {
     async (req: Request, res: Response, next: NextFunction) => {
       const userId: string = res.locals.user.id;
 
-      await this.userRepsitory.update({ id: userId }, { isPrivate: true });
+      const result = await this.userRepsitory
+        .createQueryBuilder()
+        .update(Users)
+        .set({ isPrivate: true })
+        .where({ id: userId })
+        .returning("*")
+        .execute();
+
+      if (!result) {
+        return next(new AppError("failed to update", 400));
+      }
+
+      const updatedUser: Users = result.raw[0];
 
       res.status(200).json({
         success: true,
         message: "account updated to private",
+        isPrivate: updatedUser.isPrivate,
       });
     }
   );
@@ -296,11 +309,24 @@ export class UserProfileController {
     async (req: Request, res: Response, next: NextFunction) => {
       const userId: string = res.locals.user.id;
 
-      await this.userRepsitory.update({ id: userId }, { isPrivate: false });
+      const result = await this.userRepsitory
+        .createQueryBuilder()
+        .update(Users)
+        .set({ isPrivate: false })
+        .where({ id: userId })
+        .returning("*")
+        .execute();
+
+      if (!result) {
+        return next(new AppError("failed to update", 400));
+      }
+
+      const updatedUser: Users = result.raw[0];
 
       res.status(200).json({
         success: true,
         message: "account updated to public",
+        isPrivate: updatedUser.isPrivate,
       });
     }
   );
