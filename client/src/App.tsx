@@ -43,12 +43,9 @@ function App() {
             <Route path="profile" element={<Profile />} />
             <Route path="chats" element={<Chats />} />
 
-            <Route path="profiledata" element={<ViewUserProfile />} loader>
-              <Route
-                path="generaldetails"
-                element={<EditGeneralDetails />}
-                loader
-              />
+            <Route path="profiledata" element={<ViewUserProfile />}>
+              <Route index element={<EditGeneralDetails />} />
+              <Route path="generaldetails" element={<EditGeneralDetails />} />
               <Route path="passwordsettings" element={<EditPassword />} />
               <Route path="privacysettings" element={<PrivacySettings />} />
               <Route

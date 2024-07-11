@@ -57,12 +57,14 @@ const profileSlice = createSlice({
   name: "SET_PROFILE",
   initialState,
   reducers: {
-    setProfile: (state, action: PayloadAction<ProfileState>) => {
-      state.profile = action.payload;
-    },
     updateProfilePic: (state, action: PayloadAction<string>) => {
       if (state.profile) {
         state.profile.profilePic = action.payload;
+      }
+    },
+    updateBio: (state, action: PayloadAction<string>) => {
+      if (state.profile) {
+        state.profile.bio = action.payload;
       }
     },
   },
@@ -73,6 +75,6 @@ const profileSlice = createSlice({
   },
 });
 
-export const { setProfile, updateProfilePic } = profileSlice.actions;
+export const { updateProfilePic, updateBio } = profileSlice.actions;
 
 export default profileSlice.reducer;

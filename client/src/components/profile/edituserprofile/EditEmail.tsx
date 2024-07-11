@@ -11,7 +11,7 @@ const EditEmail = () => {
           Email
         </Text>
         <Box width="100%" display={"flex"} justifyContent={"space-between"}>
-          <Input width={"85%"} value={profile?.email} />
+          <Input width={"85%"} />
           <Button>Submit</Button>
         </Box>
       </Box>

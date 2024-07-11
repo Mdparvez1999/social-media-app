@@ -126,11 +126,24 @@ export class UserProfileController {
 
       const userId: string = res.locals.user.id;
 
-      await this.userRepsitory.update({ id: userId }, { DOB });
+      const result = await this.userRepsitory
+        .createQueryBuilder()
+        .update(Users)
+        .set({ DOB })
+        .where({ id: userId })
+        .returning("*")
+        .execute();
+
+      if (!result) {
+        return next(new AppError("failed to update", 500));
+      }
+
+      const updatedUser: Users = result.raw[0];
 
       res.status(200).json({
         success: true,
         message: "profile updated successfully",
+        DOB: updatedUser.DOB,
       });
     }
   );
@@ -147,11 +160,24 @@ export class UserProfileController {
 
       const userId: string = res.locals.user.id;
 
-      await this.userRepsitory.update({ id: userId }, { bio });
+      const result = await this.userRepsitory
+        .createQueryBuilder()
+        .update(Users)
+        .set({ bio })
+        .where({ id: userId })
+        .returning("*")
+        .execute();
+
+      if (!result) {
+        return next(new AppError("failed to update", 500));
+      }
+
+      const updatedUser: Users = result.raw[0];
 
       res.status(200).json({
         success: true,
         message: "profile updated successfully",
+        bio: updatedUser.bio,
       });
     }
   );
@@ -168,11 +194,24 @@ export class UserProfileController {
 
       const userId: string = res.locals.user.id;
 
-      await this.userRepsitory.update({ id: userId }, { gender });
+      const result = await this.userRepsitory
+        .createQueryBuilder()
+        .update(Users)
+        .set({ gender })
+        .where({ id: userId })
+        .returning("*")
+        .execute();
+
+      if (!result) {
+        return next(new AppError("failed to update", 500));
+      }
+
+      const updatedUser: Users = result.raw[0];
 
       res.status(200).json({
         success: true,
         message: "profile updated successfully",
+        gender: updatedUser.gender,
       });
     }
   );
