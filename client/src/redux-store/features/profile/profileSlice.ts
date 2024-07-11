@@ -1,5 +1,4 @@
-import { PayloadAction, createSlice } from "@reduxjs/toolkit";
-// import { ProfileState } from "../..";
+import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 
 interface ProfileState {
   id: string;
@@ -25,6 +24,35 @@ const initialState = {
   profile: null,
 } as ProfileSliceState;
 
+export const fetchProfile = createAsyncThunk<
+  ProfileState,
+  void,
+  { rejectValue: string }
+>("profile/fetchProfile", async (_, { rejectWithValue }) => {
+  try {
+    const response = await fetch("/api/user/profile", {
+      method: "GET",
+      credentials: "include",
+    });
+
+    if (!response.ok) throw new Error(response.statusText);
+
+    const { data } = await response.json();
+
+    if (data.status === "fail" || data.status === "error") {
+      throw new Error(data.message);
+    }
+
+    return data;
+  } catch (error) {
+    if (error instanceof Error) {
+      return rejectWithValue(error.message);
+    }
+
+    return rejectWithValue("Something went wrong");
+  }
+});
+
 const profileSlice = createSlice({
   name: "SET_PROFILE",
   initialState,
@@ -32,9 +60,19 @@ const profileSlice = createSlice({
     setProfile: (state, action: PayloadAction<ProfileState>) => {
       state.profile = action.payload;
     },
+    updateProfilePic: (state, action: PayloadAction<string>) => {
+      if (state.profile) {
+        state.profile.profilePic = action.payload;
+      }
+    },
+  },
+  extraReducers: (builder) => {
+    builder.addCase(fetchProfile.fulfilled, (state, action) => {
+      state.profile = action.payload;
+    });
   },
 });
 
-export const { setProfile } = profileSlice.actions;
+export const { setProfile, updateProfilePic } = profileSlice.actions;
 
 export default profileSlice.reducer;

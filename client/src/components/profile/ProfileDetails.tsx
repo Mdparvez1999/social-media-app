@@ -1,8 +1,11 @@
-import { Avatar, Box, Button, Text, WrapItem } from "@chakra-ui/react";
+import { Avatar, Box, Button, Heading, Text, WrapItem } from "@chakra-ui/react";
 import { useAppSelector } from "../../hooks/hooks";
+import { useNavigate } from "react-router-dom";
 
 const ProfileDetails = () => {
   const userProfile = useAppSelector((state) => state.profile.profile);
+
+  const navigate = useNavigate();
 
   return (
     <Box
@@ -34,12 +37,20 @@ const ProfileDetails = () => {
         <Box
           display={"flex"}
           justifyContent={"flex-start"}
-          gap={"200px"}
+          gap={"160px"}
           alignItems={"center"}
           mb={"20px"}
         >
-          <h1>{userProfile?.userName}</h1>
-          <Button>Edit Profile</Button>
+          <Heading size={"lg"} fontWeight={"500"}>
+            {userProfile?.userName}
+          </Heading>
+          <Button
+            onClick={() => {
+              navigate("/app/profiledata");
+            }}
+          >
+            Edit Profile
+          </Button>
         </Box>
         <Box
           display={"flex"}

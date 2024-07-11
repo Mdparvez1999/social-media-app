@@ -8,10 +8,27 @@ import Chats from "./pages/chats/Chats";
 import Signup from "./components/auth/signup/Signup";
 import Login from "./components/auth/login/Login";
 import { Box } from "@chakra-ui/react";
-import { useAppSelector } from "./hooks/hooks";
+import { useAppDispatch, useAppSelector } from "./hooks/hooks";
+import ViewUserProfile from "./components/profile/edituserprofile/ViewUserProfileDetails";
+import EditGeneralDetails from "./components/profile/edituserprofile/EditGeneralDetails";
+import EditPassword from "./components/profile/edituserprofile/EditPassword";
+import PrivacySettings from "./components/profile/edituserprofile/PrivacySettings";
+import AdvancedAccountSettings from "./components/profile/edituserprofile/AdvancedAccountSettings";
+import { useEffect } from "react";
+import { fetchProfile } from "./redux-store/features/profile/profileSlice";
 
 function App() {
+  const dispatch = useAppDispatch();
   const currentUser = useAppSelector((state) => state.auth.currentUser);
+
+  const profile = useAppSelector((state) => state.profile.profile);
+  console.log(profile);
+
+  useEffect(() => {
+    if (currentUser) {
+      dispatch(fetchProfile());
+    }
+  }, [dispatch, currentUser]);
 
   return (
     <>
@@ -25,6 +42,20 @@ function App() {
             <Route path="notifications" element={<Notifications />} />
             <Route path="profile" element={<Profile />} />
             <Route path="chats" element={<Chats />} />
+
+            <Route path="profiledata" element={<ViewUserProfile />} loader>
+              <Route
+                path="generaldetails"
+                element={<EditGeneralDetails />}
+                loader
+              />
+              <Route path="passwordsettings" element={<EditPassword />} />
+              <Route path="privacysettings" element={<PrivacySettings />} />
+              <Route
+                path="advancedsettings"
+                element={<AdvancedAccountSettings />}
+              />
+            </Route>
           </Route>
         </Routes>
       </Box>

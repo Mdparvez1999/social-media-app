@@ -46,7 +46,7 @@ export class UserProfileController {
           "following",
           "notifications",
         ],
-      });      
+      });
 
       if (!user) {
         return next(new AppError("user not found", 404));
@@ -64,9 +64,9 @@ export class UserProfileController {
           gender: user.gender,
           isActive: user.isActive,
           bio: user.bio,
-          postsCount : user.posts.length,
-          followersCount : user.followers.length,
-          followingCount : user.following.length,
+          postsCount: user.posts.length,
+          followersCount: user.followers.length,
+          followingCount: user.following.length,
         },
       });
     }
@@ -185,9 +185,14 @@ export class UserProfileController {
 
       await this.userRepsitory.update({ id: userId }, { profilePic: fileName });
 
+      const user: Users | null = await this.userRepsitory.findOneBy({
+        id: userId,
+      });
+
       res.status(200).json({
         success: true,
         message: "profilepic changed successfully",
+        profilePic: user?.profilePic,
       });
     }
   );
