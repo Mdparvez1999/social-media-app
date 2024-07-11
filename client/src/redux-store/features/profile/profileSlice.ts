@@ -87,6 +87,11 @@ const profileSlice = createSlice({
         state.profile.isPrivate = action.payload;
       }
     },
+    updateActiveStatus: (state, action: PayloadAction<boolean>) => {
+      if (state.profile) {
+        state.profile.isActive = action.payload;
+      }
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(fetchProfile.fulfilled, (state, action) => {
@@ -102,6 +107,7 @@ export const {
   updateDOB,
   updateGender,
   updatePrivacy,
+  updateActiveStatus,
 } = profileSlice.actions;
 
 export default profileSlice.reducer;

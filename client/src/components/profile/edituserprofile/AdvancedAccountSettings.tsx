@@ -1,4 +1,6 @@
-import { Box, Heading, Switch, Text } from "@chakra-ui/react";
+import { Box, Heading, Text } from "@chakra-ui/react";
+import ConfirmDeactivateAccount from "./ConfirmDeactivateAccount";
+import ConfirmDeleteAccount from "./ConfirmDeleteAccount";
 
 const AdvancedAccountSettings = () => {
   return (
@@ -29,7 +31,7 @@ const AdvancedAccountSettings = () => {
           <Text fontSize={"1.2rem"} fontWeight={"500"}>
             Deactivate account
           </Text>
-          <Switch size={"lg"} />
+          <ConfirmDeactivateAccount />
         </Box>
 
         <Box
@@ -45,7 +47,7 @@ const AdvancedAccountSettings = () => {
           <Text fontSize={"1.2rem"} fontWeight={"500"}>
             Delete account
           </Text>
-          <Switch size={"lg"} />
+          <ConfirmDeleteAccount />
         </Box>
       </Box>
     </>

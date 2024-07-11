@@ -348,11 +348,24 @@ export class UserProfileController {
     async (req: Request, res: Response, next: NextFunction) => {
       const userId: string = res.locals.user.id;
 
-      await this.userRepsitory.update({ id: userId }, { isActive: false });
+      const result = await this.userRepsitory
+        .createQueryBuilder()
+        .update(Users)
+        .set({ isActive: false })
+        .where({ id: userId })
+        .returning("*")
+        .execute();
+
+      if (!result) {
+        return next(new AppError("failed to update", 400));
+      }
+
+      const updatedUser: Users = result.raw[0];
 
       res.status(200).json({
         success: true,
         message: "account deactivated successfully",
+        isActive: updatedUser.isActive,
       });
     }
   );
