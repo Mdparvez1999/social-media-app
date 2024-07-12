@@ -18,7 +18,10 @@ export class NotificationControllers {
       const allNotifications = await this.notificationRepository.find({
         where: { user },
         order: { createdAt: "DESC" },
+        relations: { user: true },
       });
+
+      console.log(allNotifications);
 
       if (!allNotifications || allNotifications.length === 0) {
         return res.status(200).json({
@@ -36,6 +39,11 @@ export class NotificationControllers {
           isRead: notification.isRead,
           createdAt: notification.createdAt,
           updatedAt: notification.updatedAt,
+          user: {
+            id: notification.user.id,
+            username: notification.user.userName,
+            profilePic: notification.user.profilePic,
+          },
         };
       });
 

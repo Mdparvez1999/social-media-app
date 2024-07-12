@@ -43,9 +43,6 @@ export const fetchProfile = createAsyncThunk<
     if (data.status === "fail" || data.status === "error") {
       throw new Error(data.message);
     }
-
-    console.log(data);
-
     return data;
   } catch (error) {
     if (error instanceof Error) {

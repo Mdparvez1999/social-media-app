@@ -52,17 +52,17 @@ const ViewEachCurrentUserPost = ({ isOpen, onClose, id }: propsType) => {
             display: "flex",
             flexDirection: "row",
             maxHeight: "80vh",
-            height: "800px",
+            height: "80vh",
             width: "90vw",
-            maxWidth: "1200px",
+            maxWidth: "1100px",
           }}
         >
           <ModalCloseButton />
-          <ModalBody display={"flex"} padding={"0"} flex={1}>
+          <ModalBody display={"flex"} padding={"0"} flex={1} height={"100%"}>
             <Box flex={1.5} width={"60%"} height={"100%"}>
               <PostImage />
             </Box>
-            <Box flex={1} width={"40%"} padding={"10px"}>
+            <Box flex={0.8} width={"40%"} padding={"10px"} height={"100%"}>
               <PostDeatils />
             </Box>
           </ModalBody>

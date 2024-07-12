@@ -44,7 +44,7 @@ export class CommentsController {
       await this.postRepository.save(post);
 
       const type = "comment";
-      const message = `${user.userName} commented on your post`;
+      const message = `commented on your post`;
       await NotificationUtils.createNotification(type, message, post.user.id);
 
       res.status(201).json({

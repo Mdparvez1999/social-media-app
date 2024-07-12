@@ -222,7 +222,7 @@ export class PostControllers {
       await this.postRepository.save(post);
 
       const type = "like";
-      const message = `${user.userName} liked your post`;
+      const message = `liked your post`;
       await NotificationUtils.createNotification(type, message, post.user.id);
 
       return res.status(200).json({

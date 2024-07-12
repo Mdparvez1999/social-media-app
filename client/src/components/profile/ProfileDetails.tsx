@@ -23,7 +23,11 @@ const ProfileDetails = () => {
         margin={"15px"}
       >
         <WrapItem>
-          <Avatar size={"2xl"} src={userProfile?.profilePic} />
+          <Avatar
+            size={"2xl"}
+            crossOrigin="anonymous"
+            src={`http://localhost:8000/uploads/profilePic/${userProfile?.profilePic}`}
+          />
         </WrapItem>
       </Box>
       <Box
@@ -68,7 +72,7 @@ const ProfileDetails = () => {
           justifyContent={"flex-start"}
           alignItems={"center"}
         >
-          <h1>Full Name</h1>
+          <h1>{userProfile?.fullName}</h1>
         </Box>
         <Box mt={"20px"}>
           <Text>Bio</Text>

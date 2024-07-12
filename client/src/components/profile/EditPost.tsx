@@ -77,7 +77,7 @@ const EditPost = ({ isOpen, onClose }: CreatePostProps) => {
             />
           </ModalBody>
           <ModalFooter>
-            <Button width={"50%"} onClick={handlePost}>
+            <Button width={"45%"} onClick={handlePost}>
               update
             </Button>
           </ModalFooter>

@@ -1,4 +1,4 @@
-export const formatCommentTime = (date: Date) => {
+export const formatCreatedAtTime = (date: Date) => {
   const commentDate = new Date(date);
   const now = new Date();
   const secondsDifference = Math.floor(

@@ -3,7 +3,7 @@ import { useComment } from "../../hooks/comments/useComment";
 import { useEffect } from "react";
 import { toast } from "react-toastify";
 import { useAppSelector } from "../../hooks/hooks";
-import { formatCommentTime } from "../../utils/formatTimes.utils";
+import { formatCreatedAtTime } from "../../utils/formatTimes.utils";
 
 interface propsType {
   postId: string | undefined;
@@ -68,7 +68,7 @@ const Comments = ({ postId }: propsType) => {
           </Box>
           <Box>
             <Heading fontSize={"0.8rem"} color={"gray.500"}>
-              {formatCommentTime(comment.commentedAt)}
+              {formatCreatedAtTime(comment.commentedAt)}
             </Heading>
           </Box>
         </Box>

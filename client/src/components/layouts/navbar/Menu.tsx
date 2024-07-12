@@ -14,9 +14,14 @@ import {
   Link as ChakraLink,
 } from "@chakra-ui/react";
 import CreatePost from "../../../pages/create post/CreatePost";
+import Notifications from "../../../pages/notifications/Notifications";
 
 const Menu = () => {
-  const { isOpen, onClose, onOpen } = useDisclosure();
+  // const { isOpen, onClose, onOpen } = useDisclosure();
+
+  const createPostDisclosure = useDisclosure();
+
+  const notificationsDisclosure = useDisclosure();
 
   const { logoutUser } = useLogout();
   const handleLogout = async (
@@ -80,7 +85,7 @@ const Menu = () => {
             <ChakraLink
               as={Link}
               to={"#"}
-              onClick={onOpen}
+              onClick={createPostDisclosure.onOpen}
               display={"flex"}
               alignItems={"center"}
               color={"black"}
@@ -98,13 +103,14 @@ const Menu = () => {
           <ListItem width={"100%"} padding={"10px"} mb={"14px"}>
             <ChakraLink
               as={Link}
-              to={"/app/notifications"}
+              to={"#"}
               display={"flex"}
               alignItems={"center"}
               color={"black"}
               fontSize={"1.2rem"}
               textAlign={"center"}
               _hover={{ textDecoration: "none" }}
+              onClick={notificationsDisclosure.onOpen}
             >
               <Box mr={"18px"}>
                 <IoNotifications size={"1.5rem"} />
@@ -169,7 +175,14 @@ const Menu = () => {
           </ListItem>
         </UnorderedList>
       </Box>
-      <CreatePost isOpen={isOpen} onClose={onClose} />
+      <CreatePost
+        isOpen={createPostDisclosure.isOpen}
+        onClose={createPostDisclosure.onClose}
+      />
+      <Notifications
+        isOpen={notificationsDisclosure.isOpen}
+        onClose={notificationsDisclosure.onClose}
+      />
     </>
   );
 };
