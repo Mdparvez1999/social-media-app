@@ -15,13 +15,14 @@ import {
 } from "@chakra-ui/react";
 import CreatePost from "../../../pages/create post/CreatePost";
 import Notifications from "../../../pages/notifications/Notifications";
+import Search from "../../../pages/search/Search";
 
 const Menu = () => {
-  // const { isOpen, onClose, onOpen } = useDisclosure();
-
   const createPostDisclosure = useDisclosure();
 
   const notificationsDisclosure = useDisclosure();
+
+  const searchDisclosure = useDisclosure();
 
   const { logoutUser } = useLogout();
   const handleLogout = async (
@@ -66,13 +67,14 @@ const Menu = () => {
           <ListItem width={"100%"} padding={"10px"} mb={"14px"}>
             <ChakraLink
               as={Link}
-              to={"/app/search"}
+              to={"#"}
               display={"flex"}
               alignItems={"center"}
               color={"black"}
               fontSize={"1.2rem"}
               textAlign={"center"}
               _hover={{ textDecoration: "none" }}
+              onClick={searchDisclosure.onOpen}
             >
               <Box mr={"18px"}>
                 <FaSearch size={"1.5rem"} />
@@ -182,6 +184,11 @@ const Menu = () => {
       <Notifications
         isOpen={notificationsDisclosure.isOpen}
         onClose={notificationsDisclosure.onClose}
+      />
+
+      <Search
+        isOpen={searchDisclosure.isOpen}
+        onClose={searchDisclosure.onClose}
       />
     </>
   );

@@ -4,6 +4,7 @@ import authReducer from "./features/auth/authSlice";
 import postReducer from "./features/post/postsSlice";
 import commentsReducer from "./features/comments/commentsSlice";
 import notificationsReducer from "./features/notifications/notificationsSlice";
+import usersReducer from "./features/users/userSlice";
 
 const store = configureStore({
   reducer: {
@@ -12,6 +13,7 @@ const store = configureStore({
     posts: postReducer,
     comments: commentsReducer,
     notifications: notificationsReducer,
+    users: usersReducer,
   },
 });
 

@@ -12,6 +12,7 @@ import postRouter from "./routes/post.routes";
 import commentRouter from "./routes/comments.routes";
 import followRouter from "./routes/follow.routes";
 import notificationRouter from "./routes/notification.routes";
+// import userRouter from "./routes/users.routes";
 import { errorHandler } from "./middlewares/error.middleware";
 import { auth } from "./middlewares/auth.Middleware";
 import { apiLimiter } from "./config/rate_Limit.cofig";
@@ -58,5 +59,6 @@ app.use("/api/users/post", postRouter);
 app.use("/api/post/comments", commentRouter);
 app.use("/api/users", followRouter);
 app.use("/api/notification", notificationRouter);
+// app.use("/api/user", auth, userRouter);
 
 app.use(errorHandler);

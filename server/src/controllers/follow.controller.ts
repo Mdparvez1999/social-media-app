@@ -14,6 +14,8 @@ export class FollowController {
 
   private followRequestRepository = AppDataSource.getRepository(FollowRequest);
 
+  private userRepository = AppDataSource.getRepository(Users);
+
   public followUser = asyncHandler(
     async (req: Request, res: Response, next: NextFunction) => {
       const recieverId: string = req.params.id;
@@ -313,6 +315,40 @@ export class FollowController {
           countOfFollowingUsers: followingUsers.length,
           followingUsers: followingUsers,
         },
+      });
+    }
+  );
+
+  public searchUsers = asyncHandler(
+    async (req: Request, res: Response, next: NextFunction) => {
+      const userId = res.locals.user.id;
+
+      const searchName = req.query.userName;
+
+      if (searchName === "" || typeof searchName !== "string") {
+        return next(new AppError("Invalid userName parameter", 400));
+      }
+
+      const users = await this.userRepository
+        .createQueryBuilder("users")
+        .where("users.userName LIKE :userName", {
+          userName: `${searchName}%`,
+        })
+        .andWhere("users.id != :id", { id: userId })
+        .select(["users.id", "users.userName", "users.profilePic"])
+        .getMany();
+
+      if (!users || users.length === 0) {
+        return res.status(200).json({
+          success: true,
+          data: [],
+        });
+      }
+
+      res.status(200).json({
+        success: true,
+        message: "users fetched successfully",
+        data: users,
       });
     }
   );

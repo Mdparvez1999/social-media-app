@@ -30,4 +30,6 @@ router.delete(
   followController.declineFollowRequest
 );
 
+router.get("/search", auth, followController.searchUsers);
+
 export default router;

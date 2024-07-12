@@ -21,8 +21,6 @@ export class NotificationControllers {
         relations: { user: true },
       });
 
-      console.log(allNotifications);
-
       if (!allNotifications || allNotifications.length === 0) {
         return res.status(200).json({
           success: true,
