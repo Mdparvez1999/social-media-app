@@ -18,7 +18,7 @@ const EditPassword = () => {
         flexDirection={"column"}
         minHeight={"100%"}
         gap={"35px"}
-        p={"25px 0px 0px 30px"}
+        p={"25px 20px 0px 40px"}
       >
         <Heading fontSize={"1.5rem"} fontWeight={"500"}>
           Password and Security

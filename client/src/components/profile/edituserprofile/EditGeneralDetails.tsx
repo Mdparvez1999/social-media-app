@@ -4,6 +4,7 @@ import EditBio from "./EditBio";
 import EditEmail from "./EditEmail";
 import EditDOB from "./EditDOB";
 import EditGender from "./EditGender";
+import EditFullName from "./EditFullName";
 
 const EditGeneralDetails = () => {
   return (
@@ -13,8 +14,8 @@ const EditGeneralDetails = () => {
         display={"flex"}
         flexDirection={"column"}
         height={"100%"}
-        gap={"28px"}
-        p={"25px 0px 0px 30px"}
+        gap={"20px"}
+        p={"25px 20px 0px 40px"}
       >
         <Heading fontSize={"1.5rem"} fontWeight={"500"}>
           Edit Profile
@@ -22,6 +23,9 @@ const EditGeneralDetails = () => {
 
         <Box>
           <EditProfilePic />
+        </Box>
+        <Box>
+          <EditFullName />
         </Box>
         <Box>
           <EditBio />

@@ -25,6 +25,12 @@ export class Users {
 
   @Column({
     unique: true,
+    nullable: true,
+  })
+  fullName!: string;
+
+  @Column({
+    unique: true,
     nullable: false,
   })
   email!: string;

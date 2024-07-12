@@ -9,6 +9,7 @@ import {
   changePasswordSchema,
   updateBioSchema,
   updateGenderSchema,
+  updatefullNameSchema,
 } from "../validation/userProfile.validation";
 import { comparePassword, hashPassword } from "../helpers/auth.helper";
 import { AppError } from "../utils/AppError";
@@ -56,6 +57,8 @@ export class UserProfileController {
         success: true,
         data: {
           userName: user.userName,
+          id: user.id,
+          fullName: user.fullName,
           email: user.email,
           DOB: user.DOB,
           password: "********",
@@ -89,6 +92,40 @@ export class UserProfileController {
       res.status(200).json({
         success: true,
         message: "profile updated successfully",
+      });
+    }
+  );
+
+  public updateFullName = asyncHandler(
+    async (req: updateProfileRequest, res: Response, next: NextFunction) => {
+      const { error, value } = updatefullNameSchema.validate(req.body);
+
+      if (error) {
+        return next(error);
+      }
+
+      const fullName: string = value.fullName;
+
+      const userId: string = res.locals.user.id;
+
+      const result = await this.userRepsitory
+        .createQueryBuilder()
+        .update(Users)
+        .set({ fullName })
+        .where({ id: userId })
+        .returning("*")
+        .execute();
+
+      if (result.raw.affectedRows === 0) {
+        return next(new AppError("user not found", 404));
+      }
+
+      const updatedUser = result.raw[0];
+
+      res.status(200).json({
+        success: true,
+        message: "profile updated successfully",
+        fullName: updatedUser.fullName,
       });
     }
   );

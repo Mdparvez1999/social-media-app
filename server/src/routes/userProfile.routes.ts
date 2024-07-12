@@ -11,6 +11,8 @@ router.get("/", auth, userProfileController.getUserProfile);
 
 router.patch("/username", auth, userProfileController.updateUserName);
 
+router.patch("/fullname", auth, userProfileController.updateFullName);
+
 router.patch("/email", auth, userProfileController.updateEmail);
 
 router.patch("/DOB", auth, userProfileController.updateDOB);

@@ -3,6 +3,7 @@ import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 interface ProfileState {
   id: string;
   userName: string;
+  fullName: string;
   email: string;
   DOB: string;
   profilePic: string;
@@ -43,6 +44,8 @@ export const fetchProfile = createAsyncThunk<
       throw new Error(data.message);
     }
 
+    console.log(data);
+
     return data;
   } catch (error) {
     if (error instanceof Error) {
@@ -60,6 +63,11 @@ const profileSlice = createSlice({
     updateProfilePic: (state, action: PayloadAction<string>) => {
       if (state.profile) {
         state.profile.profilePic = action.payload;
+      }
+    },
+    updateFullName: (state, action: PayloadAction<string>) => {
+      if (state.profile) {
+        state.profile.fullName = action.payload;
       }
     },
     updateBio: (state, action: PayloadAction<string>) => {
@@ -102,6 +110,7 @@ const profileSlice = createSlice({
 
 export const {
   updateProfilePic,
+  updateFullName,
   updateBio,
   updateEmail,
   updateDOB,

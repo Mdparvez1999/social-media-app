@@ -4,6 +4,10 @@ export const updateUserNameSchema = joi.object({
   userName: joi.string().required().min(3).max(30),
 });
 
+export const updatefullNameSchema = joi.object({
+  fullName: joi.string().required().min(3).max(30),
+});
+
 export const updateEmailSchema = joi.object({
   email: joi
     .string()
