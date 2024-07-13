@@ -16,11 +16,15 @@ router.post(
 
 router.get("/get-all", auth, postController.getAllPosts);
 
+router.get("/get-all/:id", auth, postController.getAllPostsByUserId);
+
 router.put("/update/:id", auth, postController.updatePostCaption);
 
 router.delete("/delete/:id", auth, postController.deletePost);
 
 router.get("/:id", auth, postController.getPostById);
+
+router.get("/user/:id", auth, postController.getPostByIdAndUserId);
 
 router.post("/like/:id", auth, postController.likePost);
 

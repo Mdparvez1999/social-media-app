@@ -36,7 +36,6 @@ const AddComment = ({ postId }: propsType) => {
       if (!response.ok) throw new Error(response.statusText);
 
       const data = await response.json();
-      console.log(data);
 
       dispatch(addComment(data));
     } catch (error) {

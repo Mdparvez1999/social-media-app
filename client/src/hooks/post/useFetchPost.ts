@@ -11,6 +11,8 @@ export const useFetchPost = () => {
 
         const data = await response.json();
 
+        console.log(data);
+
         if (data.status === "fail" || data.status === "error") {
           throw new Error(data.message);
         }

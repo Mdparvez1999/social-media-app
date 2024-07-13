@@ -352,4 +352,43 @@ export class FollowController {
       });
     }
   );
+
+  public getUsersProfileById = asyncHandler(
+    async (req: Request, res: Response, next: NextFunction) => {
+      const userId: string = req.params.id;
+
+      const user: Users | null = await this.userRepository.findOne({
+        where: {
+          id: userId,
+        },
+        relations: [
+          "posts",
+          "comments",
+          "followers",
+          "following",
+          "notifications",
+        ],
+      });
+
+      if (!user) {
+        return next(new AppError("user not found", 404));
+      }
+
+      res.status(200).json({
+        success: true,
+        data: {
+          userName: user.userName,
+          id: user.id,
+          fullName: user.fullName,
+          isPrivate: user.isPrivate,
+          profilePic: user.profilePic,
+          isActive: user.isActive,
+          bio: user.bio,
+          postsCount: user.posts.length,
+          followersCount: user.followers.length,
+          followingCount: user.following.length,
+        },
+      });
+    }
+  );
 }

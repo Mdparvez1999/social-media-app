@@ -167,12 +167,62 @@ export class PostControllers {
       });
     }
   );
+  public getAllPostsByUserId = asyncHandler(
+    async (req: Request, res: Response, next: NextFunction) => {
+      const userId: string = req.params.id;
+
+      const allPosts = await this.postRepository.find({
+        where: { user: { id: userId } },
+        relations: { files: true },
+      });
+
+      if (!allPosts || allPosts.length === 0) {
+        return res.status(200).json({
+          success: true,
+          message: "No posts found",
+          data: [],
+        });
+      }
+
+      const posts = allPosts.map((post) => {
+        return {
+          ...post,
+          files: post.files.map((file) => file.fileName),
+        };
+      });
+
+      return res.status(200).json({
+        success: true,
+        message: "Posts fetched successfully",
+        data: posts,
+      });
+    }
+  );
 
   public getPostById = asyncHandler(
     async (req: Request, res: Response, next: NextFunction) => {
       const postId: string = req.params.id;
 
       const userId: string = res.locals.user.id;
+
+      const post: Post | null = await PostUtils.findPostWithPostIdAndUserId(
+        postId,
+        userId
+      );
+
+      return res.status(200).json({
+        success: true,
+        message: "Post fetched successfully",
+        data: post,
+      });
+    }
+  );
+
+  public getPostByIdAndUserId = asyncHandler(
+    async (req: Request, res: Response, next: NextFunction) => {
+      const postId: string = req.params.id;
+
+      const userId: string = req.query.userId as string;
 
       const post: Post | null = await PostUtils.findPostWithPostIdAndUserId(
         postId,

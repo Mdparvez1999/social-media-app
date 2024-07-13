@@ -15,8 +15,13 @@ import {
 import { BiSearch } from "react-icons/bi";
 import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
 import { useState } from "react";
-import { setUsers } from "../../redux-store/features/users/userSlice";
+import {
+  setSelectedUser,
+  setUsers,
+} from "../../redux-store/features/users/userSlice";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
+import useFetchUsersProfile from "../../hooks/usersprofile/useFetchUsersProfile";
 
 interface SearchProps {
   isOpen: boolean;
@@ -27,13 +32,14 @@ const Search = ({ isOpen, onClose }: SearchProps) => {
   const dispatch = useAppDispatch();
 
   const searchedUsers = useAppSelector((state) => state.users.users);
-  console.log(searchedUsers);
 
   const [searchTerm, setSearchTerm] = useState<string>("");
 
   const [loading, setLoading] = useState(false);
 
   const [searchResultVisible, setSearchResultVisible] = useState(false);
+
+  const navigate = useNavigate();
 
   const handleSearchClick = async () => {
     try {
@@ -67,6 +73,22 @@ const Search = ({ isOpen, onClose }: SearchProps) => {
     onClose();
   };
 
+  const { fetchUsersProfile } = useFetchUsersProfile();
+
+  const handleViewUserProfile = async (userId: string) => {
+    try {
+      const userdata = await fetchUsersProfile(userId);
+
+      dispatch(setSelectedUser(userdata));
+
+      navigate("/app/usersprofile");
+      setSearchResultVisible(false);
+      onClose();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <>
       <Drawer isOpen={isOpen} onClose={handleCloseDrawer} placement="left">
@@ -96,6 +118,7 @@ const Search = ({ isOpen, onClose }: SearchProps) => {
                       _hover={{ backgroundColor: "gray.100" }}
                       mb={"10px"}
                       borderRadius={"10px"}
+                      onClick={() => handleViewUserProfile(user.id)}
                     >
                       <Avatar
                         crossOrigin="anonymous"

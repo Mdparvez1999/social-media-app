@@ -32,4 +32,6 @@ router.delete(
 
 router.get("/search", auth, followController.searchUsers);
 
+router.get("/profile/:id", auth, followController.getUsersProfileById);
+
 export default router;

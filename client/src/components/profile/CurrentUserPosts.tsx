@@ -10,6 +10,7 @@ const CurrentUserPosts = () => {
   const dispatch = useAppDispatch();
   const currentUserPosts = useAppSelector((state) => state.posts.posts);
 
+  console.log(currentUserPosts);
   useEffect(() => {
     const fetchCurrentUserPosts = async () => {
       try {

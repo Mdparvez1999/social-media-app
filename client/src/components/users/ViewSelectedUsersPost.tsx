@@ -1,3 +1,6 @@
+import { useEffect } from "react";
+import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
+import { toast } from "react-toastify";
 import {
   Box,
   Modal,
@@ -6,13 +9,10 @@ import {
   ModalContent,
   ModalOverlay,
 } from "@chakra-ui/react";
-import { useEffect } from "react";
-import PostDeatils from "./PostDeatils";
-import PostImage from "./PostImage";
-import { useFetchPost } from "../../hooks/post/useFetchPost";
-import { toast } from "react-toastify";
-import { useAppDispatch } from "../../hooks/hooks";
-import { setSinglePost } from "../../redux-store/features/post/postsSlice";
+import { setSelectedUsersSinglePost } from "../../redux-store/features/users/userSlice";
+import SelectedUsersPostImage from "./SelectedUsersPostImage";
+import useFetchSelectedusersPost from "../../hooks/usersprofile/useFetchSelectedusersPost";
+import SelectedUsersPostDetails from "./SelectedUsersPostDetails";
 
 interface propsType {
   isOpen: boolean;
@@ -20,8 +20,12 @@ interface propsType {
   id: string | null;
 }
 
-const ViewEachCurrentUserPost = ({ isOpen, onClose, id }: propsType) => {
-  const { fetchPostById } = useFetchPost();
+const ViewSelectedUsersPost = ({ isOpen, onClose, id }: propsType) => {
+  const selecteduser = useAppSelector((state) => state.users.selectedUser);
+
+  const userId: string | undefined = selecteduser?.id;
+
+  const { fetchSelectedUsersPost } = useFetchSelectedusersPost();
 
   const dispatch = useAppDispatch();
 
@@ -29,8 +33,10 @@ const ViewEachCurrentUserPost = ({ isOpen, onClose, id }: propsType) => {
     const fetchPost = async () => {
       if (id && isOpen) {
         try {
-          const data = await fetchPostById(id);
-          dispatch(setSinglePost(data));
+          const data = await fetchSelectedUsersPost({ postId: id, userId });
+          console.log(data);
+
+          dispatch(setSelectedUsersSinglePost(data));
         } catch (error) {
           toast.error("Something went wrong");
         }
@@ -40,7 +46,7 @@ const ViewEachCurrentUserPost = ({ isOpen, onClose, id }: propsType) => {
     if (isOpen && id) {
       fetchPost();
     }
-  }, [id, isOpen, fetchPostById, dispatch]);
+  }, [dispatch, fetchSelectedUsersPost, id, isOpen, userId]);
 
   return (
     <>
@@ -59,10 +65,10 @@ const ViewEachCurrentUserPost = ({ isOpen, onClose, id }: propsType) => {
           <ModalCloseButton />
           <ModalBody display={"flex"} padding={"0"} flex={1} height={"100%"}>
             <Box flex={1.5} width={"60%"} height={"100%"}>
-              <PostImage />
+              <SelectedUsersPostImage />
             </Box>
             <Box flex={0.8} width={"40%"} padding={"10px"} height={"100%"}>
-              <PostDeatils />
+              <SelectedUsersPostDetails />
             </Box>
           </ModalBody>
         </ModalContent>
@@ -71,4 +77,4 @@ const ViewEachCurrentUserPost = ({ isOpen, onClose, id }: propsType) => {
   );
 };
 
-export default ViewEachCurrentUserPost;
+export default ViewSelectedUsersPost;

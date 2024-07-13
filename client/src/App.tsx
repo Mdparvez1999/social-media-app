@@ -14,6 +14,7 @@ import PrivacySettings from "./components/profile/edituserprofile/PrivacySetting
 import AdvancedAccountSettings from "./components/profile/edituserprofile/AdvancedAccountSettings";
 import { useEffect } from "react";
 import { fetchProfile } from "./redux-store/features/profile/profileSlice";
+import UsersProfile from "./components/users/UsersProfile";
 
 function App() {
   const dispatch = useAppDispatch();
@@ -34,6 +35,7 @@ function App() {
           <Route path="/app" element={currentUser ? <Hero /> : <Login />}>
             <Route path="home" element={<Home />} />
             <Route path="profile" element={<Profile />} />
+            <Route path="usersprofile" element={<UsersProfile />} />
             <Route path="chats" element={<Chats />} />
 
             <Route path="profiledata" element={<ViewUserProfile />}>
