@@ -88,7 +88,6 @@ const Search = ({ isOpen, onClose }: SearchProps) => {
       console.log(error);
     }
   };
-
   return (
     <>
       <Drawer isOpen={isOpen} onClose={handleCloseDrawer} placement="left">

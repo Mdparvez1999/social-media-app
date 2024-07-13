@@ -13,15 +13,10 @@ const ProfileDetails = () => {
       minHeight={"45vh"}
       display={"flex"}
       justifyContent={"space-evenly"}
-      padding={"35px"}
+      padding={"20px 0 0 70px"}
       mx={"80px"}
     >
-      <Box
-        display={"flex"}
-        alignItems={"center"}
-        justifyContent={"center"}
-        margin={"15px"}
-      >
+      <Box display={"flex"} alignItems={"center"} justifyContent={"center"}>
         <WrapItem>
           <Avatar
             size={"2xl"}
@@ -36,7 +31,7 @@ const ProfileDetails = () => {
         width={"100%"}
         minHeight={"100%"}
         padding={"15px"}
-        mx={"35px"}
+        mx={"60px"}
       >
         <Box
           display={"flex"}
