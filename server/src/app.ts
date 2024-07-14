@@ -61,4 +61,8 @@ app.use("/api/users", followRouter);
 app.use("/api/notification", notificationRouter);
 // app.use("/api/user", auth, userRouter);
 
+app.get("/", (req: Request, res: Response) => {
+  res.send("hello");
+});
+
 app.use(errorHandler);

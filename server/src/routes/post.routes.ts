@@ -7,6 +7,8 @@ const router: express.Router = express.Router();
 
 const postController = new PostControllers();
 
+router.get("/feed", auth, postController.userFeed);
+
 router.post(
   "/create",
   auth,

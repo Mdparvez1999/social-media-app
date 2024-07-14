@@ -10,6 +10,8 @@ import { Users } from "../entities/user.entity";
 import { UserUtils } from "../utils/user.utils";
 import { PostUtils } from "../utils/post.utils";
 import { NotificationUtils } from "../utils/notification.utils";
+import { Follower } from "../entities/follower.entity";
+import { In } from "typeorm";
 
 export class PostControllers {
   private postRepository = AppDataSource.getRepository(Post);
@@ -19,6 +21,8 @@ export class PostControllers {
   private postLikeRepository = AppDataSource.getRepository(PostLike);
 
   private user = AppDataSource.getRepository(Users);
+
+  private followerRepository = AppDataSource.getRepository(Follower);
 
   public createPost = asyncHandler(
     async (
@@ -364,4 +368,62 @@ export class PostControllers {
       });
     }
   );
+
+  public userFeed = asyncHandler(
+    async (req: Request, res: Response, next: NextFunction) => {
+      const userId = res.locals.user.id;
+
+      const followingUser = await this.followerRepository.find({
+        where: { followers: { id: userId } },
+        relations: { following: true },
+      });
+
+      const followingUsersIds = followingUser.map((user) => {
+        return user.following.id;
+      });
+
+      const post = await this.postRepository.find({
+        where: { user: { id: In(followingUsersIds) } },
+        relations: ["user", "files"],
+        order: { createdAt: "DESC" },
+      });
+
+      if (!post || post.length === 0) {
+        return res.status(200).json({
+          success: true,
+          message: "No posts found",
+          data: [],
+        });
+      }
+
+      const responseData = post.map((post) => {
+        return {
+          id: post.id,
+          caption: post.caption,
+          likeCount: post.likeCount,
+          commentCount: post.commentCount,
+          files: post.files,
+          createdAt: post.createdAt,
+          user: {
+            id: post.user.id,
+            userName: post.user.userName,
+            profilePic: post.user.profilePic,
+          },
+        };
+      });
+
+      return res.status(200).json({
+        success: true,
+        message: "Posts fetched successfully",
+        data: responseData,
+      });
+    }
+  );
+
+  public test = asyncHandler(async (req: Request, res: Response) => {
+    return res.status(200).json({
+      success: true,
+      message: "hello world",
+    });
+  });
 }

@@ -6,7 +6,12 @@ export class UserUtils {
   private static userRepository = AppDataSource.getRepository(Users);
 
   public static async findUserById(id: string): Promise<Users> {
-    const user = await this.userRepository.findOneBy({ id });
+    const user = await this.userRepository.findOne({
+      where: {
+        id: id,
+      },
+      relations: ["following"],
+    });
 
     if (!user) {
       throw new AppError("user not found", 404);

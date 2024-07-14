@@ -45,13 +45,15 @@ export class UserProfileController {
           "comments",
           "followers",
           "following",
-          "notifications",
+          // "notifications",
         ],
       });
 
       if (!user) {
         return next(new AppError("user not found", 404));
       }
+
+      console.log(user);
 
       res.status(200).json({
         success: true,
@@ -68,8 +70,8 @@ export class UserProfileController {
           isActive: user.isActive,
           bio: user.bio,
           postsCount: user.posts.length,
-          followersCount: user.followers.length,
-          followingCount: user.following.length,
+          followersCount: user.following.length,
+          followingCount: user.followers.length,
         },
       });
     }
