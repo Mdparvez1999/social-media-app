@@ -10,9 +10,9 @@ router.post("/follow/:id", auth, followController.followUser);
 
 router.delete("/unfollow/:id", auth, followController.unfollowUser);
 
-router.get("/followers", auth, followController.getFollowers);
+router.get("/followers/:id", auth, followController.getFollowers);
 
-router.get("/following", auth, followController.getFollowing);
+router.get("/following/:id", auth, followController.getFollowing);
 
 router.get("/follow-requests", auth, followController.getFollowRequests);
 

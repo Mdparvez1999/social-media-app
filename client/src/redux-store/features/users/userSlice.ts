@@ -53,11 +53,20 @@ export interface PostState {
   updatedAt: Date;
 }
 
+interface FollowersAndFollowingState {
+  id: string;
+  username: string;
+  fullName: string;
+  profilePic: string;
+}
+
 export interface UsersState {
   users: UserState[];
   selectedUser: SelectedUserState | null;
   selectedUsersPosts: PostState[];
   selectedUsersSinglePost: PostState | null;
+  selectedUsersFollowers: FollowersAndFollowingState[];
+  selectedUsersFollowing: FollowersAndFollowingState[];
 }
 
 const initialState: UsersState = {
@@ -65,6 +74,8 @@ const initialState: UsersState = {
   selectedUser: null,
   selectedUsersPosts: [],
   selectedUsersSinglePost: null,
+  selectedUsersFollowers: [],
+  selectedUsersFollowing: [],
 };
 
 const userSlice = createSlice({
@@ -89,6 +100,18 @@ const userSlice = createSlice({
     ) => {
       state.selectedUsersSinglePost = action.payload;
     },
+    setSelectedUsersFollowers: (
+      state,
+      action: PayloadAction<FollowersAndFollowingState[]>
+    ) => {
+      state.selectedUsersFollowers = action.payload;
+    },
+    setSelectedUsersFollowing: (
+      state,
+      action: PayloadAction<FollowersAndFollowingState[]>
+    ) => {
+      state.selectedUsersFollowing = action.payload;
+    },
   },
 });
 
@@ -97,5 +120,7 @@ export const {
   setSelectedUser,
   setSelectedUsersPosts,
   setSelectedUsersSinglePost,
+  setSelectedUsersFollowers,
+  setSelectedUsersFollowing,
 } = userSlice.actions;
 export default userSlice.reducer;

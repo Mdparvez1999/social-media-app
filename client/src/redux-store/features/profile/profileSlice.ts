@@ -17,8 +17,17 @@ interface ProfileState {
   password: string;
 }
 
+interface FollowersAndFollowingState {
+  id: string;
+  username: string;
+  fullName: string;
+  profilePic: string;
+}
+
 export interface ProfileSliceState {
   profile: ProfileState | null;
+  followers: FollowersAndFollowingState[];
+  following: FollowersAndFollowingState[];
 }
 
 const initialState = {
@@ -57,6 +66,18 @@ const profileSlice = createSlice({
   name: "SET_PROFILE",
   initialState,
   reducers: {
+    setFollowers: (
+      state,
+      action: PayloadAction<FollowersAndFollowingState[]>
+    ) => {
+      state.followers = action.payload;
+    },
+    setFollowingUsers: (
+      state,
+      action: PayloadAction<FollowersAndFollowingState[]>
+    ) => {
+      state.following = action.payload;
+    },
     updateProfilePic: (state, action: PayloadAction<string>) => {
       if (state.profile) {
         state.profile.profilePic = action.payload;
@@ -106,6 +127,8 @@ const profileSlice = createSlice({
 });
 
 export const {
+  setFollowers,
+  setFollowingUsers,
   updateProfilePic,
   updateFullName,
   updateBio,

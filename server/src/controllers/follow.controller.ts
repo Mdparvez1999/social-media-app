@@ -243,7 +243,7 @@ export class FollowController {
 
   public getFollowers = asyncHandler(
     async (req: Request, res: Response, next: NextFunction) => {
-      const userId: string = res.locals.user.id;
+      const userId: string = req.params.id;
 
       const allFollowers = await this.followerRepository.find({
         where: {
@@ -266,6 +266,7 @@ export class FollowController {
         return {
           id: follower.followers.id,
           username: follower.followers.userName,
+          fullName: follower.followers.fullName,
           profilePic: follower.followers.profilePic,
         };
       });
@@ -273,17 +274,14 @@ export class FollowController {
       return res.status(200).json({
         status: "success",
         message: "followers fetched successfully",
-        data: {
-          countOfFollowers: followers.length,
-          followers: followers,
-        },
+        data: followers,
       });
     }
   );
 
   public getFollowing = asyncHandler(
     async (req: Request, res: Response, next: NextFunction) => {
-      const userId = res.locals.user.id;
+      const userId = req.params.id;
 
       const allFollowingUsers = await this.followerRepository.find({
         where: {
@@ -304,6 +302,7 @@ export class FollowController {
         return {
           id: following.following.id,
           username: following.following.userName,
+          fullName: following.following.fullName,
           profilePic: following.following.profilePic,
         };
       });
@@ -311,10 +310,7 @@ export class FollowController {
       return res.status(200).json({
         status: "success",
         message: "following users fetched successfully",
-        data: {
-          countOfFollowingUsers: followingUsers.length,
-          followingUsers: followingUsers,
-        },
+        data: followingUsers,
       });
     }
   );
