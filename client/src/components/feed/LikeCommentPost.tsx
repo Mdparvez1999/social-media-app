@@ -1,4 +1,4 @@
-import { Box } from "@chakra-ui/react";
+import { Box, useDisclosure } from "@chakra-ui/react";
 import { CiBookmark, CiHeart } from "react-icons/ci";
 import { LuSend } from "react-icons/lu";
 import { FaRegComment } from "react-icons/fa";
@@ -6,10 +6,13 @@ import { useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
 import { toast } from "react-toastify";
 import { setFeedPostComments } from "../../redux-store/features/feed/feedSlice";
+import FeedPostCommentsModal from "./FeedPostCommentsModal";
 
 const LikeCommentPost = () => {
   const dispatch = useAppDispatch();
   const post = useAppSelector((state) => state.feed.singlePost);
+
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   useEffect(() => {
     const fetchFeedPostComments = async () => {
@@ -43,13 +46,14 @@ const LikeCommentPost = () => {
       >
         <Box display={"flex"} alignItems={"center"} gap={"14px"}>
           <CiHeart size={"2.4rem"} cursor={"pointer"} />
-          <FaRegComment size={"1.8rem"} cursor={"pointer"} />
+          <FaRegComment size={"1.8rem"} cursor={"pointer"} onClick={onOpen} />
           <LuSend size={"1.8rem"} />
         </Box>
         <Box>
           <CiBookmark size={"1.9rem"} />
         </Box>
       </Box>
+      <FeedPostCommentsModal isOpen={isOpen} onClose={onClose} />
     </Box>
   );
 };

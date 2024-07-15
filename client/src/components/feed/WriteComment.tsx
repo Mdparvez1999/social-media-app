@@ -34,7 +34,7 @@ const WriteComment = () => {
 
       if (!response.ok) throw new Error(response.statusText);
 
-      const data = await response.json();
+      const { data } = await response.json();
 
       dispatch(addCommentToFeedPost(data));
     } catch (error) {

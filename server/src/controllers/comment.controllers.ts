@@ -50,7 +50,17 @@ export class CommentsController {
       res.status(201).json({
         success: true,
         message: "comment created successfully",
-        data: newComment,
+        data: {
+          id: newComment.id,
+          comment: newComment.comment,
+          commentedAt: newComment.commentedAt,
+          postId: newComment.post.id,
+          user: {
+            id: newComment.user.id,
+            userName: newComment.user.userName,
+            profilePic: newComment.user.profilePic,
+          },
+        },
       });
     }
   );
@@ -140,6 +150,7 @@ export class CommentsController {
       const comments: Comments[] = await this.commentRepository.find({
         where: { post: { id: postId } },
         relations: { user: true },
+        order: { commentedAt: "DESC" },
       });
 
       if (!comments || comments.length === 0) {

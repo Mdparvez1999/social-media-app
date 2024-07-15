@@ -93,7 +93,7 @@ const feedSlice = createSlice({
       state.comments = action.payload;
     },
     addCommentToFeedPost(state, action: PayloadAction<CommentState>) {
-      state.comments = [...state.comments, action.payload];
+      state.comments = [action.payload, ...state.comments];
     },
   },
   extraReducers(builder) {
