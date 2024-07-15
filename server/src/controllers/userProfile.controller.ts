@@ -53,8 +53,6 @@ export class UserProfileController {
         return next(new AppError("user not found", 404));
       }
 
-      console.log(user);
-
       res.status(200).json({
         success: true,
         data: {

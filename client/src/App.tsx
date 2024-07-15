@@ -15,6 +15,7 @@ import AdvancedAccountSettings from "./components/profile/edituserprofile/Advanc
 import { useEffect } from "react";
 import { fetchProfile } from "./redux-store/features/profile/profileSlice";
 import UsersProfile from "./components/users/UsersProfile";
+import "./index.css";
 
 function App() {
   const dispatch = useAppDispatch();
@@ -33,7 +34,7 @@ function App() {
           <Route path="/signup" element={<Signup />} />
           <Route path="/login" loader element={<Login />} />
           <Route path="/app" element={currentUser ? <Hero /> : <Login />}>
-            <Route path="home" element={<Home />} />
+            <Route index path="home" element={<Home />} />
             <Route path="profile" element={<Profile />} />
             <Route path="usersprofile" element={<UsersProfile />} />
             <Route path="chats" element={<Chats />} />

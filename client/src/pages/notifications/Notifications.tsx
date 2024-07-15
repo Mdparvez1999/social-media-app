@@ -32,6 +32,8 @@ const Notifications = ({ isOpen, onClose }: NotificationsProps) => {
     (state) => state.notifications.notifications
   );
 
+  console.log("notifications", notifications);
+
   useEffect(() => {
     let isMounted = true;
 
@@ -51,6 +53,7 @@ const Notifications = ({ isOpen, onClose }: NotificationsProps) => {
         if (data.status === "error" || data.status === "fail") {
           throw new Error(data.message);
         }
+        console.log(data);
 
         if (isMounted) {
           dispatch(setNotifications(data));
