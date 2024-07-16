@@ -7,17 +7,11 @@ import { fetchUserFeed } from "../../redux-store/features/feed/feedSlice";
 
 const Home = () => {
   const dispatch = useAppDispatch();
-  useEffect(() => {
-    let isMounted = true;
-    console.log("home component mounted");
-    if (isMounted) {
-      dispatch(fetchUserFeed());
-    }
 
-    return () => {
-      isMounted = false;
-    };
+  useEffect(() => {
+    dispatch(fetchUserFeed());
   }, [dispatch]);
+
   return (
     <>
       <Box display={"flex"} padding={"20px"} gap={"20px"}>

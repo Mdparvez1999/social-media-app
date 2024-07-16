@@ -7,6 +7,7 @@ import {
   CardFooter,
   CardHeader,
   Heading,
+  Spinner,
   Text,
 } from "@chakra-ui/react";
 import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
@@ -16,12 +17,32 @@ import Content from "./Content";
 import LikeCommentPost from "./LikeCommentPost";
 import WriteComment from "./WriteComment";
 import { setFeedSinglePost } from "../../redux-store/features/feed/feedSlice";
-import React from "react";
+import React, { useState } from "react";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 const Feed = () => {
   const feed = useAppSelector((state) => state.feed.posts);
+  // console.log("feed in feed", feed);
+
   const dispatch = useAppDispatch();
-  console.log("feed in feed component", feed);
+
+  const navigate = useNavigate();
+
+  const [loading, setLoading] = useState<boolean>(false);
+
+  const handleViewUserProfile = async (userId: string) => {
+    setLoading(true);
+    try {
+      navigate(`/app/usersprofile/${userId}`);
+    } catch (error) {
+      if (error instanceof Error) toast.error(error.message);
+      else toast.error("Something went wrong");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <>
       <Box padding={"10px 20px"} borderRadius={"10px"}>
@@ -43,8 +64,17 @@ const Feed = () => {
                 height={"50px"}
                 p={0}
               >
-                <Box display={"flex"} gap={"10px"}>
-                  <Avatar />
+                <Box
+                  display={"flex"}
+                  gap={"10px"}
+                  cursor={"pointer"}
+                  onClick={() => handleViewUserProfile(post.user.id)}
+                >
+                  <Avatar
+                    src={`http://localhost:8000/uploads/profilePic/${post.user.profilePic}`}
+                    name={post.user.userName}
+                    crossOrigin="anonymous"
+                  />
                   <Heading fontSize={"1.3rem"} mt={"5px"}>
                     {post.user.userName} {"."}
                   </Heading>
@@ -97,10 +127,10 @@ const Feed = () => {
                 </Box>
               </CardFooter>
             </Card>
-            {/* <Divider maxWidth={"md"} mb={"10px"} /> */}
           </React.Fragment>
         ))}
       </Box>
+      {loading && <Spinner />}
     </>
   );
 };

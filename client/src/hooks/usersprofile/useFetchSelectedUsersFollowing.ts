@@ -7,8 +7,10 @@ const useFetchSelectedUsersFollowing = () => {
 
   const selectedUser = useAppSelector((state) => state.users.selectedUser);
   const fetchSelectedUsersFollowing = async () => {
+    if (!selectedUser) return;
+    
     try {
-      const response = await fetch(`/api/users/followers/${selectedUser?.id}`, {
+      const response = await fetch(`/api/users/following/${selectedUser?.id}`, {
         method: "GET",
         credentials: "include",
       });

@@ -25,13 +25,14 @@ const SelectedUsersFollowing = ({
   const selectedUsersFollowing = useAppSelector(
     (state) => state.users.selectedUsersFollowing
   );
+
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
       <ModalContent maxWidth={"390px"}>
         <ModalCloseButton />
         <ModalHeader>
-          <Text textAlign={"center"}>Followers</Text>
+          <Text textAlign={"center"}>Following</Text>
         </ModalHeader>
         <Divider width={"85%"} margin={"auto"} />
         <ModalBody>
@@ -68,7 +69,7 @@ const SelectedUsersFollowing = ({
                 </Box>
               ))
             ) : (
-              <Text>No followers found.</Text>
+              <Text textAlign={"center"}>not following anyone</Text>
             )}
           </Box>
         </ModalBody>

@@ -9,17 +9,17 @@ import {
 } from "@chakra-ui/react";
 import { useAppSelector } from "../../hooks/hooks";
 import { useNavigate } from "react-router-dom";
-import ViewFollowersModal from "./edituserprofile/ViewFollowersModal";
+import ViewFollowersModal from "./ViewFollowersModal";
 import ViewFollowingUsersModal from "./ViewFollowingUsersModal";
 
 const ProfileDetails = () => {
   const userProfile = useAppSelector((state) => state.profile.profile);
 
-  const navigate = useNavigate();
-
   const followersDisclosure = useDisclosure();
 
   const followingUsersDisclosure = useDisclosure();
+  
+  const navigate = useNavigate();
 
   return (
     <>

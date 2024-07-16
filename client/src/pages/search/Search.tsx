@@ -15,13 +15,9 @@ import {
 import { BiSearch } from "react-icons/bi";
 import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
 import { useState } from "react";
-import {
-  setSelectedUser,
-  setUsers,
-} from "../../redux-store/features/users/userSlice";
+import { setUsers } from "../../redux-store/features/users/userSlice";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
-import useFetchUsersProfile from "../../hooks/usersprofile/useFetchUsersProfile";
 
 interface SearchProps {
   isOpen: boolean;
@@ -73,21 +69,18 @@ const Search = ({ isOpen, onClose }: SearchProps) => {
     onClose();
   };
 
-  const { fetchUsersProfile } = useFetchUsersProfile();
-
   const handleViewUserProfile = async (userId: string) => {
     try {
-      const userdata = await fetchUsersProfile(userId);
-
-      dispatch(setSelectedUser(userdata));
-
-      navigate("/app/usersprofile");
+      navigate(`/app/usersprofile/${userId}`);
+      window.location.reload();
       setSearchResultVisible(false);
       onClose();
     } catch (error) {
-      console.log(error);
+      if (error instanceof Error) toast.error(error.message);
+      else toast.error("Something went wrong");
     }
   };
+
   return (
     <>
       <Drawer isOpen={isOpen} onClose={handleCloseDrawer} placement="left">

@@ -1,9 +1,7 @@
 import { toast } from "react-toastify";
-import { setFollowingUsers } from "../../redux-store/features/profile/profileSlice";
-import { useAppDispatch, useAppSelector } from "../hooks";
+import { useAppSelector } from "../hooks";
 
 const useFetchFollowingUsers = () => {
-  const dispatch = useAppDispatch();
   const currentUser = useAppSelector((state) => state.auth.currentUser);
   const fetchFollowingUsers = async () => {
     try {
@@ -16,7 +14,7 @@ const useFetchFollowingUsers = () => {
 
       const { data } = await response.json();
 
-      dispatch(setFollowingUsers(data));
+      return data;
     } catch (error) {
       if (error instanceof Error) toast.error(error.message);
       else toast.error("Something went wrong");

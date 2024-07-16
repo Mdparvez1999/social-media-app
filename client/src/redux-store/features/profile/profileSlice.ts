@@ -78,6 +78,17 @@ const profileSlice = createSlice({
     ) => {
       state.following = action.payload;
     },
+    addFollowing: (
+      state,
+      action: PayloadAction<FollowersAndFollowingState>
+    ) => {
+      state.following = [action.payload, ...state.following];
+    },
+    removeFollowing: (state, action: PayloadAction<string>) => {
+      state.following = state.following.filter(
+        (user) => user.id !== action.payload
+      );
+    },
     updateProfilePic: (state, action: PayloadAction<string>) => {
       if (state.profile) {
         state.profile.profilePic = action.payload;
@@ -129,6 +140,8 @@ const profileSlice = createSlice({
 export const {
   setFollowers,
   setFollowingUsers,
+  addFollowing,
+  removeFollowing,
   updateProfilePic,
   updateFullName,
   updateBio,

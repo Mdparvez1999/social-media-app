@@ -70,6 +70,20 @@ export class FollowController {
       return res.status(200).json({
         status: "success",
         message: "followed successfully",
+        data: {
+          follower: {
+            id: follower.followers.id,
+            username: follower.followers.userName,
+            fullName: follower.followers.fullName,
+            profilePic: follower.followers.profilePic,
+          },
+          following: {
+            id: follower.following.id,
+            username: follower.following.userName,
+            fullName: follower.following.fullName,
+            profilePic: follower.following.profilePic,
+          },
+        },
       });
     }
   );
@@ -234,9 +248,25 @@ export class FollowController {
 
       await this.followerRepository.remove(follower);
 
+      console.log("unfollowed user successfully", follower);
+
       return res.status(200).json({
         status: "success",
         message: "unfollowed user successfully",
+        data: {
+          follower: {
+            id: follower.followers.id,
+            username: follower.followers.userName,
+            fullName: follower.followers.fullName,
+            profilePic: follower.followers.profilePic,
+          },
+          following: {
+            id: follower.following.id,
+            username: follower.following.userName,
+            fullName: follower.following.fullName,
+            profilePic: follower.following.profilePic,
+          },
+        },
       });
     }
   );
@@ -381,8 +411,8 @@ export class FollowController {
           isActive: user.isActive,
           bio: user.bio,
           postsCount: user.posts.length,
-          followersCount: user.followers.length,
-          followingCount: user.following.length,
+          followersCount: user.following.length,
+          followingCount: user.followers.length,
         },
       });
     }

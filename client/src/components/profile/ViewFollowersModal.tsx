@@ -11,7 +11,7 @@ import {
   ModalOverlay,
   Text,
 } from "@chakra-ui/react";
-import { useAppSelector } from "../../../hooks/hooks";
+import { useAppSelector } from "../../hooks/hooks";
 
 interface ViewFollowersModalProps {
   isOpen: boolean;
@@ -20,6 +20,8 @@ interface ViewFollowersModalProps {
 
 const ViewFollowersModal = ({ isOpen, onClose }: ViewFollowersModalProps) => {
   const followers = useAppSelector((state) => state.profile.followers);
+
+  // console.log(followers);
 
   if (!followers) return null;
 

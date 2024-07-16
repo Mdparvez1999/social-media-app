@@ -14,6 +14,7 @@ const UsersProfile = () => {
     fetchSelectedUsersFollowing();
     fetchSelectedUsersFollowers();
   }, [fetchSelectedUsersFollowing, fetchSelectedUsersFollowers]);
+  
   return (
     <Box
       width={"100%"}

@@ -12,6 +12,9 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { useAppSelector } from "../../hooks/hooks";
+import { useState } from "react";
+import { toast } from "react-toastify";
+import useUnfollowUser from "../../hooks/usersprofile/useUnfollowUser";
 
 interface ViewFollowingUsersModalProps {
   isOpen: boolean;
@@ -23,6 +26,22 @@ const ViewFollowingUsersModal = ({
   onClose,
 }: ViewFollowingUsersModalProps) => {
   const followingUsers = useAppSelector((state) => state.profile.following);
+
+  const [loading, setLoading] = useState<boolean>(false);
+
+  const { unfollowUser } = useUnfollowUser();
+
+  const unfollowUserClick = async (id: string) => {
+    setLoading(true);
+    try {
+      await unfollowUser(id);
+    } catch (error) {
+      toast.error("Something went wrong");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
@@ -62,11 +81,16 @@ const ViewFollowingUsersModal = ({
                       )}
                     </Box>
                   </Box>
-                  <Button>unfollow</Button>
+                  <Button
+                    onClick={() => unfollowUserClick(followinguser.id)}
+                    isLoading={loading}
+                  >
+                    unfollow
+                  </Button>
                 </Box>
               ))
             ) : (
-              <Text>No followers found.</Text>
+              <Text textAlign={"center"}>you are not following anyone</Text>
             )}
           </Box>
         </ModalBody>

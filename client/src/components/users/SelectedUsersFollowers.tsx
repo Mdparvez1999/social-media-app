@@ -25,6 +25,7 @@ const SelectedUsersFollowers = ({
   const selectedUsersFollowers = useAppSelector(
     (state) => state.users.selectedUsersFollowers
   );
+
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
@@ -68,7 +69,7 @@ const SelectedUsersFollowers = ({
                 </Box>
               ))
             ) : (
-              <Text>No followers found.</Text>
+              <Text textAlign={"center"}>no followers</Text>
             )}
           </Box>
         </ModalBody>

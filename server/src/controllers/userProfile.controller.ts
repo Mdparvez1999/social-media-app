@@ -70,6 +70,8 @@ export class UserProfileController {
           postsCount: user.posts.length,
           followersCount: user.following.length,
           followingCount: user.followers.length,
+          follwers: user.followers,
+          following: user.following,
         },
       });
     }

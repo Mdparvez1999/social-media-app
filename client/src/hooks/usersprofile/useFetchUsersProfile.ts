@@ -18,6 +18,7 @@ const useFetchUsersProfile = () => {
       return data;
     } catch (error) {
       if (error instanceof Error) toast.error(error.message);
+      console.log(error);
     }
   };
 

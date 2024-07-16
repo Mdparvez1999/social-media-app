@@ -8,15 +8,88 @@ import {
   WrapItem,
 } from "@chakra-ui/react";
 import { useAppSelector } from "../../hooks/hooks";
+import useFollowUser from "../../hooks/usersprofile/useFollowUser";
+import { toast } from "react-toastify";
+import { useEffect, useRef, useState } from "react";
+import useFetchUsersProfile from "../../hooks/usersprofile/useFetchUsersProfile";
+import {
+  clearSelecetedUsersData,
+  setSelectedUser,
+} from "../../redux-store/features/users/userSlice";
+import { useParams } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import useUnfollowUser from "../../hooks/usersprofile/useUnfollowUser";
 import SelectedUsersFollowers from "./SelectedUsersFollowers";
 import SelectedUsersFollowing from "./SelectedUsersFollowing";
 
 const UsersProfileDetails = () => {
+  const dispatch = useDispatch();
+
+  const { userId } = useParams<{ userId: string }>();
+
+  const { fetchUsersProfile } = useFetchUsersProfile();
+
+  if (!userId) throw new Error("Something went wrong");
+
+  const hasFetchedData = useRef(false);
+
+  useEffect(() => {
+    const fetchSelectedUsersData = async () => {
+      dispatch(clearSelecetedUsersData());
+      try {
+        const userdata = await fetchUsersProfile(userId);
+        dispatch(setSelectedUser(userdata));
+      } catch (error) {
+        if (error instanceof Error) toast.error(error.message);
+        else toast.error("Something went wrong");
+      }
+    };
+
+    if (!hasFetchedData.current) {
+      fetchSelectedUsersData();
+      hasFetchedData.current = true;
+    }
+  }, [userId, dispatch, fetchUsersProfile]);
+
   const selectedUserData = useAppSelector((state) => state.users.selectedUser);
+
+  const currentUsersFollowing = useAppSelector(
+    (state) => state.profile.following
+  );
+
+  const followedUser = currentUsersFollowing?.find(
+    (user) => user.id === selectedUserData?.id
+  );
 
   const followersDisclosure = useDisclosure();
 
   const followingUsersDisclosure = useDisclosure();
+
+  const [loading, setLoading] = useState(false);
+
+  const { followUser } = useFollowUser();
+
+  const { unfollowUser } = useUnfollowUser();
+
+  const followOrUnfollowUserClick = async () => {
+    if (!selectedUserData) {
+      toast.error("User data not found");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      if (followedUser) {
+        await unfollowUser(selectedUserData?.id);
+      } else {
+        await followUser(selectedUserData?.id);
+      }
+    } catch (error) {
+      toast.error("Something went wrong");
+    } finally {
+      setLoading(false);
+    }
+  };
   return (
     <>
       <Box
@@ -34,11 +107,24 @@ const UsersProfileDetails = () => {
           margin={"15px"}
         >
           <WrapItem>
-            <Avatar
-              size={"2xl"}
-              crossOrigin="anonymous"
-              src={`http://localhost:8000/uploads/profilePic/${selectedUserData?.profilePic}`}
-            />
+            {selectedUserData?.profilePic ? (
+              <Avatar
+                size={"2xl"}
+                crossOrigin="anonymous"
+                name={selectedUserData?.userName}
+              />
+            ) : (
+              <Avatar
+                size={"2xl"}
+                crossOrigin="anonymous"
+                name={selectedUserData?.userName}
+                src={
+                  selectedUserData?.profilePic
+                    ? `http://localhost:8000/uploads/profilePic/${selectedUserData?.profilePic}`
+                    : undefined
+                }
+              />
+            )}
           </WrapItem>
         </Box>
         <Box
@@ -62,7 +148,9 @@ const UsersProfileDetails = () => {
               </Heading>
             </Box>
             <Box display={"flex"} gap={"20px"}>
-              <Button>Follow</Button>
+              <Button onClick={followOrUnfollowUserClick} isLoading={loading}>
+                {followedUser ? "Unfollow" : "Follow"}
+              </Button>
               <Button>Message</Button>
             </Box>
           </Box>
@@ -86,7 +174,7 @@ const UsersProfileDetails = () => {
             justifyContent={"flex-start"}
             alignItems={"center"}
           >
-            <h1>{selectedUserData?.fullName}</h1>
+            <Text>{selectedUserData?.fullName}</Text>
           </Box>
           <Box mt={"20px"}>
             <Text>Bio</Text>

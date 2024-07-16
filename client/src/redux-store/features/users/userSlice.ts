@@ -91,6 +91,9 @@ const userSlice = createSlice({
     ) => {
       state.selectedUser = action.payload;
     },
+    clearSelecetedUsersData: (state) => {
+      state.selectedUser = null;
+    },
     setSelectedUsersPosts: (state, action: PayloadAction<PostState[]>) => {
       state.selectedUsersPosts = action.payload;
     },
@@ -112,15 +115,32 @@ const userSlice = createSlice({
     ) => {
       state.selectedUsersFollowing = action.payload;
     },
+    addSelectedUsersFollower: (
+      state,
+      action: PayloadAction<FollowersAndFollowingState>
+    ) => {
+      state.selectedUsersFollowers = [
+        action.payload,
+        ...state.selectedUsersFollowers,
+      ];
+    },
+    removeSelectedUsersFollower: (state, action: PayloadAction<string>) => {
+      state.selectedUsersFollowers = state.selectedUsersFollowers.filter(
+        (user) => user.id !== action.payload
+      );
+    },
   },
 });
 
 export const {
   setUsers,
   setSelectedUser,
+  clearSelecetedUsersData,
   setSelectedUsersPosts,
   setSelectedUsersSinglePost,
   setSelectedUsersFollowers,
   setSelectedUsersFollowing,
+  addSelectedUsersFollower,
+  removeSelectedUsersFollower,
 } = userSlice.actions;
 export default userSlice.reducer;
