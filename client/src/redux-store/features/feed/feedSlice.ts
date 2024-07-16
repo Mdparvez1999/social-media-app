@@ -95,6 +95,12 @@ const feedSlice = createSlice({
     addCommentToFeedPost(state, action: PayloadAction<CommentState>) {
       state.comments = [action.payload, ...state.comments];
     },
+    clearFeed(state) {
+      (state.posts = []), (state.singlePost = null), (state.comments = []);
+      state.addComment = null;
+      state.loading = false;
+      state.error = null;
+    },
   },
   extraReducers(builder) {
     builder.addCase(fetchUserFeed.pending, (state) => {
@@ -115,7 +121,11 @@ const feedSlice = createSlice({
   },
 });
 
-export const { setFeedSinglePost, setFeedPostComments, addCommentToFeedPost } =
-  feedSlice.actions;
+export const {
+  setFeedSinglePost,
+  setFeedPostComments,
+  addCommentToFeedPost,
+  clearFeed,
+} = feedSlice.actions;
 
 export default feedSlice.reducer;

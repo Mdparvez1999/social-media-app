@@ -15,13 +15,12 @@ import AdvancedAccountSettings from "./components/profile/edituserprofile/Advanc
 import { useEffect } from "react";
 import { fetchProfile } from "./redux-store/features/profile/profileSlice";
 import UsersProfile from "./components/users/UsersProfile";
-import "./index.css";
 import { toast } from "react-toastify";
 
 function App() {
   const dispatch = useAppDispatch();
   const currentUser = useAppSelector((state) => state.auth.currentUser);
-  
+
   useEffect(() => {
     const loadUserData = async () => {
       try {

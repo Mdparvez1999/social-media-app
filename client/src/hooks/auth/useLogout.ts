@@ -2,6 +2,7 @@ import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { useAppDispatch } from "../hooks";
 import { logoutCurrentUser } from "../../redux-store/features/auth/authSlice";
+import { clearFeed } from "../../redux-store/features/feed/feedSlice";
 
 const useLogout = () => {
   const dispatch = useAppDispatch();
@@ -20,6 +21,8 @@ const useLogout = () => {
       }
 
       dispatch(logoutCurrentUser());
+
+      dispatch(clearFeed());
 
       toast.success(data.message);
 

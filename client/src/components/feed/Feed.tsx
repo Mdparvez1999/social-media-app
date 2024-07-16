@@ -23,8 +23,6 @@ import { useNavigate } from "react-router-dom";
 
 const Feed = () => {
   const feed = useAppSelector((state) => state.feed.posts);
-  // console.log("feed in feed", feed);
-
   const dispatch = useAppDispatch();
 
   const navigate = useNavigate();

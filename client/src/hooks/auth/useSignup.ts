@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useAuthContext } from "../../contexts/AuthContext";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 
@@ -11,7 +10,7 @@ interface useSignupProps {
 interface SignupResponse {
   error?: string;
   message?: string;
-  userData?: unknown; // Replace `any` with the actual user data type if known
+  userData?: unknown;
 }
 
 interface useSignupReturnType {
@@ -19,8 +18,6 @@ interface useSignupReturnType {
   signUp: (signupData: useSignupProps) => Promise<void>;
 }
 const useSignup = (): useSignupReturnType => {
-  const { setCurrentUser } = useAuthContext();
-
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
@@ -47,10 +44,8 @@ const useSignup = (): useSignupReturnType => {
       }
 
       localStorage.setItem("userData", JSON.stringify(data));
-      setCurrentUser(data);
 
       toast.success(data.message);
-
       navigate("/app/home");
     } catch (error) {
       if (error instanceof Error) toast.error(error.message);
