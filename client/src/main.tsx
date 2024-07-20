@@ -6,13 +6,15 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Provider } from "react-redux";
 import store from "./redux-store/store.ts";
+import SocketContextProvider from "./context/socketContext.tsx";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
-  // <React.StrictMode>
   <Router>
     <ChakraProvider>
       <Provider store={store}>
-        <App />
+        <SocketContextProvider>
+          <App />
+        </SocketContextProvider>
       </Provider>
     </ChakraProvider>
     <ToastContainer
@@ -24,5 +26,4 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
       pauseOnHover={false}
     />
   </Router>
-  // </React.StrictMode>
 );

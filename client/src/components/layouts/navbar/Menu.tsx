@@ -124,7 +124,7 @@ const Menu = () => {
           <ListItem width={"100%"} padding={"10px"} mb={"14px"}>
             <ChakraLink
               as={Link}
-              to={"/app/chats"}
+              to={"/app/messages"}
               display={"flex"}
               alignItems={"center"}
               color={"black"}
@@ -135,7 +135,7 @@ const Menu = () => {
               <Box mr={"18px"}>
                 <BsChatSquareDotsFill size={"1.5rem"} />
               </Box>
-              Chats
+              Messages
             </ChakraLink>
           </ListItem>
 

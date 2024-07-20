@@ -21,11 +21,9 @@ interface PostCommentsPropsType {
 
 const FeedPostCommentsModal = ({ isOpen, onClose }: PostCommentsPropsType) => {
   const comments = useAppSelector((state) => state.feed.comments);
-
   const post = useAppSelector((state) => state.feed.singlePost);
 
   if (!comments) return null;
-
   if (!post) return null;
 
   return (
@@ -42,7 +40,7 @@ const FeedPostCommentsModal = ({ isOpen, onClose }: PostCommentsPropsType) => {
             {post?.caption !== "" ? (
               <Box display={"flex"} alignItems={"center"} gap={"14px"}>
                 <Avatar
-                  src={`http://localhost:8000/uploads/profilePic/${post.user.profilePic} `}
+                  src={`http://localhost:8000/uploads/profilePic/${post.user.profilePic}`}
                   size={"sm"}
                   name={post?.user.userName}
                   crossOrigin="anonymous"
@@ -68,35 +66,39 @@ const FeedPostCommentsModal = ({ isOpen, onClose }: PostCommentsPropsType) => {
             pl={"6px"}
             sx={{ "&::-webkit-scrollbar": { display: "none" } }}
           >
-            {comments?.map((comment) => (
-              <Box
-                display={"flex"}
-                alignItems={"center"}
-                gap={"14px"}
-                key={comment.id}
-                mb={"12px"}
-              >
-                <Avatar
-                  src={`http://localhost:8000/uploads/profilePic/${comment.user.profilePic} `}
-                  size={"sm"}
-                  name={comment.user.userName}
-                  crossOrigin="anonymous"
-                />
-                <Box display={"flex"} flexDirection={"column"} gap={"6px"}>
-                  <Box display={"flex"} gap={"10px"} alignItems={"center"}>
-                    <Heading fontSize={"1.3rem"}>
-                      {comment.user.userName}
-                    </Heading>
-                    <Text>{comment.comment}</Text>
-                  </Box>
-                  <Box>
-                    <Text fontSize={"0.9rem"} color={"gray.700"}>
-                      {formatCreatedAtTime(comment.commentedAt)}
-                    </Text>
+            {comments.length > 0 ? (
+              comments.map((comment) => (
+                <Box
+                  display={"flex"}
+                  alignItems={"center"}
+                  gap={"14px"}
+                  key={comment.id}
+                  mb={"12px"}
+                >
+                  <Avatar
+                    src={`http://localhost:8000/uploads/profilePic/${comment.user.profilePic}`}
+                    size={"sm"}
+                    name={comment.user.userName}
+                    crossOrigin="anonymous"
+                  />
+                  <Box display={"flex"} flexDirection={"column"} gap={"6px"}>
+                    <Box display={"flex"} gap={"10px"} alignItems={"center"}>
+                      <Heading fontSize={"1.3rem"}>
+                        {comment.user.userName}
+                      </Heading>
+                      <Text>{comment.comment}</Text>
+                    </Box>
+                    <Box>
+                      <Text fontSize={"0.9rem"} color={"gray.700"}>
+                        {formatCreatedAtTime(comment.commentedAt)}
+                      </Text>
+                    </Box>
                   </Box>
                 </Box>
-              </Box>
-            ))}
+              ))
+            ) : (
+              <Text textAlign={"center"}>no comments yet</Text>
+            )}
           </Box>
         </ModalBody>
       </ModalContent>

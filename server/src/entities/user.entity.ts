@@ -4,6 +4,8 @@ import {
   PrimaryGeneratedColumn,
   BeforeInsert,
   OneToMany,
+  ManyToMany,
+  JoinTable,
 } from "typeorm";
 import { v4 as uuidv4 } from "uuid";
 import { PostLike } from "./postLike.entity";
@@ -12,6 +14,8 @@ import { Post } from "./post.entity";
 import { Follower } from "./follower.entity";
 import { FollowRequest } from "./followRequest.entity";
 import { Notifications } from "./notification.entity";
+import { Conversations } from "./conversationEntity";
+import { Message } from "./message.entity";
 
 @Entity()
 export class Users {
@@ -132,6 +136,20 @@ export class Users {
     cascade: true,
   })
   notifications!: Notifications[];
+
+  @OneToMany(() => Message, (message) => message.sender, { cascade: true })
+  sentMessages!: Message[];
+
+  @OneToMany(() => Message, (message) => message.reciever, { cascade: true })
+  recievedMessages!: Message[];
+
+  @ManyToMany(
+    () => Conversations,
+    (conversation) => conversation.participants,
+    { cascade: true }
+  )
+  @JoinTable()
+  conversations!: Conversations[];
 
   @BeforeInsert()
   addId() {

@@ -13,17 +13,14 @@ export class NotificationControllers {
     async (req: Request, res: Response, next: NextFunction) => {
       const userId: string = res.locals.user.id;
 
-      console.log(userId);
-
       const user: Users | null = await UserUtils.findUserById(userId);
 
-      const allNotifications = await this.notificationRepository.find({
-        where: { user },
-        // relations: { user: true },
-        // order: { createdAt: "DESC" },
-      });
-
-      console.log("allNotifications : ", allNotifications);
+      const allNotifications = await this.notificationRepository
+        .createQueryBuilder("notification")
+        .leftJoinAndSelect("notification.user", "user")
+        .where("notification.userId = :userId", { userId })
+        .orderBy("notification.createdAt", "DESC")
+        .getMany();
 
       if (!allNotifications || allNotifications.length === 0) {
         return res.status(200).json({

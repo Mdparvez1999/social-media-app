@@ -67,6 +67,7 @@ export interface UsersState {
   selectedUsersSinglePost: PostState | null;
   selectedUsersFollowers: FollowersAndFollowingState[];
   selectedUsersFollowing: FollowersAndFollowingState[];
+  selectedUsersMessage: UserState | null;
 }
 
 const initialState: UsersState = {
@@ -76,6 +77,7 @@ const initialState: UsersState = {
   selectedUsersSinglePost: null,
   selectedUsersFollowers: [],
   selectedUsersFollowing: [],
+  selectedUsersMessage: null,
 };
 
 const userSlice = createSlice({
@@ -129,6 +131,12 @@ const userSlice = createSlice({
         (user) => user.id !== action.payload
       );
     },
+    setSelectedUsersMessage: (
+      state,
+      action: PayloadAction<UserState | null>
+    ) => {
+      state.selectedUsersMessage = action.payload;
+    },
   },
 });
 
@@ -142,5 +150,6 @@ export const {
   setSelectedUsersFollowing,
   addSelectedUsersFollower,
   removeSelectedUsersFollower,
+  setSelectedUsersMessage,
 } = userSlice.actions;
 export default userSlice.reducer;

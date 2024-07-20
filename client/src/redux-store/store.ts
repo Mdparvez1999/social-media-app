@@ -6,6 +6,7 @@ import commentsReducer from "./features/comments/commentsSlice";
 import notificationsReducer from "./features/notifications/notificationsSlice";
 import usersReducer from "./features/users/userSlice";
 import feedReducer from "./features/feed/feedSlice";
+import messagesReducer from "./features/messages/messagesSlice";
 
 const store = configureStore({
   reducer: {
@@ -16,6 +17,7 @@ const store = configureStore({
     notifications: notificationsReducer,
     users: usersReducer,
     feed: feedReducer,
+    messages: messagesReducer,
   },
 });
 

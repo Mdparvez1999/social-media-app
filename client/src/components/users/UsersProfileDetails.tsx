@@ -15,12 +15,15 @@ import useFetchUsersProfile from "../../hooks/usersprofile/useFetchUsersProfile"
 import {
   clearSelecetedUsersData,
   setSelectedUser,
+  setSelectedUsersMessage,
 } from "../../redux-store/features/users/userSlice";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import useUnfollowUser from "../../hooks/usersprofile/useUnfollowUser";
 import SelectedUsersFollowers from "./SelectedUsersFollowers";
 import SelectedUsersFollowing from "./SelectedUsersFollowing";
+import { setSelectedConversation } from "../../redux-store/features/messages/messagesSlice";
+// import { setSelectedConversation } from "../../redux-store/features/messages/messagesSlice";
 
 const UsersProfileDetails = () => {
   const dispatch = useDispatch();
@@ -90,6 +93,23 @@ const UsersProfileDetails = () => {
       setLoading(false);
     }
   };
+
+  const navigate = useNavigate();
+
+  const conversations = useAppSelector((state) => state.messages.conversations);
+
+  const handleMessageClick = () => {
+    const existingConversation = conversations.filter(
+      (conversation) => conversation.participants[0].id === selectedUserData?.id
+    );
+
+    if (existingConversation.length > 0)
+      dispatch(setSelectedConversation(existingConversation[0]));
+    else dispatch(setSelectedUsersMessage(selectedUserData));
+
+    navigate("/app/messages");
+  };
+
   return (
     <>
       <Box
@@ -151,7 +171,7 @@ const UsersProfileDetails = () => {
               <Button onClick={followOrUnfollowUserClick} isLoading={loading}>
                 {followedUser ? "Unfollow" : "Follow"}
               </Button>
-              <Button>Message</Button>
+              <Button onClick={handleMessageClick}>Message</Button>
             </Box>
           </Box>
           <Box

@@ -2,7 +2,6 @@ import Hero from "./pages/hero/Hero";
 import Home from "./pages/home/Home";
 import { Routes, Route, Navigate } from "react-router-dom"; // Added Navigate for conditional redirect
 import Profile from "./pages/profile/Profile";
-import Chats from "./pages/chats/Chats";
 import Signup from "./components/auth/signup/Signup";
 import Login from "./components/auth/login/Login";
 import { Box } from "@chakra-ui/react";
@@ -16,6 +15,7 @@ import { useEffect } from "react";
 import { fetchProfile } from "./redux-store/features/profile/profileSlice";
 import UsersProfile from "./components/users/UsersProfile";
 import { toast } from "react-toastify";
+import Messages from "./pages/messages/Messages";
 
 function App() {
   const dispatch = useAppDispatch();
@@ -59,7 +59,7 @@ function HeroRoutes() {
         <Route index element={<Home />} />
         <Route path="home" element={<Home />} />
         <Route path="usersprofile/:userId" element={<UsersProfile />} />
-        <Route path="chats" element={<Chats />} />
+        <Route path="messages" element={<Messages />} />
         <Route path="profile" element={<Profile />} />
 
         <Route path="profiledata" element={<ViewUserProfile />}>

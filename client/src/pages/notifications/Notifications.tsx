@@ -32,7 +32,7 @@ const Notifications = ({ isOpen, onClose }: NotificationsProps) => {
     (state) => state.notifications.notifications
   );
 
-  console.log("notifications", notifications);
+  // console.log("notifications", notifications);
 
   useEffect(() => {
     let isMounted = true;
@@ -53,7 +53,6 @@ const Notifications = ({ isOpen, onClose }: NotificationsProps) => {
         if (data.status === "error" || data.status === "fail") {
           throw new Error(data.message);
         }
-        console.log(data);
 
         if (isMounted) {
           dispatch(setNotifications(data));
@@ -118,12 +117,17 @@ const Notifications = ({ isOpen, onClose }: NotificationsProps) => {
                   <Box>
                     <Avatar
                       crossOrigin="anonymous"
-                      src={`http://localhost:8000/uploads/profilePic/${notification.user.profilePic}`}
+                      name={notification.user.username}
+                      src={
+                        notification.user.profilePic !== null
+                          ? `http://localhost:8000/uploads/profilePic/${notification.user.profilePic}`
+                          : undefined
+                      }
                     />
                   </Box>
                   <Box display={"flex"} flexDirection={"row"} ml={"12px"}>
-                    <Text fontWeight={notification.isRead ? "normal" : "bold"}>
-                      {notification.user.username} {notification.message}.{" "}
+                    <Text fontWeight={notification.isRead ? "normal" : "500"}>
+                      {notification.message}.{" "}
                       {formatCreatedAtTime(notification.createdAt)}
                     </Text>
                   </Box>
@@ -141,7 +145,7 @@ const Notifications = ({ isOpen, onClose }: NotificationsProps) => {
             ) : (
               <>
                 <Text textAlign={"center"}>Activity On Your Posts</Text>
-                <Text>
+                <Text mt={"60px"}>
                   When someone likes or comments on one of your posts, you'll
                   see it here.
                 </Text>
