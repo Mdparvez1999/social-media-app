@@ -22,7 +22,15 @@ const MessageContainer = () => {
           >
             <Box>
               <Box display={"flex"} gap={"14px"} alignItems={"center"}>
-                <Avatar />
+                <Avatar
+                  name={selectedConversation?.participants[0].userName}
+                  src={
+                    selectedConversation?.participants[0].profilePic !== null
+                      ? `http://localhost:8000/uploads/profliePic/${selectedConversation?.participants[0].profilePic}`
+                      : undefined
+                  }
+                  crossOrigin="anonymous"
+                />
                 <Text fontSize={"1.2rem"} fontWeight={"500"}>
                   {selectedConversation?.participants[0].userName}
                 </Text>

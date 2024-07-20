@@ -22,12 +22,11 @@ const Conversations = () => {
           credentials: "include",
         });
 
-        const { data } = await response.json();
+        const data = await response.json();
 
-        if (data.status === "error" || data.status === "fail")
-          throw new Error(data.message);
+        if (data.status === "error" || data.status === "fail") return;
 
-        dispatch(setConversations(data));
+        dispatch(setConversations(data.data));
       } catch (error) {
         if (error instanceof Error) toast.error(error.message);
         else toast.error("Something went wrong");
@@ -67,7 +66,11 @@ const Conversations = () => {
             <Avatar
               size={"md"}
               name={conversation.participants[0]?.userName}
-              src={`/https://localhost:8000/uploads/profliePic/${conversation.participants[0]?.profilePic}`}
+              src={
+                conversation.participants[0]?.profilePic !== null
+                  ? `https://localhost:8000/uploads/profliePic/${conversation.participants[0]?.profilePic}`
+                  : undefined
+              }
               crossOrigin="anonymous"
             />
             <Text fontSize={"1.2rem"}>

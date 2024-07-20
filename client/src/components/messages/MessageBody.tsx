@@ -34,7 +34,7 @@ const MessageBody = () => {
           new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
       )
       .map((message) => {
-        const isSentByCurrentUser = message.sender.id === currentUser?.id;
+        const isSentByCurrentUser = message?.sender.id === currentUser?.id;
 
         return {
           position: isSentByCurrentUser ? "right" : "left",
@@ -50,7 +50,7 @@ const MessageBody = () => {
           removeButton: false,
           retracted: false,
           reply: null,
-          status: "received",
+          status: "sent",
           notch: false,
         };
       });

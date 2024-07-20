@@ -29,12 +29,12 @@ const useSendMessage = () => {
         }
       );
 
-      const data = await response.json();
+      const { data } = await response.json();
 
       if (data.status === "error" || data.status === "fail")
         throw new Error(data.message);
 
-      dispatch(setMessages([...messages, data.data]));
+      dispatch(setMessages([...messages, data.message]));
     } catch (error) {
       if (error instanceof Error) toast.error(error.message);
     } finally {

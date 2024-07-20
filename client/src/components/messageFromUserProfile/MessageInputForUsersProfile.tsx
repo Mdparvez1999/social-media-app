@@ -45,7 +45,7 @@ const MessageInputForUsersProfile = () => {
         dispatch(addConversation(data.conversation));
         dispatch(setSelectedConversation(data.conversation));
       }
-      
+
       setMessage("");
     } catch (error) {
       if (error instanceof Error) toast.error(error.message);

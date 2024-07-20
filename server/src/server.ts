@@ -19,30 +19,19 @@ interface OnlineUsersState {
 
 const onlineUsersMap: OnlineUsersState = {};
 
-console.log("Initial onlineUsersMap:", onlineUsersMap);
-
 export const checkIsOnline = (receiverId: string) => {
   return onlineUsersMap[receiverId];
 };
 
 io.on("connection", (socket) => {
-  console.log("Client connected with socket id:", socket.id);
-
   const userId = socket.handshake.query.userId as string;
 
-  console.log("User ID from handshake query:", userId);
-
-  if (!userId) {
-    console.log("No userId provided in handshake query");
-    return;
-  }
+  if (!userId) return;
 
   onlineUsersMap[userId] = socket.id;
-  console.log("Updated onlineUsersMap:", onlineUsersMap);
 
   socket.on("disconnect", () => {
     delete onlineUsersMap[userId];
-    console.log(`Client disconnected. Updated onlineUsersMap:`, onlineUsersMap);
   });
 });
 
