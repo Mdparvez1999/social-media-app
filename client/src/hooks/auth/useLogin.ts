@@ -35,8 +35,6 @@ const useLogin = () => {
         throw new Error(data.message);
       }
 
-      console.log("data in useLogin", data);
-
       dispatch(setCurrentUser(data.user));
 
       toast.success(data.message);

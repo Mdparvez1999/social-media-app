@@ -44,7 +44,7 @@ export class FollowController {
         await this.followRequestRepository.save(followRequest);
 
         const type = "followRequest";
-        const message = `sent you a request`;
+        const message = `${reqSenderUser?.userName} sent you a request`;
 
         await NotificationUtils.createNotification(type, message, recieverId);
 
@@ -64,7 +64,7 @@ export class FollowController {
       await this.followerRepository.save(follower);
 
       const type = "follow";
-      const message = `followed you`;
+      const message = `${reqSenderUser?.userName} followed you`;
       await NotificationUtils.createNotification(type, message, recieverId);
 
       return res.status(200).json({
@@ -119,7 +119,7 @@ export class FollowController {
       });
 
       const type = "follow";
-      const message = `accepted your request`;
+      const message = `${user?.userName} accepted your request`;
       await NotificationUtils.createNotification(
         type,
         message,

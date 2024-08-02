@@ -28,7 +28,7 @@ const commentSlice = createSlice({
       state.comments = action.payload;
     },
     addComment: (state, ation) => {
-      state.comments = [...state.comments, ation.payload];
+      state.comments = [ation.payload, ...state.comments];
     },
   },
 });

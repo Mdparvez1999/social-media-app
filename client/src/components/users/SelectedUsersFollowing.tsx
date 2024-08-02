@@ -29,7 +29,7 @@ const SelectedUsersFollowing = ({
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
-      <ModalContent maxWidth={"390px"}>
+      <ModalContent maxWidth={{ xs: "95vw", md: "390px" }}>
         <ModalCloseButton />
         <ModalHeader>
           <Text textAlign={"center"}>Following</Text>
@@ -51,10 +51,14 @@ const SelectedUsersFollowing = ({
                 >
                   <Box display={"flex"} gap={"10px"} alignItems={"center"}>
                     <Avatar
-                      src={`http://localhost:8000/uploads/profilePic/${follower.profilePic}`}
                       size={"md"}
-                      name={follower.username}
                       crossOrigin="anonymous"
+                      src={
+                        follower.profilePic
+                          ? `http://localhost:8000/uploads/profilePic/${follower.profilePic}`
+                          : undefined
+                      }
+                      name={follower.username}
                     />
                     <Box mb={"8px"}>
                       <Text fontWeight={"bold"} fontSize={"1.3rem"}>
@@ -65,7 +69,7 @@ const SelectedUsersFollowing = ({
                       )}
                     </Box>
                   </Box>
-                  <Button>Remove</Button>
+                  <Button>unfollow</Button>
                 </Box>
               ))
             ) : (

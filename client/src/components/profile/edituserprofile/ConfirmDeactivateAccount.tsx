@@ -58,7 +58,7 @@ const ConfirmDeactivateAccount = () => {
         onClose={onClose}
       >
         <AlertDialogOverlay>
-          <AlertDialogContent>
+          <AlertDialogContent maxWidth={{ xs: "350px", md: "100%" }}>
             <AlertDialogHeader>Deactivate account</AlertDialogHeader>
             <AlertDialogCloseButton />
             <AlertDialogBody>
@@ -68,6 +68,9 @@ const ConfirmDeactivateAccount = () => {
             </AlertDialogBody>
             <AlertDialogFooter>
               <Button onClick={handleDeactivate}>Deactivate</Button>
+              <Button onClick={onClose} ml={"16px"}>
+                Cancel
+              </Button>
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialogOverlay>

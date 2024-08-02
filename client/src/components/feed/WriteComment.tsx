@@ -6,11 +6,9 @@ import { addCommentToFeedPost } from "../../redux-store/features/feed/feedSlice"
 
 const WriteComment = () => {
   const dispatch = useAppDispatch();
-
   const post = useAppSelector((state) => state.feed.singlePost);
 
   const [comment, setComment] = useState<string>("");
-
   const [loading, setLoading] = useState<boolean>(false);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -36,22 +34,23 @@ const WriteComment = () => {
 
       const { data } = await response.json();
 
+      // Dispatch action to add the new comment to the Redux state
       dispatch(addCommentToFeedPost(data));
+
+      setComment(""); // Clear the input field
     } catch (error) {
-      console.log(error);
       if (error instanceof Error) toast.error(error.message);
       else toast.error("Something went wrong");
     } finally {
       setLoading(false);
-      setComment("");
     }
   };
 
   return (
     <Box width={"100%"} display={"flex"} justifyContent={"space-between"}>
       <Input
-        width={"80%"}
-        placeholder="write a comment"
+        width={{ xs: "75%", md: "80%" }}
+        placeholder="Write a comment"
         name="comment"
         borderRadius={"10px"}
         onChange={handleChange}
@@ -62,7 +61,7 @@ const WriteComment = () => {
         onClick={handleWriteComment}
         isLoading={loading}
       >
-        write
+        Write
       </Button>
     </Box>
   );

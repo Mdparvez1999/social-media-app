@@ -20,21 +20,19 @@ const MessageContainer = () => {
             alignItems={"center"}
             p={"10px 20px"}
           >
-            <Box>
-              <Box display={"flex"} gap={"14px"} alignItems={"center"}>
-                <Avatar
-                  name={selectedConversation?.participants[0].userName}
-                  src={
-                    selectedConversation?.participants[0].profilePic !== null
-                      ? `http://localhost:8000/uploads/profliePic/${selectedConversation?.participants[0].profilePic}`
-                      : undefined
-                  }
-                  crossOrigin="anonymous"
-                />
-                <Text fontSize={"1.2rem"} fontWeight={"500"}>
-                  {selectedConversation?.participants[0].userName}
-                </Text>
-              </Box>
+            <Box display={"flex"} gap={"14px"} alignItems={"center"}>
+              <Avatar
+                name={selectedConversation?.participants[0].userName}
+                src={
+                  selectedConversation?.participants[0].profilePic !== null
+                    ? `http://localhost:8000/uploads/profliePic/${selectedConversation?.participants[0].profilePic}`
+                    : undefined
+                }
+                crossOrigin="anonymous"
+              />
+              <Text fontSize={"1.2rem"} fontWeight={"500"}>
+                {selectedConversation?.participants[0].userName}
+              </Text>
             </Box>
             <Box
               display={"flex"}

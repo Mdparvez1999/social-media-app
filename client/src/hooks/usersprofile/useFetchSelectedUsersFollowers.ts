@@ -1,10 +1,7 @@
 import { toast } from "react-toastify";
-import { setSelectedUsersFollowers } from "../../redux-store/features/users/userSlice";
-import { useAppDispatch, useAppSelector } from "../hooks";
+import { useAppSelector } from "../hooks";
 
 const UseFetchSelectedUsersFollowers = () => {
-  const dispatch = useAppDispatch();
-
   const selectedUser = useAppSelector((state) => state.users.selectedUser);
   const fetchSelectedUsersFollowers = async () => {
     if (!selectedUser) return;
@@ -18,7 +15,7 @@ const UseFetchSelectedUsersFollowers = () => {
 
       const { data } = await response.json();
 
-      dispatch(setSelectedUsersFollowers(data));
+      return data;
     } catch (error) {
       if (error instanceof Error) toast.error(error.message);
       else toast.error("Something went wrong");

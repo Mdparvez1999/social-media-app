@@ -11,15 +11,15 @@ const AdvancedAccountSettings = () => {
         display={"flex"}
         flexDirection={"column"}
         height={"100%"}
-        gap={"35px"}
-        p={"25px 20px 0px 40px"}
+        gap={{ xs: "30px", md: "35px" }}
+        p={{ xs: "25px", md: "25px 20px 0px 40px" }}
       >
         <Heading fontSize={"1.5rem"} fontWeight={"500"}>
           Advanced settings
         </Heading>
 
         <Box
-          width={"85%"}
+          width={{ md: "85%" }}
           display={"flex"}
           justifyContent={"space-between"}
           alignItems={"center"}
@@ -35,7 +35,7 @@ const AdvancedAccountSettings = () => {
         </Box>
 
         <Box
-          width={"85%"}
+          width={{ md: "85%" }}
           display={"flex"}
           justifyContent={"space-between"}
           alignItems={"center"}

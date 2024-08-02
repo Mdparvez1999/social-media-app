@@ -18,7 +18,7 @@ const ProfileDetails = () => {
   const followersDisclosure = useDisclosure();
 
   const followingUsersDisclosure = useDisclosure();
-  
+
   const navigate = useNavigate();
 
   return (

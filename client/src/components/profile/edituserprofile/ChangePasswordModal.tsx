@@ -59,7 +59,7 @@ const ChangePasswordModal = ({ isOpen, onClose }: ChangePasswordModalProps) => {
     <>
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
-        <ModalContent>
+        <ModalContent maxWidth={{ xs: "350px", md: "100%" }}>
           <ModalHeader textAlign={"center"}>Change Password</ModalHeader>
           <ModalCloseButton />
           <ModalBody>

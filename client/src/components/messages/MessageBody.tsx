@@ -64,7 +64,7 @@ const MessageBody = () => {
 
   return (
     <Box
-      p={4}
+      p={{ xs: "0px", md: 4 }}
       overflowY="auto"
       height="calc(100vh - 130px)"
       display="flex"

@@ -6,6 +6,7 @@ import {
   AlertDialogHeader,
   AlertDialogOverlay,
   Button,
+  Divider,
   Switch,
   useDisclosure,
 } from "@chakra-ui/react";
@@ -43,21 +44,25 @@ const PrivacySettingConfirm = () => {
         leastDestructiveRef={cancelref}
       >
         <AlertDialogOverlay>
-          <AlertDialogContent>
+          <AlertDialogContent maxWidth={{ xs: "350px", md: "100%" }}>
             <AlertDialogHeader
               fontSize="lg"
               fontWeight="bold"
               textAlign={"center"}
             >
-              {profile?.isPrivate ? "Make public" : "Make private"}
+              {profile?.isPrivate ? "switch to public?" : "switch to private?"}
             </AlertDialogHeader>
-            <AlertDialogBody>
+            <Divider />
+            <AlertDialogBody fontSize={"1.1rem"} fontWeight={"500"}>
               {profile?.isPrivate
                 ? "Your profile is currently private. Only approved followers can see your posts. Do you want to make your profile public?"
                 : "Your profile is currently public. Anyone can see your posts. Do you want to make your profile private?"}
             </AlertDialogBody>
             <AlertDialogFooter>
               <Button onClick={handlePrivacyClick}>confirm</Button>
+              <Button onClick={onClose} ref={cancelref} ml={"16px"}>
+                cancel
+              </Button>
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialogOverlay>

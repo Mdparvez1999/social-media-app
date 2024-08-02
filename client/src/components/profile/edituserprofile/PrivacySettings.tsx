@@ -10,15 +10,15 @@ const PrivacySettings = () => {
         display={"flex"}
         flexDirection={"column"}
         height={"100%"}
-        gap={"35px"}
-        p={"25px 20px 0px 40px"}
+        gap={{ xs: "25px", md: "35px" }}
+        p={{ xs: "25px", md: "25px 20px 0px 40px" }}
       >
         <Heading fontSize={"1.5rem"} fontWeight={"500"}>
           Account privacy
         </Heading>
 
         <Box
-          width={"85%"}
+          width={{ md: "85%" }}
           display={"flex"}
           justifyContent={"space-between"}
           alignItems={"center"}

@@ -32,7 +32,12 @@ const Feed = () => {
   const handleViewUserProfile = async (userId: string) => {
     setLoading(true);
     try {
-      navigate(`/app/usersprofile/${userId}`);
+      const isMobile = window.matchMedia("(max-width:768px)").matches;
+      if (isMobile) {
+        navigate(`/app/selectedUserProfile/${userId}`);
+      } else {
+        navigate(`/app/usersprofile/${userId}`);
+      }
     } catch (error) {
       if (error instanceof Error) toast.error(error.message);
       else toast.error("Something went wrong");
@@ -69,7 +74,11 @@ const Feed = () => {
                   onClick={() => handleViewUserProfile(post.user.id)}
                 >
                   <Avatar
-                    src={`http://localhost:8000/uploads/profilePic/${post.user.profilePic}`}
+                    src={
+                      post.user.profilePic !== null
+                        ? `http://localhost:8000/uploads/profilePic/${post.user.profilePic}`
+                        : undefined
+                    }
                     name={post.user.userName}
                     crossOrigin="anonymous"
                   />

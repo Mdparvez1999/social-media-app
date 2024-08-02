@@ -146,7 +146,7 @@ export class PostControllers {
 
       const allPosts = await this.postRepository.find({
         where: { user: { id: userId } },
-        relations: { files: true },
+        relations: { files: true, user: true },
       });
 
       if (!allPosts || allPosts.length === 0) {
@@ -161,6 +161,11 @@ export class PostControllers {
         return {
           ...post,
           files: post.files.map((file) => file.fileName),
+          user: {
+            id: post.user.id,
+            userName: post.user.userName,
+            profilePic: post.user.profilePic,
+          },
         };
       });
 
@@ -171,13 +176,14 @@ export class PostControllers {
       });
     }
   );
+
   public getAllPostsByUserId = asyncHandler(
     async (req: Request, res: Response, next: NextFunction) => {
       const userId: string = req.params.id;
 
       const allPosts = await this.postRepository.find({
         where: { user: { id: userId } },
-        relations: { files: true },
+        relations: { files: true, user: true },
       });
 
       if (!allPosts || allPosts.length === 0) {
@@ -192,9 +198,14 @@ export class PostControllers {
         return {
           ...post,
           files: post.files.map((file) => file.fileName),
+          user: {
+            id: post.user.id,
+            userName: post.user.userName,
+            profilePic: post.user.profilePic,
+          },
         };
       });
-
+      
       return res.status(200).json({
         success: true,
         message: "Posts fetched successfully",
@@ -276,7 +287,7 @@ export class PostControllers {
       await this.postRepository.save(post);
 
       const type = "like";
-      const message = `liked your post`;
+      const message = `${user.userName} liked your post`;
       await NotificationUtils.createNotification(type, message, post.user.id);
 
       return res.status(200).json({

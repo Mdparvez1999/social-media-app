@@ -1,7 +1,7 @@
 import { Avatar, Box, Divider, Text } from "@chakra-ui/react";
-import Comments from "../profile/Comments";
-import LikePost from "../profile/LikePost";
-import AddComment from "../profile/AddComment";
+import Comments from "../posts/Comments";
+import LikePost from "../posts/LikePost";
+import AddComment from "../posts/AddComment";
 import { useAppSelector } from "../../hooks/hooks";
 
 const SelectedUsersPostDetails = () => {

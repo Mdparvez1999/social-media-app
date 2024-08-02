@@ -64,6 +64,9 @@ const messageSlice = createSlice({
     setMessages: (state, action: PayloadAction<EachMessageState[]>) => {
       state.messages = action.payload;
     },
+    clearConversation: (state) => {
+      state.selectedConversation = null;
+    },
   },
 });
 
@@ -72,6 +75,7 @@ export const {
   addConversation,
   setSelectedConversation,
   setMessages,
+  clearConversation,
 } = messageSlice.actions;
 
 export default messageSlice.reducer;

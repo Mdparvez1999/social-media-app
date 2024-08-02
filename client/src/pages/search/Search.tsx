@@ -114,8 +114,14 @@ const Search = ({ isOpen, onClose }: SearchProps) => {
                     >
                       <Avatar
                         crossOrigin="anonymous"
-                        src={`http://localhost:8000/uploads/profilePic/${user.profilePic}`}
+                        src={
+                          user.profilePic
+                            ? `http://localhost:8000/uploads/profilePic/${user.profilePic}`
+                            : undefined
+                        }
+                        name={user.userName}
                       />
+
                       <Text fontSize={"1.1rem"} fontWeight={"500"}>
                         {user.userName}
                       </Text>

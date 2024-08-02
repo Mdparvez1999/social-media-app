@@ -24,8 +24,8 @@ const PostOptions = () => {
     try {
       await deletePost(post?.id);
       setTimeout(() => {
-        window.location.assign("/app/profile");
-      }, 2000);
+        window.location.replace("/app/profile");
+      }, 2500);
     } catch (error) {
       toast.error("Something went wrong");
     }

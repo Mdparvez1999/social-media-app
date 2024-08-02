@@ -53,10 +53,10 @@ const EditProfilePic = () => {
     <>
       <Box
         border={"1px solid #f2f2f2"}
-        width={"90%"}
+        width={{ xs: "92%", md: "90%" }}
         borderRadius={"10px"}
         boxShadow={"4px 4px 6px #ccc"}
-        p={"10px 20px"}
+        p={{ xs: "10px 8px ", md: "10px 20px" }}
         display={"flex"}
         justifyContent={"space-between"}
         alignItems={"center"}
@@ -65,10 +65,15 @@ const EditProfilePic = () => {
           <Avatar
             size={"md"}
             crossOrigin="anonymous"
-            src={`http://localhost:8000/uploads/profilePic/${profile?.profilePic}`}
+            src={
+              profile?.profilePic
+                ? `http://localhost:8000/uploads/profilePic/${profile?.profilePic}`
+                : undefined
+            }
+            name={profile?.userName}
           />
           <Heading fontSize={"1.2rem"} fontWeight={"500"}>
-            username
+            {profile?.userName}
           </Heading>
         </Box>
         <Box>

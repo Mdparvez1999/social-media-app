@@ -19,7 +19,7 @@ const useFollowUser = () => {
       dispatch(addSelectedUsersFollower(data.follower));
       dispatch(addFollowing(data.following));
 
-      window.location.reload();
+      // window.location.reload();
     } catch (error) {
       if (error instanceof Error) toast.error(error.message);
       else toast.error("Something went wrong");

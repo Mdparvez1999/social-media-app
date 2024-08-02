@@ -24,12 +24,13 @@ const FeedPostCommentsModal = ({ isOpen, onClose }: PostCommentsPropsType) => {
   const post = useAppSelector((state) => state.feed.singlePost);
 
   if (!comments) return null;
+
   if (!post) return null;
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
-      <ModalContent>
+      <ModalContent maxWidth={{ xs: "95vw", md: "100%" }}>
         <ModalCloseButton />
         <ModalHeader>
           <Text textAlign={"center"}>Comments</Text>

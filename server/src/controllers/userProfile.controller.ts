@@ -13,6 +13,7 @@ import {
 } from "../validation/userProfile.validation";
 import { comparePassword, hashPassword } from "../helpers/auth.helper";
 import { AppError } from "../utils/AppError";
+import { Not } from "typeorm";
 
 interface updateProfileRequest extends Request {
   body: {
@@ -40,13 +41,7 @@ export class UserProfileController {
         where: {
           id: userId,
         },
-        relations: [
-          "posts",
-          "comments",
-          "followers",
-          "following",
-          // "notifications",
-        ],
+        relations: ["posts", "comments", "followers", "following"],
       });
 
       if (!user) {
@@ -418,6 +413,40 @@ export class UserProfileController {
       res.status(200).json({
         success: true,
         message: "account reactivated successfully",
+      });
+    }
+  );
+
+  public suggestedUsers = asyncHandler(
+    async (req: Request, res: Response, next: NextFunction) => {
+      const currentUserId = res.locals.user.id;
+
+      const suggestedUsers = await this.userRepsitory.find({
+        where: {
+          id: Not(currentUserId),
+          isActive: true,
+        },
+        take: 10,
+      });
+
+      if (!suggestedUsers || suggestedUsers.length === 0) {
+        return res.status(200).json({
+          status: true,
+          data: [],
+        });
+      }
+
+      const usersData = suggestedUsers.map((user) => {
+        return {
+          id: user.id,
+          userName: user.userName,
+          profilePic: user.profilePic,
+        };
+      });
+
+      return res.status(200).json({
+        status: true,
+        data: usersData,
       });
     }
   );

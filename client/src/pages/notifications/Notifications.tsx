@@ -32,8 +32,6 @@ const Notifications = ({ isOpen, onClose }: NotificationsProps) => {
     (state) => state.notifications.notifications
   );
 
-  // console.log("notifications", notifications);
-
   useEffect(() => {
     let isMounted = true;
 

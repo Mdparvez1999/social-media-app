@@ -45,25 +45,30 @@ const Signup = () => {
   return (
     <Box
       border="1px solid #f2f2f2"
-      width={"390px"}
-      margin={"50px auto"}
+      width={{ sm: "350px", md: "390px" }}
+      margin={{ sm: "50px auto" }}
       borderRadius={"10px"}
       boxShadow={"4px 4px 6px #ccc"}
     >
-      <Box as="h1" textAlign={"center"} mt={"14px"} fontSize={"1.2rem"}>
+      <Text
+        as="h1"
+        textAlign={"center"}
+        mt={"14px"}
+        fontSize={{ sm: "1rem", md: "1.2rem" }}
+      >
         Signup
-      </Box>
+      </Text>
       <form className="signup-form">
         <Box padding={"10px"} margin={"2px 20px 2px 20px"}>
-          <Text>User Name</Text>
+          <Text fontSize={{ sm: "0.9rem", md: "1rem" }}>User Name</Text>
           <Input borderRadius="50px" name="userName" onChange={handleChange} />
         </Box>
         <Box padding={"10px"} margin={"2px 20px 2px 20px"}>
-          <Text>Email</Text>
+          <Text fontSize={{ sm: "0.9rem", md: "1rem" }}>Email</Text>
           <Input borderRadius="50px" name="email" onChange={handleChange} />
         </Box>
         <Box padding={"10px"} margin={"2px 20px 2px 20px"}>
-          <Text>Password</Text>
+          <Text fontSize={{ sm: "0.9rem", md: "1rem" }}>Password</Text>
           <Input
             type="password"
             borderRadius="50px"
@@ -75,7 +80,7 @@ const Signup = () => {
           <Button
             width="100%"
             borderRadius="30px"
-            fontSize="1.03rem"
+            fontSize={{ sm: "1rem", md: "1.1rem" }}
             onClick={handleSubmit}
             isLoading={loading}
           >
@@ -84,7 +89,7 @@ const Signup = () => {
         </Box>
       </form>
       <Box textAlign={"center"}>
-        <Box as="span">
+        <Box as="span" fontSize={{ sm: "0.9rem", md: "1rem" }}>
           Already have an account?{" "}
           <ChakraLink
             as={Link}
@@ -107,7 +112,7 @@ const Signup = () => {
           leftIcon={<FcGoogle />}
           width="100%"
           borderRadius="50px"
-          fontSize="1.02rem"
+          fontSize={{ sm: "1rem", md: "1.1rem" }}
         >
           Continue with Google
         </Button>

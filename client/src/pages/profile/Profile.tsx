@@ -1,8 +1,11 @@
-import { Box, Divider } from "@chakra-ui/react";
+import { Box, Divider, useBreakpointValue } from "@chakra-ui/react";
 import ProfileDetails from "../../components/profile/ProfileDetails";
-import ProfilePosts from "../../components/profile/ProfilePosts";
+import ProfilePosts from "../../components/posts/ProfilePosts";
+import MobileProfileDetails from "../../components/mobileComponents/MobileProfile/MobileProfileDetails";
+import ProfilePostsMobile from "../../components/mobileComponents/MobileProfile/ProfilePostsMobile";
 
 const Profile = () => {
+  const isMobile = useBreakpointValue({ xs: true, md: false });
   return (
     <Box
       width={"100%"}
@@ -10,9 +13,19 @@ const Profile = () => {
       flexDirection={"column"}
       height={"100%"}
     >
-      <ProfileDetails />
-      <Divider />
-      <ProfilePosts />
+      {isMobile ? (
+        <>
+          <MobileProfileDetails />
+          <Divider />
+          <ProfilePostsMobile />
+        </>
+      ) : (
+        <>
+          <ProfileDetails />
+          <Divider />
+          <ProfilePosts />
+        </>
+      )}
     </Box>
   );
 };

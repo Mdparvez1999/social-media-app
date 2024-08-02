@@ -38,12 +38,16 @@ const EditDOB = () => {
   };
   return (
     <>
-      <Box width={"90%"}>
+      <Box width={{ xs: "92%", md: "90%" }}>
         <Text fontSize={"1.2rem"} fontWeight={"500"}>
           DOB
         </Text>
         <Box width="100%" display={"flex"} justifyContent={"space-between"}>
-          <Input type="date" width={"85%"} onChange={handleChange} />
+          <Input
+            type="date"
+            width={{ xs: "70%", md: "85%" }}
+            onChange={handleChange}
+          />
           <Button onClick={handleUpdateDOB}>Submit</Button>
         </Box>
       </Box>

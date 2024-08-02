@@ -7,6 +7,7 @@ import notificationsReducer from "./features/notifications/notificationsSlice";
 import usersReducer from "./features/users/userSlice";
 import feedReducer from "./features/feed/feedSlice";
 import messagesReducer from "./features/messages/messagesSlice";
+import suggestedUsersReducer from "./features/suggestedUsers/suggestedUsersSlice";
 
 const store = configureStore({
   reducer: {
@@ -18,6 +19,7 @@ const store = configureStore({
     users: usersReducer,
     feed: feedReducer,
     messages: messagesReducer,
+    suggestedUsers: suggestedUsersReducer,
   },
 });
 

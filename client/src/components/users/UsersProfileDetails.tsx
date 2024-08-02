@@ -23,7 +23,6 @@ import useUnfollowUser from "../../hooks/usersprofile/useUnfollowUser";
 import SelectedUsersFollowers from "./SelectedUsersFollowers";
 import SelectedUsersFollowing from "./SelectedUsersFollowing";
 import { setSelectedConversation } from "../../redux-store/features/messages/messagesSlice";
-// import { setSelectedConversation } from "../../redux-store/features/messages/messagesSlice";
 
 const UsersProfileDetails = () => {
   const dispatch = useDispatch();
@@ -75,12 +74,10 @@ const UsersProfileDetails = () => {
   const { unfollowUser } = useUnfollowUser();
 
   const followOrUnfollowUserClick = async () => {
-    if (!selectedUserData) {
-      toast.error("User data not found");
-      return;
-    }
+    if (!selectedUserData) return;
 
     setLoading(true);
+
     try {
       if (followedUser) {
         await unfollowUser(selectedUserData?.id);
@@ -127,24 +124,16 @@ const UsersProfileDetails = () => {
           margin={"15px"}
         >
           <WrapItem>
-            {selectedUserData?.profilePic ? (
-              <Avatar
-                size={"2xl"}
-                crossOrigin="anonymous"
-                name={selectedUserData?.userName}
-              />
-            ) : (
-              <Avatar
-                size={"2xl"}
-                crossOrigin="anonymous"
-                name={selectedUserData?.userName}
-                src={
-                  selectedUserData?.profilePic
-                    ? `http://localhost:8000/uploads/profilePic/${selectedUserData?.profilePic}`
-                    : undefined
-                }
-              />
-            )}
+            <Avatar
+              size={"2xl"}
+              crossOrigin="anonymous"
+              src={
+                selectedUserData?.profilePic
+                  ? `http://localhost:8000/uploads/profilePic/${selectedUserData?.profilePic}`
+                  : undefined
+              }
+              name={selectedUserData?.userName}
+            />
           </WrapItem>
         </Box>
         <Box

@@ -40,4 +40,6 @@ router.patch("/reactivate", auth, userProfileController.reActivateProfile);
 
 router.delete("/", auth, userProfileController.deleteProfile);
 
+router.get("/suggested-users", auth, userProfileController.suggestedUsers);
+
 export default router;

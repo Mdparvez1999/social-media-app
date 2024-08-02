@@ -42,12 +42,16 @@ const EditGender = () => {
   };
   return (
     <>
-      <Box width={"90%"}>
+      <Box width={{ xs: "92%", md: "90%" }}>
         <Text fontSize={"1.2rem"} fontWeight={"500"}>
           Gender
         </Text>
         <Box width="100%" display={"flex"} justifyContent={"space-between"}>
-          <Select width={"85%"} value={gender} onChange={handleChange}>
+          <Select
+            width={{ xs: "70%", md: "85%" }}
+            value={gender}
+            onChange={handleChange}
+          >
             <option value="male">Male</option>
             <option value="female">Female</option>
             <option value="other">Other</option>

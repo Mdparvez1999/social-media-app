@@ -18,6 +18,7 @@ import { FiMinusCircle } from "react-icons/fi";
 import { ChangeEvent, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import useCreatePost from "../../hooks/post/useCreatePost";
+import { useLocation, useNavigate } from "react-router-dom";
 
 interface createPostProps {
   isOpen: boolean;
@@ -58,6 +59,10 @@ const CreatePost = ({ isOpen, onClose }: createPostProps) => {
 
   const { loading, createPost } = useCreatePost();
 
+  const navigate = useNavigate();
+
+  const location = useLocation();
+
   const handlePost = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -72,7 +77,11 @@ const CreatePost = ({ isOpen, onClose }: createPostProps) => {
       setPreviewFiles([]);
       onClose();
       setTimeout(() => {
-        window.location.assign("/app/profile");
+        if (location.pathname !== "/app/profile") {
+          navigate("/app/profile");
+        } else {
+          window.location.assign("/app/profile");
+        }
       }, 2000);
     } catch (error) {
       toast.error("Something went wrong");
@@ -88,7 +97,7 @@ const CreatePost = ({ isOpen, onClose }: createPostProps) => {
     <>
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
-        <ModalContent>
+        <ModalContent maxWidth={{ xs: "360px", md: "450px" }}>
           <ModalHeader textAlign={"center"}>Create new post</ModalHeader>
           <ModalCloseButton />
           <Divider />

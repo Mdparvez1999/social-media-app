@@ -45,7 +45,7 @@ const ViewFollowingUsersModal = ({
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
-      <ModalContent maxWidth={"390px"}>
+      <ModalContent maxWidth={{ xs: "92vw", md: "390px" }}>
         <ModalCloseButton />
         <ModalHeader>
           <Text textAlign={"center"}>Followers</Text>
@@ -67,10 +67,14 @@ const ViewFollowingUsersModal = ({
                 >
                   <Box display={"flex"} gap={"10px"} alignItems={"center"}>
                     <Avatar
-                      src={`http://localhost:8000/uploads/profilePic/${followinguser.profilePic}`}
                       size={"md"}
-                      name={followinguser.username}
                       crossOrigin="anonymous"
+                      src={
+                        followinguser.profilePic
+                          ? `http://localhost:8000/uploads/profilePic/${followinguser.profilePic}`
+                          : undefined
+                      }
+                      name={followinguser.username}
                     />
                     <Box mb={"8px"}>
                       <Text fontWeight={"bold"} fontSize={"1.3rem"}>

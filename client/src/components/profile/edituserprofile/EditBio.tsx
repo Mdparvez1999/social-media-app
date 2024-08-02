@@ -38,13 +38,13 @@ const EditBio = () => {
   };
   return (
     <>
-      <Box width={"90%"}>
+      <Box width={{ xs: "92%", md: "90%" }}>
         <Text fontSize={"1.2rem"} fontWeight={"500"}>
           Bio
         </Text>
         <Box width="100%" display={"flex"} justifyContent={"space-between"}>
           <Input
-            width={"85%"}
+            width={{ xs: "70%", md: "85%" }}
             defaultValue={profile?.bio === null ? "add bio" : profile?.bio}
             onChange={handleChange}
           />
