@@ -1,3 +1,4 @@
+import React, { useEffect, useRef, useState, useCallback } from "react";
 import {
   Avatar,
   Box,
@@ -9,7 +10,6 @@ import {
 import { useDispatch } from "react-redux";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import useFetchUsersProfile from "../../../hooks/usersprofile/useFetchUsersProfile";
-import { useEffect, useRef, useState } from "react";
 import {
   clearSelecetedUsersData,
   setSelectedUser,
@@ -20,17 +20,31 @@ import useFollowUser from "../../../hooks/usersprofile/useFollowUser";
 import useUnfollowUser from "../../../hooks/usersprofile/useUnfollowUser";
 import SelectedUsersFollowers from "../../../components/users/SelectedUsersFollowers";
 import SelectedUsersFollowing from "../../../components/users/SelectedUsersFollowing";
+import { IoArrowBack } from "react-icons/io5";
+import { setProfile } from "../../../redux-store/features/profile/profileSlice";
+import useFetchCurrentUsersProfile from "../../../hooks/profile/useFetchCurrentUsersProfile";
 
-const SelectedUsersProfileDetailsInMobile = () => {
+const SelectedUsersProfileDetailsInMobile = React.memo(() => {
   const dispatch = useDispatch();
-
   const { userId } = useParams<{ userId: string }>();
-
   const { fetchUsersProfile } = useFetchUsersProfile();
 
   if (!userId) throw new Error("Something went wrong");
 
   const hasFetchedData = useRef(false);
+  const selectedUserData = useAppSelector((state) => state.users.selectedUser);
+
+  const currentUsersFollowing = useAppSelector(
+    (state) => state.profile.following
+  );
+
+  const followersDisclosure = useDisclosure();
+  const followingUsersDisclosure = useDisclosure();
+
+  const [loading, setLoading] = useState(false);
+
+  const { followUser } = useFollowUser();
+  const { unfollowUser } = useUnfollowUser();
 
   useEffect(() => {
     const fetchSelectedUsersData = async () => {
@@ -50,51 +64,59 @@ const SelectedUsersProfileDetailsInMobile = () => {
     }
   }, [userId, dispatch, fetchUsersProfile]);
 
-  const selectedUserData = useAppSelector((state) => state.users.selectedUser);
-
-  const currentUsersFollowing = useAppSelector(
-    (state) => state.profile.following
+  const [isFollowing, setIsFollowing] = useState(
+    currentUsersFollowing?.some((user) => user?.id === selectedUserData?.id)
   );
 
-  const followedUser = currentUsersFollowing?.find(
-    (user) => user.id === selectedUserData?.id
-  );
+  useEffect(() => {
+    setIsFollowing(
+      currentUsersFollowing?.some((user) => user?.id === selectedUserData?.id)
+    );
+  }, [currentUsersFollowing, selectedUserData]);
 
-  const followersDisclosure = useDisclosure();
+  const { fetchCurrentUserProfile } = useFetchCurrentUsersProfile();
 
-  const followingUsersDisclosure = useDisclosure();
-
-  const [loading, setLoading] = useState(false);
-
-  const { followUser } = useFollowUser();
-
-  const { unfollowUser } = useUnfollowUser();
-
-  const followOrUnfollowUserClick = async () => {
+  const followOrUnfollowUserClick = useCallback(async () => {
     if (!selectedUserData) return;
 
     setLoading(true);
 
     try {
-      if (followedUser) {
+      if (isFollowing) {
         await unfollowUser(selectedUserData?.id);
       } else {
         await followUser(selectedUserData?.id);
       }
+
+      const updatedUserData = await fetchUsersProfile(userId);
+      dispatch(setSelectedUser(updatedUserData));
+
+      const updatedCurrentUsersData = await fetchCurrentUserProfile();
+      dispatch(setProfile(updatedCurrentUsersData));
+
+      setIsFollowing(!isFollowing);
     } catch (error) {
       toast.error("Something went wrong");
     } finally {
       setLoading(false);
     }
-  };
+  }, [
+    isFollowing,
+    selectedUserData,
+    followUser,
+    unfollowUser,
+    fetchUsersProfile,
+    fetchCurrentUserProfile,
+    userId,
+    dispatch,
+  ]);
 
   const navigate = useNavigate();
-
   const location = useLocation();
 
-  const handleMessageClick = () => {
+  const handleMessageClick = useCallback(() => {
     navigate("/app/messagesinmobile", { state: { from: location } });
-  };
+  }, [navigate, location]);
 
   return (
     <Box
@@ -103,8 +125,18 @@ const SelectedUsersProfileDetailsInMobile = () => {
       display={"flex"}
       flexDirection={"column"}
     >
-      <Box p={"5px 0 2px 15px"} width={"100%"}>
-        <Heading fontSize={"2rem"}>{selectedUserData?.userName}</Heading>
+      <Box
+        p={"5px 0 2px 15px"}
+        width={"100%"}
+        display={"flex"}
+        alignItems={"center"}
+        gap={"15px"}
+        cursor={"pointer"}
+      >
+        <IoArrowBack size={"1.8rem"} onClick={() => window.history.back()} />
+        <Heading fontSize={"2rem"} pb={"8px"}>
+          {selectedUserData?.userName}
+        </Heading>
       </Box>
       <Box
         height={"100px"}
@@ -193,10 +225,10 @@ const SelectedUsersProfileDetailsInMobile = () => {
           onClick={followOrUnfollowUserClick}
           isLoading={loading}
         >
-          {followedUser ? "Unfollow" : "follow"}
+          {isFollowing ? "Unfollow" : "Follow"}
         </Button>
         <Button width={"48%"} onClick={handleMessageClick}>
-          message
+          Message
         </Button>
       </Box>
       <SelectedUsersFollowers
@@ -209,6 +241,6 @@ const SelectedUsersProfileDetailsInMobile = () => {
       />
     </Box>
   );
-};
+});
 
 export default SelectedUsersProfileDetailsInMobile;

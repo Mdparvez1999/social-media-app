@@ -18,7 +18,6 @@ import Messages from "./pages/messages/Messages";
 import ViewCurrentUsersPostsInMobile from "./components/mobileComponents/MobileProfile/ViewCurrentUsersPostsInMobile";
 import SearchInMobile from "./pages/search/SearchInMobile";
 import NotificationsInMobile from "./pages/notifications/NotificationsInMobile";
-import SelectedUsersProfileInMobile from "./components/mobileComponents/selectedUsersProfileInMobile/SelectedUsersProfileInMobile";
 import ViewSelectedUsersPostInMobile from "./components/mobileComponents/selectedUsersProfileInMobile/ViewSelectedUsersPostInMobile";
 import MessagesComponent from "./components/mobileComponents/mobileMessages/MessagesComponent";
 import MessageContainerForMobile from "./components/mobileComponents/mobileMessages/MessageContainerForMobile";
@@ -61,11 +60,6 @@ function HeroRoutes() {
         <Route path="search" element={<SearchInMobile />} />
         <Route path="notifications" element={<NotificationsInMobile />} />
         <Route path="profile" element={<Profile />} />
-
-        <Route
-          path="selectedUserProfile/:userId"
-          element={<SelectedUsersProfileInMobile />}
-        />
         <Route
           path="viewpost/:postId"
           element={<ViewCurrentUsersPostsInMobile />}

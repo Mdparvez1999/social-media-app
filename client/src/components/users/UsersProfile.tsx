@@ -1,4 +1,4 @@
-import { Box, Divider } from "@chakra-ui/react";
+import { Box, Divider, useBreakpointValue } from "@chakra-ui/react";
 import UsersProfileDetails from "./UsersProfileDetails";
 import SelectedUsersProfilePosts from "./SelectedUsersProfilePosts";
 import { useAppDispatch } from "../../hooks/hooks";
@@ -10,6 +10,7 @@ import {
 } from "../../redux-store/features/users/userSlice";
 import { toast } from "react-toastify";
 import { useEffect } from "react";
+import SelectedUsersProfileInMobile from "../mobileComponents/selectedUsersProfileInMobile/SelectedUsersProfileInMobile";
 
 const UsersProfile = () => {
   const dispatch = useAppDispatch();
@@ -32,6 +33,8 @@ const UsersProfile = () => {
     };
     loadUsersData();
   }, [dispatch, fetchSelectedUsersFollowing, fetchSelectedUsersFollowers]);
+
+  const isMobile = useBreakpointValue({ xs: true, md: false });
   return (
     <Box
       width={"100%"}
@@ -39,9 +42,15 @@ const UsersProfile = () => {
       flexDirection={"column"}
       height={"100%"}
     >
-      <UsersProfileDetails />
-      <Divider />
-      <SelectedUsersProfilePosts />
+      {isMobile ? (
+        <SelectedUsersProfileInMobile />
+      ) : (
+        <>
+          <UsersProfileDetails />
+          <Divider />
+          <SelectedUsersProfilePosts />
+        </>
+      )}
     </Box>
   );
 };

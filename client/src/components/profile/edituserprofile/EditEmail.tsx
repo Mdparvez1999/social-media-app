@@ -8,7 +8,7 @@ const EditEmail = () => {
   const dispatch = useAppDispatch();
   const profile = useAppSelector((state) => state.profile.profile);
 
-  const [email, setEmail] = useState<string | null>(profile?.email || "");
+  const [email, setEmail] = useState<string>(profile?.email || "");
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;
@@ -46,7 +46,9 @@ const EditEmail = () => {
         <Box width="100%" display={"flex"} justifyContent={"space-between"}>
           <Input
             width={{ xs: "70%", md: "85%" }}
-            defaultValue={profile?.email}
+            type="email"
+            placeholder={profile?.email ? profile?.email : "add email"}
+            value={profile?.email ? profile?.email : email}
             onChange={handleChange}
           />
           <Button onClick={handleUpdateEmail}>Submit</Button>

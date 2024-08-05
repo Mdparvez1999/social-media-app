@@ -32,12 +32,7 @@ const Feed = () => {
   const handleViewUserProfile = async (userId: string) => {
     setLoading(true);
     try {
-      const isMobile = window.matchMedia("(max-width:768px)").matches;
-      if (isMobile) {
-        navigate(`/app/selectedUserProfile/${userId}`);
-      } else {
-        navigate(`/app/usersprofile/${userId}`);
-      }
+      navigate(`/app/usersprofile/${userId}`);
     } catch (error) {
       if (error instanceof Error) toast.error(error.message);
       else toast.error("Something went wrong");
@@ -75,7 +70,7 @@ const Feed = () => {
                 >
                   <Avatar
                     src={
-                      post.user.profilePic !== null
+                      post.user.profilePic
                         ? `http://localhost:8000/uploads/profilePic/${post.user.profilePic}`
                         : undefined
                     }

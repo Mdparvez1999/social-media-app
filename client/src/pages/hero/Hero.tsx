@@ -2,16 +2,17 @@ import { Outlet, useLocation } from "react-router-dom";
 import Navbar from "../../components/layouts/navbar/Navbar";
 import MobileNavbar from "../../components/mobileComponents/MobileNavbar/MobileNavbar";
 import { Box } from "@chakra-ui/react";
-import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
+import { useAppDispatch } from "../../hooks/hooks";
 import useFetchFollowers from "../../hooks/profile/useFetchFollowers";
 import useFetchFollowingUsers from "../../hooks/profile/useFetchFollowingUsers";
 import { useEffect } from "react";
 import { toast } from "react-toastify";
 import {
-  fetchProfile,
   setFollowers,
   setFollowingUsers,
+  setProfile,
 } from "../../redux-store/features/profile/profileSlice";
+import useFetchCurrentUsersProfile from "../../hooks/profile/useFetchCurrentUsersProfile";
 
 const Hero = () => {
   const dispatch = useAppDispatch();
@@ -21,12 +22,13 @@ const Hero = () => {
   const { fetchFollowers } = useFetchFollowers();
   const { fetchFollowingUsers } = useFetchFollowingUsers();
 
-  const currentUser = useAppSelector((state) => state.auth.currentUser);
+  const { fetchCurrentUserProfile } = useFetchCurrentUsersProfile();
 
   useEffect(() => {
     const loadUserData = async () => {
       try {
-        dispatch(fetchProfile());
+        const currentUsersProfileData = await fetchCurrentUserProfile();
+        dispatch(setProfile(currentUsersProfileData));
       } catch (error) {
         if (error instanceof Error) {
           toast.error(error.message);
@@ -37,7 +39,7 @@ const Hero = () => {
     };
 
     loadUserData();
-  }, [dispatch, currentUser]);
+  }, [dispatch, fetchCurrentUserProfile]);
 
   useEffect(() => {
     const loadUsersData = async () => {

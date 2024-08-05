@@ -10,7 +10,7 @@ import {
 import { useAppSelector } from "../../hooks/hooks";
 import useFollowUser from "../../hooks/usersprofile/useFollowUser";
 import { toast } from "react-toastify";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import useFetchUsersProfile from "../../hooks/usersprofile/useFetchUsersProfile";
 import {
   clearSelecetedUsersData,
@@ -23,17 +23,30 @@ import useUnfollowUser from "../../hooks/usersprofile/useUnfollowUser";
 import SelectedUsersFollowers from "./SelectedUsersFollowers";
 import SelectedUsersFollowing from "./SelectedUsersFollowing";
 import { setSelectedConversation } from "../../redux-store/features/messages/messagesSlice";
+import useFetchCurrentUsersProfile from "../../hooks/profile/useFetchCurrentUsersProfile";
+import { setProfile } from "../../redux-store/features/profile/profileSlice";
 
 const UsersProfileDetails = () => {
   const dispatch = useDispatch();
-
   const { userId } = useParams<{ userId: string }>();
-
   const { fetchUsersProfile } = useFetchUsersProfile();
 
   if (!userId) throw new Error("Something went wrong");
 
   const hasFetchedData = useRef(false);
+  const selectedUserData = useAppSelector((state) => state.users.selectedUser);
+
+  const currentUsersFollowing = useAppSelector(
+    (state) => state.profile.following
+  );
+
+  const followersDisclosure = useDisclosure();
+  const followingUsersDisclosure = useDisclosure();
+
+  const [loading, setLoading] = useState(false);
+
+  const { followUser } = useFollowUser();
+  const { unfollowUser } = useUnfollowUser();
 
   useEffect(() => {
     const fetchSelectedUsersData = async () => {
@@ -53,43 +66,53 @@ const UsersProfileDetails = () => {
     }
   }, [userId, dispatch, fetchUsersProfile]);
 
-  const selectedUserData = useAppSelector((state) => state.users.selectedUser);
-
-  const currentUsersFollowing = useAppSelector(
-    (state) => state.profile.following
+  const [isFollowing, setIsFollowing] = useState(
+    currentUsersFollowing?.some((user) => user?.id === selectedUserData?.id)
   );
 
-  const followedUser = currentUsersFollowing?.find(
-    (user) => user.id === selectedUserData?.id
-  );
+  useEffect(() => {
+    setIsFollowing(
+      currentUsersFollowing?.some((user) => user?.id === selectedUserData?.id)
+    );
+  }, [currentUsersFollowing, selectedUserData?.id]);
 
-  const followersDisclosure = useDisclosure();
+  const { fetchCurrentUserProfile } = useFetchCurrentUsersProfile();
 
-  const followingUsersDisclosure = useDisclosure();
-
-  const [loading, setLoading] = useState(false);
-
-  const { followUser } = useFollowUser();
-
-  const { unfollowUser } = useUnfollowUser();
-
-  const followOrUnfollowUserClick = async () => {
+  const followOrUnfollowUserClick = useCallback(async () => {
     if (!selectedUserData) return;
 
     setLoading(true);
 
     try {
-      if (followedUser) {
+      if (isFollowing) {
         await unfollowUser(selectedUserData?.id);
       } else {
         await followUser(selectedUserData?.id);
       }
+
+      const updatedUsersData = await fetchUsersProfile(userId);
+      dispatch(setSelectedUser(updatedUsersData));
+
+      const updatedCurrentUsersData = await fetchCurrentUserProfile();
+      dispatch(setProfile(updatedCurrentUsersData));
+
+      setIsFollowing(!isFollowing);
     } catch (error) {
       toast.error("Something went wrong");
     } finally {
       setLoading(false);
     }
-  };
+  }, [
+    selectedUserData,
+    setLoading,
+    isFollowing,
+    followUser,
+    unfollowUser,
+    fetchUsersProfile,
+    userId,
+    dispatch,
+    fetchCurrentUserProfile,
+  ]);
 
   const navigate = useNavigate();
 
@@ -158,7 +181,7 @@ const UsersProfileDetails = () => {
             </Box>
             <Box display={"flex"} gap={"20px"}>
               <Button onClick={followOrUnfollowUserClick} isLoading={loading}>
-                {followedUser ? "Unfollow" : "Follow"}
+                {isFollowing ? "Unfollow" : "Follow"}
               </Button>
               <Button onClick={handleMessageClick}>Message</Button>
             </Box>

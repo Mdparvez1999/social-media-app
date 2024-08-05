@@ -52,14 +52,13 @@ const SearchInMobile = () => {
     if (location.state && location.state.from) {
       navigate(location.state.from);
     } else {
-      navigate(-1);
+      window.history.back();
     }
   };
 
   const handleViewUserProfile = async (userId: string) => {
     try {
-      navigate(`/app/selectedUserProfile/${userId}`);
-      //   window.location.reload();
+      navigate(`/app/usersprofile/${userId}`);
       setSearchResultVisible(false);
     } catch (error) {
       if (error instanceof Error) toast.error(error.message);

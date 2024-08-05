@@ -5,8 +5,6 @@ import { Box, Button, Input } from "@chakra-ui/react";
 import { addComment } from "../../../redux-store/features/comments/commentsSlice";
 
 const WriteCommentInMobile = ({ postId }: { postId: string }) => {
-  console.log("postId in write comment", postId);
-
   const dispatch = useAppDispatch();
 
   const [comment, setComment] = useState<string>("");

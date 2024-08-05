@@ -12,12 +12,10 @@ const useUnfollowUser = () => {
         credentials: "include",
       });
 
-      const data = await response.json();
+      const { data } = await response.json();
 
       dispatch(removeFollowing(data.following));
       dispatch(removeSelectedUsersFollower(data.follower));
-
-      window.location.reload();
     } catch (error) {
       if (error instanceof Error) toast.error(error.message);
       else toast.error("Something went wrong");

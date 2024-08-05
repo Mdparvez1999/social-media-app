@@ -8,7 +8,7 @@ const EditBio = () => {
   const dispatch = useAppDispatch();
   const profile = useAppSelector((state) => state.profile.profile);
 
-  const [bio, setBio] = useState<string | null>(profile?.bio || "");
+  const [bio, setBio] = useState<string>(profile?.bio || "");
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;
@@ -45,7 +45,9 @@ const EditBio = () => {
         <Box width="100%" display={"flex"} justifyContent={"space-between"}>
           <Input
             width={{ xs: "70%", md: "85%" }}
-            defaultValue={profile?.bio === null ? "add bio" : profile?.bio}
+            type="text"
+            placeholder={profile?.bio ? profile?.bio : "add bio"}
+            value={profile?.bio ? profile?.bio : bio}
             onChange={handleChange}
           />
           <Button onClick={handleUpdateBio}>Submit</Button>

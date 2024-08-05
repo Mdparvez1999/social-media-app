@@ -21,6 +21,7 @@ interface PostCommentsPropsType {
 
 const FeedPostCommentsModal = ({ isOpen, onClose }: PostCommentsPropsType) => {
   const comments = useAppSelector((state) => state.feed.comments);
+
   const post = useAppSelector((state) => state.feed.singlePost);
 
   if (!comments) return null;
@@ -41,10 +42,14 @@ const FeedPostCommentsModal = ({ isOpen, onClose }: PostCommentsPropsType) => {
             {post?.caption !== "" ? (
               <Box display={"flex"} alignItems={"center"} gap={"14px"}>
                 <Avatar
-                  src={`http://localhost:8000/uploads/profilePic/${post.user.profilePic}`}
                   size={"sm"}
-                  name={post?.user.userName}
                   crossOrigin="anonymous"
+                  src={
+                    post.user.profilePic
+                      ? `http://localhost:8000/uploads/profilePic/${post.user.profilePic}`
+                      : undefined
+                  }
+                  name={post?.user.userName}
                 />
                 <Box display={"flex"} flexDirection={"column"} gap={"6px"}>
                   <Box display={"flex"} gap={"10px"} alignItems={"center"}>
@@ -77,10 +82,14 @@ const FeedPostCommentsModal = ({ isOpen, onClose }: PostCommentsPropsType) => {
                   mb={"12px"}
                 >
                   <Avatar
-                    src={`http://localhost:8000/uploads/profilePic/${comment.user.profilePic}`}
                     size={"sm"}
-                    name={comment.user.userName}
                     crossOrigin="anonymous"
+                    src={
+                      comment.user.profilePic
+                        ? `http://localhost:8000/uploads/profilePic/${comment.user.profilePic}`
+                        : undefined
+                    }
+                    name={comment.user.userName}
                   />
                   <Box display={"flex"} flexDirection={"column"} gap={"6px"}>
                     <Box display={"flex"} gap={"10px"} alignItems={"center"}>

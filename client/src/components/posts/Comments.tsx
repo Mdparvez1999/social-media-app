@@ -14,6 +14,7 @@ const Comments = ({ postId }: propsType) => {
   const comments = useAppSelector((state) => state.comments.comments);
 
   const post = useAppSelector((state) => state.posts.singlePost);
+  console.log("post in comments", post);
 
   useEffect(() => {
     const getComments = async () => {
@@ -40,7 +41,16 @@ const Comments = ({ postId }: propsType) => {
     >
       {post?.caption && (
         <Box display={"flex"} alignItems={"center"} gap={"14px"}>
-          <Avatar src={post?.user.profilePic} size={"sm"} />
+          <Avatar
+            size={"sm"}
+            crossOrigin="anonymous"
+            src={
+              post.user.profilePic
+                ? `http://localhost:8000/uploads/profilePic/${post.user.profilePic}`
+                : undefined
+            }
+            name={post?.user.userName}
+          />
           <Box>
             <Heading fontSize={"1.1rem"} mb={"5px"}>
               {post?.user?.userName}
@@ -61,7 +71,16 @@ const Comments = ({ postId }: propsType) => {
             mb={"20px"}
           >
             <Box display={"flex"} alignItems={"center"} gap={"14px"}>
-              <Avatar src={comment?.user?.profilePic} size={"sm"} />
+              <Avatar
+                size={"sm"}
+                crossOrigin="anonymous"
+                src={
+                  comment.user.profilePic
+                    ? `http://localhost:8000/uploads/profilePic/${comment.user.profilePic}`
+                    : undefined
+                }
+                name={comment?.user?.userName}
+              />
               <Box>
                 <Heading fontSize={"1.1rem"} mb={"5px"}>
                   {comment?.user?.userName}

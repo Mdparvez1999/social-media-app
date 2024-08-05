@@ -37,7 +37,11 @@ const MessageContainerForMobile = () => {
             p={"10px 20px"}
           >
             <Box display={"flex"} gap={"14px"} alignItems={"center"}>
-              <IoArrowBackOutline onClick={handleBackClick} size={"1.7rem"} />
+              <IoArrowBackOutline
+                onClick={handleBackClick}
+                size={"1.7rem"}
+                cursor={"pointer"}
+              />
               <Avatar
                 crossOrigin="anonymous"
                 src={

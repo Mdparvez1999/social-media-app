@@ -81,7 +81,11 @@ const ConversationsInMobile = () => {
         alignItems={"center"}
         gap={"10px"}
       >
-        <IoArrowBackOutline onClick={handleBackClick} size={"2rem"} />
+        <IoArrowBackOutline
+          onClick={handleBackClick}
+          size={"2rem"}
+          cursor={"pointer"}
+        />
         <Text fontSize={"2rem"} fontWeight={"600"} pl={"10px"} pb={"10px"}>
           {currentUser?.userName}
         </Text>

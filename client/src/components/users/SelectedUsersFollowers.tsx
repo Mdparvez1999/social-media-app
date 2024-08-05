@@ -1,7 +1,6 @@
 import {
   Avatar,
   Box,
-  Button,
   Divider,
   Modal,
   ModalBody,
@@ -13,7 +12,7 @@ import {
 } from "@chakra-ui/react";
 import { useAppSelector } from "../../hooks/hooks";
 
-interface SelectedUsersFollowersProps {
+interface SelectedUsersUsersProps {
   isOpen: boolean;
   onClose: () => void;
 }
@@ -21,8 +20,8 @@ interface SelectedUsersFollowersProps {
 const SelectedUsersFollowers = ({
   isOpen,
   onClose,
-}: SelectedUsersFollowersProps) => {
-  const selectedUsersFollowers = useAppSelector(
+}: SelectedUsersUsersProps) => {
+  const SelectedUsersFollowers = useAppSelector(
     (state) => state.users.selectedUsersFollowers
   );
 
@@ -32,48 +31,50 @@ const SelectedUsersFollowers = ({
       <ModalContent maxWidth={{ xs: "95vw", md: "390px" }}>
         <ModalCloseButton />
         <ModalHeader>
-          <Text textAlign={"center"}>Followers</Text>
+          <Text textAlign={"center"}>Users</Text>
         </ModalHeader>
         <Divider width={"85%"} margin={"auto"} />
         <ModalBody>
           <Box>
-            {selectedUsersFollowers?.length > 0 ? (
-              selectedUsersFollowers?.map((follower) => (
-                <Box
-                  key={follower.id}
-                  display={"flex"}
-                  justifyContent={"space-between"}
-                  alignItems={"center"}
-                  mb={"12px"}
-                  px={"3px"}
-                  maxHeight={"300px"}
-                  overflow={"auto"}
-                >
-                  <Box display={"flex"} gap={"10px"} alignItems={"center"}>
-                    <Avatar
-                      size={"md"}
-                      crossOrigin="anonymous"
-                      src={
-                        follower.profilePic
-                          ? `http://localhost:8000/uploads/profilePic/${follower.profilePic}`
-                          : undefined
-                      }
-                      name={follower.username}
-                    />
-                    <Box mb={"8px"}>
-                      <Text fontWeight={"bold"} fontSize={"1.3rem"}>
-                        {follower.username}
-                      </Text>
-                      {follower.fullName && (
-                        <Text fontSize={"1rem"}>{follower.fullName}</Text>
-                      )}
+            {SelectedUsersFollowers?.length > 0 ? (
+              SelectedUsersFollowers?.map((user) =>
+                user ? (
+                  <Box
+                    key={user.id}
+                    display={"flex"}
+                    justifyContent={"space-between"}
+                    alignItems={"center"}
+                    mb={"12px"}
+                    px={"3px"}
+                    maxHeight={"300px"}
+                    overflow={"auto"}
+                  >
+                    <Box display={"flex"} gap={"10px"} alignItems={"center"}>
+                      <Avatar
+                        size={"md"}
+                        crossOrigin="anonymous"
+                        src={
+                          user?.profilePic
+                            ? `http://localhost:8000/uploads/profilePic/${user.profilePic}`
+                            : undefined
+                        }
+                        name={user?.username}
+                      />
+                      <Box mb={"8px"}>
+                        <Text fontWeight={"bold"} fontSize={"1.3rem"}>
+                          {user?.username}
+                        </Text>
+                        {user?.fullName && (
+                          <Text fontSize={"1rem"}>{user.fullName}</Text>
+                        )}
+                      </Box>
                     </Box>
+                    {/* <Button>follow/unfollow</Button> */}
                   </Box>
-                  <Button>Remove</Button>
-                </Box>
-              ))
+                ) : null
+              )
             ) : (
-              <Text textAlign={"center"}>no followers</Text>
+              <Text textAlign={"center"}>no users</Text>
             )}
           </Box>
         </ModalBody>

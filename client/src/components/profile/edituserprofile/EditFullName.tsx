@@ -8,9 +8,7 @@ const EditFullName = () => {
   const dispatch = useAppDispatch();
   const profile = useAppSelector((state) => state.profile.profile);
 
-  const [fullName, setFullName] = useState<string | null>(
-    profile?.fullName || ""
-  );
+  const [fullName, setFullName] = useState<string>(profile?.fullName || "");
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;
@@ -46,10 +44,10 @@ const EditFullName = () => {
         </Text>
         <Box width="100%" display={"flex"} justifyContent={"space-between"}>
           <Input
+            type="text"
             width={{ xs: "70%", md: "85%" }}
-            defaultValue={
-              profile?.fullName === null ? "add name" : profile?.fullName
-            }
+            placeholder={profile?.fullName ? profile.fullName : "add fullname"}
+            value={profile?.fullName ? profile.fullName : fullName}
             onChange={handleChange}
           />
           <Button onClick={handleUpdateFullName}>Submit</Button>

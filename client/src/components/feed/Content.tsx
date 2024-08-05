@@ -32,11 +32,15 @@ const Content = ({ file }: ContentPropType) => {
             {imageFiles.map((file) => (
               <Image
                 key={file.id}
-                src={`http://localhost:8000/uploads/postFiles/${file.fileName}`}
-                alt="user_post"
-                crossOrigin="anonymous"
                 width={"100%"}
                 height={"100%"}
+                src={
+                  file.fileName
+                    ? `http://localhost:8000/uploads/postFiles/${file.fileName}`
+                    : undefined
+                }
+                alt="user_post"
+                crossOrigin="anonymous"
                 objectFit={"cover"}
                 p={0}
               />

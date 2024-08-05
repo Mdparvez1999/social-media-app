@@ -36,7 +36,11 @@ const ProfileDetails = () => {
             <Avatar
               size={"2xl"}
               crossOrigin="anonymous"
-              src={`http://localhost:8000/uploads/profilePic/${userProfile?.profilePic}`}
+              src={
+                userProfile?.profilePic
+                  ? `http://localhost:8000/uploads/profilePic/${userProfile?.profilePic}`
+                  : undefined
+              }
             />
           </WrapItem>
         </Box>

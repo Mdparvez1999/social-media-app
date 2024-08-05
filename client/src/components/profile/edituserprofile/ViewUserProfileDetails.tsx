@@ -3,6 +3,7 @@ import UserProfileDetails from "./UserProfileDetails";
 import UserProfileSidebar from "./UserProfileSideBar";
 import { GiHamburgerMenu } from "react-icons/gi";
 import SideBarMenuForMobile from "./SideBarMenuForMobile";
+import { RxCross2 } from "react-icons/rx";
 
 const ViewUserProfile = () => {
   const { isOpen, onClose, onOpen } = useDisclosure();
@@ -24,6 +25,13 @@ const ViewUserProfile = () => {
           <Text fontWeight={"bold"} fontSize={"1.5rem"} pl={"60px"}>
             Edit Profile
           </Text>
+          <Button
+            ml={"auto"}
+            variant={"ghost"}
+            onClick={() => window.history.back()}
+          >
+            <RxCross2 size={"1.5rem"} onClick={onClose} />
+          </Button>
         </Box>
       </Box>
       <Box width={"100%"} display={"flex"} minHeight={"100%"}>

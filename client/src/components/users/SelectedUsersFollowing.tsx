@@ -1,7 +1,6 @@
 import {
   Avatar,
   Box,
-  Button,
   Divider,
   Modal,
   ModalBody,
@@ -38,9 +37,9 @@ const SelectedUsersFollowing = ({
         <ModalBody>
           <Box>
             {selectedUsersFollowing?.length > 0 ? (
-              selectedUsersFollowing?.map((follower) => (
+              selectedUsersFollowing?.map((user) => (
                 <Box
-                  key={follower.id}
+                  key={user.id}
                   display={"flex"}
                   justifyContent={"space-between"}
                   alignItems={"center"}
@@ -54,22 +53,22 @@ const SelectedUsersFollowing = ({
                       size={"md"}
                       crossOrigin="anonymous"
                       src={
-                        follower.profilePic
-                          ? `http://localhost:8000/uploads/profilePic/${follower.profilePic}`
+                        user.profilePic
+                          ? `http://localhost:8000/uploads/profilePic/${user.profilePic}`
                           : undefined
                       }
-                      name={follower.username}
+                      name={user.username}
                     />
                     <Box mb={"8px"}>
                       <Text fontWeight={"bold"} fontSize={"1.3rem"}>
-                        {follower.username}
+                        {user.username}
                       </Text>
-                      {follower.fullName && (
-                        <Text fontSize={"1rem"}>{follower.fullName}</Text>
+                      {user.fullName && (
+                        <Text fontSize={"1rem"}>{user.fullName}</Text>
                       )}
                     </Box>
                   </Box>
-                  <Button>unfollow</Button>
+                  {/* <Button>unfollow</Button> */}
                 </Box>
               ))
             ) : (
