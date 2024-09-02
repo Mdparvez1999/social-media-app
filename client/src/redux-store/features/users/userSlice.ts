@@ -12,8 +12,6 @@ interface SelectedUserState {
   fullName: string;
   profilePic: string;
   bio: string;
-  isPrivate: boolean;
-  isActive: boolean;
   postsCount: number;
   followersCount: number;
   followingCount: number;
@@ -26,10 +24,9 @@ interface File {
 }
 
 interface PostLikes {
-  id: string;
-  isLiked: boolean;
-  liked_at: Date;
-  post: string;
+  postLikeId: string;
+  likedAt: Date;
+  postId: string;
   user: {
     id: string;
     profilePic: string;
@@ -55,7 +52,7 @@ export interface PostState {
 
 interface FollowersAndFollowingState {
   id: string;
-  username: string;
+  userName: string;
   fullName: string;
   profilePic: string;
 }
@@ -128,6 +125,20 @@ const userSlice = createSlice({
     },
     removeSelectedUsersFollower: (state, action: PayloadAction<string>) => {
       state.selectedUsersFollowers = state.selectedUsersFollowers.filter(
+        (user) => user?.id !== action.payload
+      );
+    },
+    addSelectedUsersFollowing: (
+      state,
+      action: PayloadAction<FollowersAndFollowingState>
+    ) => {
+      state.selectedUsersFollowing = [
+        action.payload,
+        ...state.selectedUsersFollowing,
+      ];
+    },
+    removeSelectedUsersFollowing: (state, action: PayloadAction<string>) => {
+      state.selectedUsersFollowing = state.selectedUsersFollowing.filter(
         (user) => user.id !== action.payload
       );
     },
@@ -136,6 +147,40 @@ const userSlice = createSlice({
       action: PayloadAction<UserState | null>
     ) => {
       state.selectedUsersMessage = action.payload;
+    },
+    setSelectedPostLikes: (state, action: PayloadAction<PostLikes[]>) => {
+      if (state.selectedUsersSinglePost) {
+        state.selectedUsersSinglePost.postlikes = action.payload;
+      }
+    },
+    likeSelectedPostAction: (state, action: PayloadAction<PostLikes>) => {
+      if (
+        state.selectedUsersSinglePost &&
+        state.selectedUsersSinglePost.id === action.payload.postId
+      ) {
+        state.selectedUsersSinglePost.postlikes = [
+          ...state.selectedUsersSinglePost.postlikes,
+          action.payload,
+        ];
+        state.selectedUsersSinglePost.likeCount =
+          state.selectedUsersSinglePost.likeCount + 1;
+      }
+    },
+    unlikeSelectedPostAction: (
+      state,
+      action: PayloadAction<{ postId: string; userId: string }>
+    ) => {
+      if (
+        state.selectedUsersSinglePost &&
+        state.selectedUsersSinglePost.id === action.payload.postId
+      ) {
+        state.selectedUsersSinglePost.postlikes =
+          state.selectedUsersSinglePost.postlikes.filter(
+            (like) => like.user.id !== action.payload.userId
+          );
+        state.selectedUsersSinglePost.likeCount =
+          state.selectedUsersSinglePost.likeCount - 1;
+      }
     },
   },
 });
@@ -150,6 +195,11 @@ export const {
   setSelectedUsersFollowing,
   addSelectedUsersFollower,
   removeSelectedUsersFollower,
+  addSelectedUsersFollowing,
+  removeSelectedUsersFollowing,
   setSelectedUsersMessage,
+  setSelectedPostLikes,
+  likeSelectedPostAction,
+  unlikeSelectedPostAction,
 } = userSlice.actions;
 export default userSlice.reducer;

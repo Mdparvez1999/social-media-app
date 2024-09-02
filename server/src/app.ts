@@ -14,12 +14,17 @@ import followRouter from "./routes/follow.routes";
 import notificationRouter from "./routes/notification.routes";
 import chatRouter from "./routes/chats.routes";
 import { errorHandler } from "./middlewares/error.middleware";
-import { auth } from "./middlewares/auth.Middleware";
 import { apiLimiter } from "./config/rate_Limit.cofig";
 import path from "path";
+import { fileURLToPath } from "url";
 
 // create express app
 export const app: Application = express();
+
+// Create __dirname equivalent in ESM
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // security middlewares
 app.use(helmet());
@@ -46,10 +51,8 @@ app.use(cookieParser());
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ limit: "50mb", extended: true }));
 
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
-
 // rate limiter
-// app.use("/api", apiLimiter);
+app.use("/api", apiLimiter);
 
 // Routes
 app.use("/api/auth", authRouter);
@@ -61,8 +64,24 @@ app.use("/api/users", followRouter);
 app.use("/api/notification", notificationRouter);
 app.use("/api/messages", chatRouter);
 
-app.get("/", (req: Request, res: Response) => {
-  res.send("hello");
+const __dirnameReact = path.dirname(fileURLToPath(import.meta.url));
+
+// Serve static files from the client/dist directory
+app.use(express.static(path.join(__dirnameReact, "../../client/dist")));
+
+// Handle all other routes by serving the index.html file
+app.get("*", (req, res, next) => {
+  return res.sendFile(
+    path.join(__dirnameReact, "../../client/dist/index.html")
+  );
+});
+
+// 404 handler
+app.use((req: Request, res: Response, next: NextFunction) => {
+  res.status(404).json({
+    success: false,
+    message: "API route not found",
+  });
 });
 
 app.use(errorHandler);

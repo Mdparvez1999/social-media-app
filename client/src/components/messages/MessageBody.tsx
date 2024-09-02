@@ -11,9 +11,7 @@ const MessageBody = () => {
   const selectedConversation = useAppSelector(
     (state) => state.messages.selectedConversation
   );
-
   const currentUser = useAppSelector((state) => state.auth.currentUser);
-
   const messages = useAppSelector((state) => state.messages.messages);
 
   useEffect(() => {
@@ -28,7 +26,7 @@ const MessageBody = () => {
     type: "text";
   })[] => {
     return messages
-      .slice()
+      ?.slice()
       .sort(
         (a, b) =>
           new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()

@@ -19,7 +19,9 @@ import { asyncHandler } from "../utils/asyncHandler";
 import { UserUtils } from "../utils/user.utils";
 
 export class AuthController {
-  private userRepository = AppDataSource.getRepository(Users);
+  private get userRepository() {
+    return AppDataSource.getRepository(Users);
+  }
 
   public userRegister = asyncHandler(
     async (
@@ -29,13 +31,16 @@ export class AuthController {
     ): Promise<Response | Error | void> => {
       const { error, value } = registerSchema.validate(req.body);
 
-      if (error) {
-        return next(error);
-      }
+      if (error) return next(error);
 
       const { userName, email, DOB, password, gender } = value;
-
       const profilePicName: string | undefined = req.file?.filename;
+
+      const existingUser: Users = await UserUtils.findUserByEmail(email);
+
+      if (existingUser) {
+        return next(new AppError("Email already exists", 400));
+      }
 
       const hashedPassword: string = await hashPassword(password);
 
@@ -52,8 +57,12 @@ export class AuthController {
 
       return res.status(201).json({
         success: true,
-        message: "User created successfully",
-        data: newUser,
+        message: "account created successfully",
+        data: {
+          id: newUser.id,
+          userName: newUser.userName,
+          isActive: newUser.isActive,
+        },
       });
     }
   );
@@ -66,9 +75,7 @@ export class AuthController {
     ): Promise<Response | Error | void> => {
       const { error, value } = loginSchema.validate(req.body);
 
-      if (error) {
-        next(error);
-      }
+      if (error) next(error);
 
       const { email, password } = value;
 
@@ -88,8 +95,7 @@ export class AuthController {
         user: {
           id: user.id,
           userName: user.userName,
-          email: user.email,
-          DOB: user.DOB,
+          isActive: user.isActive,
         },
       });
     }
@@ -103,9 +109,7 @@ export class AuthController {
     ): Promise<Response | Error | void> => {
       const { error, value } = forgotPasswordSchema.validate(req.body);
 
-      if (error) {
-        next(error);
-      }
+      if (error) next(error);
 
       const { email } = value;
 
@@ -133,9 +137,7 @@ export class AuthController {
     ): Promise<Response | Error | void> => {
       const { error, value } = resetPasswordSchema.validate(req.body);
 
-      if (error) {
-        next(error);
-      }
+      if (error) next(error);
 
       const { password } = value;
 
@@ -165,6 +167,7 @@ export class AuthController {
       next: NextFunction
     ): Promise<Response | Error | void> => {
       res.clearCookie("jwt");
+
       return res.status(200).json({
         success: true,
         message: "user logged out successfully",

@@ -5,23 +5,29 @@ import { UserUtils } from "./user.utils";
 import { AppError } from "./AppError";
 
 export class NotificationUtils {
-  private static notificationRepository =
-    AppDataSource.getRepository(Notifications);
+  private static get notificationRepository() {
+    return AppDataSource.getRepository(Notifications);
+  }
 
   public static async createNotification(
     type: string,
     message: string,
-    id: string
+    sentBy: Users,
+    receivedBy: Users
   ) {
-    const user: Users | null = await UserUtils.findUserById(id);
     const notification = new Notifications();
+
     notification.type = type;
     notification.message = message;
-    notification.user = user;
-    return this.notificationRepository.save(notification);
+    notification.sentBy = sentBy;
+    notification.receivedBy = receivedBy;
+
+    return await this.notificationRepository.save(notification);
   }
 
   public static async findNotificationById(id: string): Promise<Notifications> {
+    if (!id) throw new AppError("Notification id is required", 400);
+
     const notification = await this.notificationRepository.findOneBy({ id });
 
     if (!notification) {

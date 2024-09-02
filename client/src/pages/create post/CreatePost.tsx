@@ -15,7 +15,7 @@ import {
   Image,
 } from "@chakra-ui/react";
 import { FiMinusCircle } from "react-icons/fi";
-import { ChangeEvent, useRef, useState } from "react";
+import { ChangeEvent, useCallback, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import useCreatePost from "../../hooks/post/useCreatePost";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -28,10 +28,13 @@ const CreatePost = ({ isOpen, onClose }: createPostProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [files, setFiles] = useState<File[]>([]);
-
   const [previewFiles, setPreviewFiles] = useState<string[]>([]);
-
   const [caption, setCaption] = useState<string>("");
+
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const { loading, createPost } = useCreatePost();
 
   const handleFileButtonClick = () => {
     if (fileInputRef.current) {
@@ -57,36 +60,38 @@ const CreatePost = ({ isOpen, onClose }: createPostProps) => {
     }
   };
 
-  const { loading, createPost } = useCreatePost();
+  const handlePost = useCallback(
+    async (e: React.FormEvent) => {
+      e.preventDefault();
 
-  const navigate = useNavigate();
+      try {
+        const formData = new FormData();
 
-  const location = useLocation();
+        files.forEach((file) => {
+          formData.append("files", file);
+        });
+        formData.append("caption", caption);
 
-  const handlePost = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      const formData = new FormData();
+        await createPost(formData);
 
-      files.forEach((file) => {
-        formData.append("files", file);
-      });
-      formData.append("caption", caption);
+        setPreviewFiles([]);
+        setFiles([]);
+        setCaption("");
 
-      await createPost(formData);
-      setPreviewFiles([]);
-      onClose();
-      setTimeout(() => {
-        if (location.pathname !== "/app/profile") {
-          navigate("/app/profile");
-        } else {
-          window.location.assign("/app/profile");
-        }
-      }, 2000);
-    } catch (error) {
-      toast.error("Something went wrong");
-    }
-  };
+        onClose();
+        setTimeout(() => {
+          if (location.pathname !== "/app/profile") {
+            navigate("/app/profile");
+          } else {
+            window.location.assign("/app/profile");
+          }
+        }, 2000);
+      } catch (error) {
+        toast.error("Something went wrong");
+      }
+    },
+    [caption, createPost, files, location.pathname, navigate, onClose]
+  );
 
   const removeFile = (index: number) => {
     setFiles((prevFiles) => prevFiles.filter((_, i) => i !== index));

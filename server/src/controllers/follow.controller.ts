@@ -10,11 +10,17 @@ import { UserUtils } from "../utils/user.utils";
 import { NotificationUtils } from "../utils/notification.utils";
 
 export class FollowController {
-  private followerRepository = AppDataSource.getRepository(Follower);
+  private get followerRepository() {
+    return AppDataSource.getRepository(Follower);
+  }
 
-  private followRequestRepository = AppDataSource.getRepository(FollowRequest);
+  private get followRequestRepository() {
+    return AppDataSource.getRepository(FollowRequest);
+  }
 
-  private userRepository = AppDataSource.getRepository(Users);
+  private get userRepository() {
+    return AppDataSource.getRepository(Users);
+  }
 
   public followUser = asyncHandler(
     async (req: Request, res: Response, next: NextFunction) => {
@@ -28,48 +34,74 @@ export class FollowController {
       const reqSenderUser: Users | null = await UserUtils.findUserById(
         senderId
       );
-
       const reqReciverUser: Users | null = await UserUtils.findUserById(
         recieverId
       );
+
+      if (!reqSenderUser || !reqReciverUser) {
+        return next(new AppError("User not found", 404));
+      }
 
       if (reqReciverUser.isPrivate) {
         await FollowUtils.ensureNoPendingFollowRequest(senderId, recieverId);
 
         const followRequest = new FollowRequest();
-
         followRequest.requestedUser = reqSenderUser;
-        followRequest.recievedUser = reqReciverUser;
+        followRequest.receivedUser = reqReciverUser;
 
         await this.followRequestRepository.save(followRequest);
 
         const type = "followRequest";
-        const message = `${reqSenderUser?.userName} sent you a request`;
+        const message = `${reqSenderUser.userName} sent you a request`;
 
-        await NotificationUtils.createNotification(type, message, recieverId);
+        await NotificationUtils.createNotification(
+          type,
+          message,
+          reqSenderUser,
+          reqReciverUser
+        );
 
         return res.status(200).json({
           status: "success",
-          message: "request sent successfully",
+          message: "Request sent successfully",
+          data: {
+            id: followRequest.id,
+            status: followRequest.status,
+            requestedUser: {
+              id: followRequest.requestedUser.id,
+              username: followRequest.requestedUser.userName,
+              profilePic: followRequest.requestedUser.profilePic,
+            },
+            recievedUser: {
+              id: followRequest.receivedUser.id,
+              username: followRequest.receivedUser.userName,
+              profilePic: followRequest.receivedUser.profilePic,
+            },
+          },
         });
       }
 
       await FollowUtils.ensureNotAlreadyFollowing(senderId, recieverId);
 
       const follower = new Follower();
-
       follower.followers = reqSenderUser;
       follower.following = reqReciverUser;
 
       await this.followerRepository.save(follower);
 
       const type = "follow";
-      const message = `${reqSenderUser?.userName} followed you`;
-      await NotificationUtils.createNotification(type, message, recieverId);
+      const message = `${reqSenderUser.userName} followed you`;
+
+      await NotificationUtils.createNotification(
+        type,
+        message,
+        reqSenderUser,
+        reqReciverUser
+      );
 
       return res.status(200).json({
         status: "success",
-        message: "followed successfully",
+        message: "Followed successfully",
         data: {
           follower: {
             id: follower.followers.id,
@@ -91,26 +123,32 @@ export class FollowController {
   public acceptFollowRequest = asyncHandler(
     async (req: Request, res: Response, next: NextFunction) => {
       const followRequestId: string = req.params.id;
-
       const userId: string = res.locals.user.id;
 
       const user: Users | null = await UserUtils.findUserById(userId);
 
+      if (!user) {
+        return next(new AppError("User not found", 404));
+      }
+
       const followRequest: FollowRequest | null =
-        (await FollowUtils.getPendingFollowRequestByUserId(
+        (await FollowUtils.getPendingFollowRequestByReceiverId(
           userId,
           followRequestId
         )) as FollowRequest;
 
+      if (!followRequest) {
+        return next(new AppError("Follow request not found", 404));
+      }
+
       await FollowUtils.ensureNotAlreadyFollowing(
         followRequest.requestedUser.id,
-        followRequest.recievedUser.id
+        followRequest.receivedUser.id
       );
 
       const follower = new Follower();
-
       follower.followers = followRequest.requestedUser;
-      follower.following = followRequest.recievedUser;
+      follower.following = followRequest.receivedUser;
 
       await AppDataSource.transaction(async (entityTransactionalManager) => {
         await entityTransactionalManager.save(follower);
@@ -119,16 +157,31 @@ export class FollowController {
       });
 
       const type = "follow";
-      const message = `${user?.userName} accepted your request`;
+      const message = `${user.userName} accepted your follow request`;
+
+      // Updated notification creation
       await NotificationUtils.createNotification(
         type,
         message,
-        followRequest.requestedUser.id
+        followRequest.receivedUser, // `sentBy`: the user who accepted the request
+        followRequest.requestedUser // `receivedBy`: the user who sent the request
       );
 
       return res.status(200).json({
         status: "success",
-        message: "follow request accepted",
+        message: "Follow request accepted",
+        follower: {
+          id: follower.followers.id,
+          username: follower.followers.userName,
+          fullName: follower.followers.fullName,
+          profilePic: follower.followers.profilePic,
+        },
+        following: {
+          id: follower.following.id,
+          username: follower.following.userName,
+          fullName: follower.following.fullName,
+          profilePic: follower.following.profilePic,
+        },
       });
     }
   );
@@ -140,10 +193,10 @@ export class FollowController {
       const allFollowRequests: FollowRequest[] =
         await this.followRequestRepository.find({
           where: {
-            recievedUser: { id: userId },
+            receivedUser: { id: userId },
             status: "pending",
           },
-          relations: ["requestedUser"],
+          relations: ["requestedUser", "receivedUser"],
         });
 
       if (!allFollowRequests || allFollowRequests.length === 0) {
@@ -157,9 +210,16 @@ export class FollowController {
       const data = allFollowRequests.map((request) => {
         return {
           id: request.id,
-          requestedUserId: request.requestedUser.id,
-          requestedUserName: request.requestedUser.userName,
-          requestedUserProfilePic: request.requestedUser.profilePic,
+          requestedUser: {
+            id: request.requestedUser.id,
+            username: request.requestedUser.userName,
+            profilePic: request.requestedUser.profilePic,
+          },
+          recievedUser: {
+            id: request.receivedUser.id,
+            username: request.receivedUser.userName,
+            profilePic: request.receivedUser.profilePic,
+          },
         };
       });
 
@@ -169,6 +229,54 @@ export class FollowController {
         data: {
           countOfFollowRequests: allFollowRequests.length,
           followRequests: data,
+        },
+      });
+    }
+  );
+
+  public getSentRequests = asyncHandler(
+    async (req: Request, res: Response, next: NextFunction) => {
+      const userId: string = req.params.id;
+
+      const allSentRequests: FollowRequest[] =
+        await this.followRequestRepository.find({
+          where: {
+            requestedUser: { id: userId },
+            status: "pending",
+          },
+          relations: ["requestedUser", "receivedUser"],
+        });
+
+      if (!allSentRequests || allSentRequests.length === 0) {
+        return res.status(200).json({
+          status: "success",
+          message: "no sent requests",
+          data: [],
+        });
+      }
+
+      const data = allSentRequests.map((request) => {
+        return {
+          id: request.id,
+          requestedUser: {
+            id: request.requestedUser.id,
+            userName: request.requestedUser.userName,
+            profilePic: request.requestedUser.profilePic,
+          },
+          receivedUser: {
+            id: request.receivedUser.id,
+            userName: request.receivedUser.userName,
+            profilePic: request.receivedUser.profilePic,
+          },
+        };
+      });
+
+      return res.status(200).json({
+        status: "success",
+        message: "sent requests",
+        data: {
+          countOfSentRequests: allSentRequests.length,
+          sentRequests: data,
         },
       });
     }
@@ -191,7 +299,7 @@ export class FollowController {
       if (followRequest.requestedUser.id !== user.id && user.role !== "admin") {
         return next(new AppError("unauthorized", 401));
       }
-      await this.followRequestRepository.remove(followRequest);
+      const response = await this.followRequestRepository.remove(followRequest);
 
       return res.status(200).json({
         status: "success",
@@ -214,7 +322,7 @@ export class FollowController {
           followRequestId
         )) as FollowRequest;
 
-      if (followRequest.recievedUser.id !== user.id && user.role !== "admin") {
+      if (followRequest.receivedUser.id !== user.id && user.role !== "admin") {
         return next(new AppError("unauthorized", 401));
       }
 
@@ -295,7 +403,7 @@ export class FollowController {
       const followers = allFollowers.map((follower) => {
         return {
           id: follower.followers.id,
-          username: follower.followers.userName,
+          userName: follower.followers.userName,
           fullName: follower.followers.fullName,
           profilePic: follower.followers.profilePic,
         };
@@ -331,7 +439,7 @@ export class FollowController {
       const followingUsers = allFollowingUsers.map((following) => {
         return {
           id: following.following.id,
-          username: following.following.userName,
+          userName: following.following.userName,
           fullName: following.following.fullName,
           profilePic: following.following.profilePic,
         };
@@ -387,13 +495,7 @@ export class FollowController {
         where: {
           id: userId,
         },
-        relations: [
-          "posts",
-          "comments",
-          "followers",
-          "following",
-          "notifications",
-        ],
+        relations: ["posts", "comments", "followers", "following"],
       });
 
       if (!user) {
@@ -403,12 +505,10 @@ export class FollowController {
       res.status(200).json({
         success: true,
         data: {
-          userName: user.userName,
           id: user.id,
+          userName: user.userName,
           fullName: user.fullName,
-          isPrivate: user.isPrivate,
           profilePic: user.profilePic,
-          isActive: user.isActive,
           bio: user.bio,
           postsCount: user.posts.length,
           followersCount: user.following.length,

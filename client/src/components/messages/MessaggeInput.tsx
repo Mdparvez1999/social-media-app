@@ -7,7 +7,9 @@ const MessaggeInput = () => {
   const [message, setMessage] = useState<string>("");
 
   const { loading, sendMessage } = useSendMessage();
+
   const handleSendMessage = async () => {
+    if (!message.trim()) return; // Prevent sending empty messages
     try {
       await sendMessage(message);
       setMessage("");
@@ -15,6 +17,7 @@ const MessaggeInput = () => {
       toast.error("Something went wrong");
     }
   };
+
   return (
     <Box
       display={"flex"}
@@ -23,14 +26,17 @@ const MessaggeInput = () => {
       width={"100%"}
     >
       <Input
-        width={"85%"}
+        flex={1}
+        mr={2}
         placeholder="Type something..."
         value={message}
-        onChange={(e) => setMessage(e.target.value)}
+        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+          setMessage(e.target.value)
+        }
       />
       <Button
         size={"md"}
-        width={"12%"}
+        flexShrink={0}
         isLoading={loading}
         onClick={handleSendMessage}
       >

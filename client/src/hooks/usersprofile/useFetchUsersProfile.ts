@@ -2,6 +2,8 @@ import { toast } from "react-toastify";
 
 const useFetchUsersProfile = () => {
   const fetchUsersProfile = async (id: string) => {
+    if (!id) return;
+
     try {
       const response = await fetch(`/api/users/profile/${id}`, {
         method: "GET",
@@ -10,7 +12,7 @@ const useFetchUsersProfile = () => {
 
       if (!response.ok) throw new Error(response.statusText);
 
-      const { data } = await response.json();
+      const data = await response.json();
 
       if (data.status === "error" || data.status === "fail")
         throw new Error(data.message);

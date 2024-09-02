@@ -27,13 +27,13 @@ const ViewFollowersModal = ({ isOpen, onClose }: ViewFollowersModalProps) => {
     <Modal isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
       <ModalContent maxWidth={{ xs: "92vw", md: "390px" }}>
-        <ModalCloseButton />
+        <ModalCloseButton aria-label="Close Modal" />
         <ModalHeader>
           <Text textAlign={"center"}>Followers</Text>
         </ModalHeader>
         <Divider width={"85%"} margin={"auto"} />
         <ModalBody>
-          <Box>
+          <Box maxHeight={"300px"} overflowY={"auto"}>
             {followers?.length > 0 ? (
               followers?.map((follower) => (
                 <Box
@@ -55,11 +55,11 @@ const ViewFollowersModal = ({ isOpen, onClose }: ViewFollowersModalProps) => {
                           ? `http://localhost:8000/uploads/profilePic/${follower.profilePic}`
                           : undefined
                       }
-                      name={follower.username}
+                      name={follower.userName}
                     />
                     <Box mb={"8px"}>
                       <Text fontWeight={"bold"} fontSize={"1.3rem"}>
-                        {follower.username}
+                        {follower.userName}
                       </Text>
                       {follower.fullName && (
                         <Text fontSize={"1rem"}>{follower.fullName}</Text>

@@ -9,13 +9,14 @@ const EditGender = () => {
   const profile = useAppSelector((state) => state.profile.profile);
 
   const [gender, setGender] = useState<string>(profile?.gender || "");
+  const [loading, setLoading] = useState<boolean>(false);
 
   const handleChange = (e: ChangeEvent<HTMLSelectElement>) => {
-    const { value } = e.target;
-    setGender(value);
+    setGender(e.target.value);
   };
 
   const handleUpdateGender = async () => {
+    setLoading(true);
     try {
       const response = await fetch("/api/user/profile/gender", {
         method: "PATCH",
@@ -25,6 +26,8 @@ const EditGender = () => {
         },
         body: JSON.stringify({ gender }),
       });
+
+      if (!response.ok) throw new Error(response.statusText);
 
       const data = await response.json();
 
@@ -38,28 +41,31 @@ const EditGender = () => {
     } catch (error) {
       if (error instanceof Error) toast.error(error.message);
       else toast.error("Something went wrong");
+    } finally {
+      setLoading(false);
     }
   };
+
   return (
-    <>
-      <Box width={{ xs: "92%", md: "90%" }}>
-        <Text fontSize={"1.2rem"} fontWeight={"500"}>
-          Gender
-        </Text>
-        <Box width="100%" display={"flex"} justifyContent={"space-between"}>
-          <Select
-            width={{ xs: "70%", md: "85%" }}
-            value={gender}
-            onChange={handleChange}
-          >
-            <option value="male">Male</option>
-            <option value="female">Female</option>
-            <option value="other">Other</option>
-          </Select>
-          <Button onClick={handleUpdateGender}>Submit</Button>
-        </Box>
+    <Box width={{ xs: "92%", md: "90%" }}>
+      <Text fontSize={"1.2rem"} fontWeight={"500"}>
+        Gender
+      </Text>
+      <Box width="100%" display={"flex"} justifyContent={"space-between"}>
+        <Select
+          width={{ xs: "70%", md: "85%" }}
+          value={gender}
+          onChange={handleChange}
+        >
+          <option value="male">Male</option>
+          <option value="female">Female</option>
+          <option value="other">Other</option>
+        </Select>
+        <Button onClick={handleUpdateGender} isLoading={loading}>
+          Submit
+        </Button>
       </Box>
-    </>
+    </Box>
   );
 };
 

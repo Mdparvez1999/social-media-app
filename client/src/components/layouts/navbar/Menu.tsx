@@ -35,146 +35,76 @@ const Menu = () => {
       toast.error("Something went wrong");
     }
   };
+
+  const menuItems = [
+    {
+      label: "Home",
+      icon: FaHome,
+      to: "/app/home",
+    },
+    {
+      label: "Search",
+      icon: FaSearch,
+      onClick: searchDisclosure.onOpen,
+    },
+    {
+      label: "Create Post",
+      icon: GoPlusCircle,
+      onClick: createPostDisclosure.onOpen,
+    },
+    {
+      label: "Notifications",
+      icon: IoNotifications,
+      onClick: notificationsDisclosure.onOpen,
+    },
+    {
+      label: "Messages",
+      icon: BsChatSquareDotsFill,
+      to: "/app/messages",
+    },
+    {
+      label: "Profile",
+      icon: FaUserCircle,
+      to: "/app/profile",
+    },
+    {
+      label: "Logout",
+      icon: FiLogOut,
+      to: "/login",
+      onClick: handleLogout,
+    },
+  ];
+
   return (
     <>
       <Box width={"100%"} height={"100%"}>
         <UnorderedList
           display={"flex"}
           flexDirection={"column"}
-          listStyleImage={"none"}
           padding={"8px"}
           listStyleType={"none"}
           _hover={{ cursor: "pointer" }}
         >
-          <ListItem width={"100%"} padding={"10px"} mb={"14px"}>
-            <ChakraLink
-              as={Link}
-              to={"/app/home"}
-              display={"flex"}
-              alignItems={"center"}
-              color={"black"}
-              fontSize={"1.2rem"}
-              textAlign={"center"}
-              _hover={{ textDecoration: "none" }}
-            >
-              <Box mr={"18px"}>
-                <FaHome size={"1.5rem"} />
-              </Box>
-              <span>Home</span>
-            </ChakraLink>
-          </ListItem>
-
-          <ListItem width={"100%"} padding={"10px"} mb={"14px"}>
-            <ChakraLink
-              as={Link}
-              to={"#"}
-              display={"flex"}
-              alignItems={"center"}
-              color={"black"}
-              fontSize={"1.2rem"}
-              textAlign={"center"}
-              _hover={{ textDecoration: "none" }}
-              onClick={searchDisclosure.onOpen}
-            >
-              <Box mr={"18px"}>
-                <FaSearch size={"1.5rem"} />
-              </Box>
-              Search
-            </ChakraLink>
-          </ListItem>
-
-          <ListItem width={"100%"} padding={"10px"} mb={"14px"}>
-            <ChakraLink
-              as={Link}
-              to={"#"}
-              onClick={createPostDisclosure.onOpen}
-              display={"flex"}
-              alignItems={"center"}
-              color={"black"}
-              fontSize={"1.2rem"}
-              textAlign={"center"}
-              _hover={{ textDecoration: "none" }}
-            >
-              <Box mr={"18px"}>
-                <GoPlusCircle size={"1.5rem"} />
-              </Box>
-              Create Post
-            </ChakraLink>
-          </ListItem>
-
-          <ListItem width={"100%"} padding={"10px"} mb={"14px"}>
-            <ChakraLink
-              as={Link}
-              to={"#"}
-              display={"flex"}
-              alignItems={"center"}
-              color={"black"}
-              fontSize={"1.2rem"}
-              textAlign={"center"}
-              _hover={{ textDecoration: "none" }}
-              onClick={notificationsDisclosure.onOpen}
-            >
-              <Box mr={"18px"}>
-                <IoNotifications size={"1.5rem"} />
-              </Box>
-              Notifications
-            </ChakraLink>
-          </ListItem>
-
-          <ListItem width={"100%"} padding={"10px"} mb={"14px"}>
-            <ChakraLink
-              as={Link}
-              to={"/app/messages"}
-              display={"flex"}
-              alignItems={"center"}
-              color={"black"}
-              fontSize={"1.2rem"}
-              textAlign={"center"}
-              _hover={{ textDecoration: "none" }}
-            >
-              <Box mr={"18px"}>
-                <BsChatSquareDotsFill size={"1.5rem"} />
-              </Box>
-              Messages
-            </ChakraLink>
-          </ListItem>
-
-          <ListItem width={"100%"} padding={"10px"} mb={"14px"}>
-            <ChakraLink
-              as={Link}
-              to={"/app/profile"}
-              display={"flex"}
-              alignItems={"center"}
-              color={"black"}
-              fontSize={"1.2rem"}
-              textAlign={"center"}
-              _hover={{ textDecoration: "none" }}
-            >
-              <Box mr={"18px"}>
-                <FaUserCircle size={"1.5rem"} />
-              </Box>
-              Profile
-            </ChakraLink>
-          </ListItem>
-
-          <ListItem width={"100%"} padding={"10px"} mb={"14px"}>
-            <ChakraLink
-              as={Link}
-              to={"/login"}
-              onClick={handleLogout}
-              display={"flex"}
-              alignItems={"center"}
-              color={"black"}
-              fontSize={"1.2rem"}
-              textAlign={"center"}
-              _hover={{ textDecoration: "none" }}
-            >
-              <Box mr={"18px"}>
-                <FiLogOut size={"1.5rem"} />
-              </Box>
-              Logout
-            </ChakraLink>
-          </ListItem>
+          {menuItems.map(({ label, icon: Icon, to, onClick }) => (
+            <ListItem key={label} width={"100%"} padding={"10px"} mb={"14px"}>
+              <ChakraLink
+                as={Link}
+                to={to || "#"}
+                display={"flex"}
+                alignItems={"center"}
+                color={"black"}
+                fontSize={"1.2rem"}
+                textAlign={"center"}
+                _hover={{ textDecoration: "none" }}
+                onClick={onClick}
+              >
+                <Box mr={"18px"}>
+                  <Icon size={"1.5rem"} />
+                </Box>
+                {label}
+              </ChakraLink>
+            </ListItem>
+          ))}
         </UnorderedList>
       </Box>
       <CreatePost

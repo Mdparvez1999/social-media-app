@@ -6,8 +6,9 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   ManyToOne,
+  Relation,
 } from "typeorm";
-import { v4 as uuid } from "uuid";
+import { v4 as uuidv4 } from "uuid";
 import { Users } from "./user.entity";
 
 @Entity()
@@ -26,11 +27,17 @@ export class Notifications {
   })
   isRead!: boolean;
 
-  @ManyToOne(() => Users, (user) => user.notifications, {
+  @ManyToOne(() => Users, (user) => user.sentNotifications, {
     onDelete: "CASCADE",
     eager: true,
   })
-  user!: Users;
+  sentBy!: Relation<Users>;
+
+  @ManyToOne(() => Users, (user) => user.receivedNotifications, {
+    onDelete: "CASCADE",
+    eager: true,
+  })
+  receivedBy!: Relation<Users>;
 
   @CreateDateColumn()
   createdAt!: Date;
@@ -40,6 +47,6 @@ export class Notifications {
 
   @BeforeInsert()
   addId() {
-    this.id = uuid();
+    this.id = uuidv4();
   }
 }

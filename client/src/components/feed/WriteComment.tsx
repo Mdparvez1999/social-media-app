@@ -1,12 +1,11 @@
 import { Box, Button, Input } from "@chakra-ui/react";
 import { ChangeEvent, useState } from "react";
-import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
+import { useAppDispatch } from "../../hooks/hooks";
 import { toast } from "react-toastify";
 import { addCommentToFeedPost } from "../../redux-store/features/feed/feedSlice";
 
-const WriteComment = () => {
+const WriteComment = ({ postId }: { postId: string }) => {
   const dispatch = useAppDispatch();
-  const post = useAppSelector((state) => state.feed.singlePost);
 
   const [comment, setComment] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
@@ -19,9 +18,11 @@ const WriteComment = () => {
   const handleWriteComment = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
 
+    if (comment.trim() === "") return toast.error("Comment cannot be empty");
+
     try {
       setLoading(true);
-      const response = await fetch(`/api/post/comments/write/${post?.id}`, {
+      const response = await fetch(`/api/post/comments/write/${postId}`, {
         method: "POST",
         credentials: "include",
         headers: {
@@ -32,15 +33,18 @@ const WriteComment = () => {
 
       if (!response.ok) throw new Error(response.statusText);
 
-      const { data } = await response.json();
+      const data = await response.json();
 
-      // Dispatch action to add the new comment to the Redux state
-      dispatch(addCommentToFeedPost(data));
+      if (data.status === "fail" || data.status === "error")
+        throw new Error(data.message);
 
-      setComment(""); // Clear the input field
+      dispatch(addCommentToFeedPost(data.data));
+
+      setComment("");
     } catch (error) {
-      if (error instanceof Error) toast.error(error.message);
-      else toast.error("Something went wrong");
+      toast.error(
+        error instanceof Error ? error.message : "Something went wrong"
+      );
     } finally {
       setLoading(false);
     }
@@ -59,6 +63,7 @@ const WriteComment = () => {
       <Button
         borderRadius={"10px"}
         onClick={handleWriteComment}
+        disabled={loading}
         isLoading={loading}
       >
         Write

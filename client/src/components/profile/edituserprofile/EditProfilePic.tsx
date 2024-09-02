@@ -1,5 +1,5 @@
-import { Avatar, Box, Button, Heading, Input } from "@chakra-ui/react";
-import { ChangeEvent, useRef } from "react";
+import { Avatar, Box, Button, Heading, Input, Spinner } from "@chakra-ui/react";
+import { ChangeEvent, useRef, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../../hooks/hooks";
 import { updateProfilePic } from "../../../redux-store/features/profile/profileSlice";
 import { toast } from "react-toastify";
@@ -8,6 +8,8 @@ const EditProfilePic = () => {
   const profile = useAppSelector((state) => state.profile.profile);
 
   const dispatch = useAppDispatch();
+
+  const [loading, setLoading] = useState<boolean>(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -20,7 +22,16 @@ const EditProfilePic = () => {
   const handleFileInputChange = async (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files?.length) {
       const selectedProfilePic = e.target.files[0];
+      const fileType = selectedProfilePic.type.split("/")[1];
+
+      if (fileType !== "jpeg" && fileType !== "png" && fileType !== "jpg") {
+        toast.error("Only JPEG, PNG, and JPG files are allowed.");
+        return;
+      }
+
+      setLoading(true);
       await updateProfilePicture(selectedProfilePic);
+      setLoading(false);
     }
   };
 
@@ -39,6 +50,9 @@ const EditProfilePic = () => {
         if (!response.ok) throw new Error(response.statusText);
 
         const data = await response.json();
+
+        if (data.status === "fail" || data.status === "error")
+          throw new Error(data.message);
 
         dispatch(updateProfilePic(data.profilePic));
 
@@ -78,7 +92,7 @@ const EditProfilePic = () => {
         </Box>
         <Box>
           <Button onClick={fileInputClick}>
-            Change Photo
+            {loading ? <Spinner size="sm" /> : "Change Photo"}
             <Input
               type="file"
               ref={fileInputRef}

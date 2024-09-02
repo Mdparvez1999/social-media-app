@@ -12,7 +12,6 @@ const Conversations = () => {
   const dispatch = useAppDispatch();
 
   const conversations = useAppSelector((state) => state.messages.conversations);
-
   const currentUser = useAppSelector((state) => state.auth.currentUser);
 
   useEffect(() => {
@@ -23,14 +22,20 @@ const Conversations = () => {
           credentials: "include",
         });
 
+        if (!response.ok) {
+          throw new Error("Failed to fetch conversations");
+        }
+
         const data = await response.json();
 
-        if (data.status === "error" || data.status === "fail") return;
+        if (data.status === "error" || data.status === "fail")
+          throw new Error(data.message);
 
         dispatch(setConversations(data.data));
       } catch (error) {
-        if (error instanceof Error) toast.error(error.message);
-        else toast.error("Something went wrong");
+        toast.error(
+          error instanceof Error ? error.message : "Something went wrong"
+        );
       }
     };
 

@@ -1,8 +1,9 @@
-import { Box, Image } from "@chakra-ui/react";
+import { Box } from "@chakra-ui/react";
 import { useAppSelector } from "../../hooks/hooks";
 import { PostState } from "../../redux-store/features/post/postsSlice";
-import { Carousel } from "react-responsive-carousel";
-import "react-responsive-carousel/lib/styles/carousel.min.css";
+import CustomCarousel from "../layouts/general/CustomCarousel";
+import { useEffect, useState } from "react";
+import PostImageSkeleton from "../../skeletons/PostImageSkeleton";
 
 const CurrentPostImage = () => {
   const post = useAppSelector(
@@ -11,31 +12,25 @@ const CurrentPostImage = () => {
 
   const images = post?.files;
 
-  return (
-    <>
-      <Box w={"100%"} h={"100%"}>
-        <Carousel
-          showThumbs={false}
-          showStatus={false}
-          autoPlay
-          infiniteLoop
-          useKeyboardArrows
-        >
-          {images?.map((image) => {
-            return (
-              <Image
-                key={image.fileName}
-                crossOrigin="anonymous"
-                w={"100%"}
-                h={"100%"}
-                objectFit={"cover"}
-                src={`http://localhost:8000/uploads/postFiles/${image.fileName}`}
-              />
-            );
-          })}
-        </Carousel>
-      </Box>
-    </>
+  const [loading, setLoading] = useState<boolean>(true);
+
+  useEffect(() => {
+    if (images) setLoading(false);
+  }, [images]);
+
+  return loading ? (
+    <PostImageSkeleton />
+  ) : (
+    <Box w={"100%"} h={"100%"}>
+      <CustomCarousel
+        images={images?.map(
+          (image) => `http://localhost:8000/uploads/postFiles/${image.fileName}`
+        )}
+        width={"100%"}
+        height={"100%"}
+        objectFit={"contain"}
+      />
+    </Box>
   );
 };
 

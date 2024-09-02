@@ -3,7 +3,6 @@ import { FollowController } from "../controllers/follow.controller";
 import { auth } from "../middlewares/auth.Middleware";
 
 const router: express.Router = express.Router();
-
 const followController = new FollowController();
 
 router.post("/follow/:id", auth, followController.followUser);
@@ -16,7 +15,9 @@ router.get("/following/:id", auth, followController.getFollowing);
 
 router.get("/follow-requests", auth, followController.getFollowRequests);
 
-router.put("/accept-request/:id", auth, followController.acceptFollowRequest);
+router.get("/sent-requests/:id", auth, followController.getSentRequests);
+
+router.post("/accept-request/:id", auth, followController.acceptFollowRequest);
 
 router.delete(
   "/cancel-request/:id",
@@ -25,7 +26,7 @@ router.delete(
 );
 
 router.delete(
-  "/delete-request/:id",
+  "/decline-request/:id",
   auth,
   followController.declineFollowRequest
 );

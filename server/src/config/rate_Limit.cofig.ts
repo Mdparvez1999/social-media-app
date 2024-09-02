@@ -1,11 +1,17 @@
-import rateLimit from "express-rate-limit";
+import rateLimit, { RateLimitRequestHandler } from "express-rate-limit";
 import { AppError } from "../utils/AppError";
+import { NextFunction, Request, Response } from "express";
 
-export const apiLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 100,
-  handler: (req, res, next) => {
-    return next(new AppError("Too many requests", 429));
+export const apiLimiter: RateLimitRequestHandler = rateLimit({
+  windowMs: 150 * 60 * 1000,
+  max: 1000,
+  handler: (req: Request, res: Response, next: NextFunction) => {
+    return next(
+      new AppError(
+        "Too many requests from this IP, please try again later",
+        429
+      )
+    );
   },
   headers: true,
 });

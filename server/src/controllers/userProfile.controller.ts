@@ -31,7 +31,9 @@ interface changePasswordRequest extends Request {
 }
 
 export class UserProfileController {
-  private userRepsitory = AppDataSource.getRepository(Users);
+  private get userRepsitory() {
+    return AppDataSource.getRepository(Users);
+  }
 
   public getUserProfile = asyncHandler(
     async (req: Request, res: Response, next: NextFunction) => {
@@ -76,9 +78,7 @@ export class UserProfileController {
     async (req: updateProfileRequest, res: Response, next: NextFunction) => {
       const { error, value } = updateUserNameSchema.validate(req.body);
 
-      if (error) {
-        return next(error);
-      }
+      if (error) return next(error);
 
       const userName: string = value.userName;
 
@@ -97,9 +97,7 @@ export class UserProfileController {
     async (req: updateProfileRequest, res: Response, next: NextFunction) => {
       const { error, value } = updatefullNameSchema.validate(req.body);
 
-      if (error) {
-        return next(error);
-      }
+      if (error) return next(error);
 
       const fullName: string = value.fullName;
 
@@ -131,9 +129,7 @@ export class UserProfileController {
     async (req: updateProfileRequest, res: Response, next: NextFunction) => {
       const { error, value } = updateEmailSchema.validate(req.body);
 
-      if (error) {
-        return next(error);
-      }
+      if (error) return next(error);
 
       const email: string = value.email;
 
@@ -152,9 +148,7 @@ export class UserProfileController {
     async (req: updateProfileRequest, res: Response, next: NextFunction) => {
       const { error, value } = updateDOBSchema.validate(req.body);
 
-      if (error) {
-        return next(error);
-      }
+      if (error) return next(error);
 
       const DOB: string = value.DOB;
 
@@ -186,9 +180,7 @@ export class UserProfileController {
     async (req: updateProfileRequest, res: Response, next: NextFunction) => {
       const { error, value } = updateBioSchema.validate(req.body);
 
-      if (error) {
-        return next(error);
-      }
+      if (error) return next(error);
 
       const bio: string = value.bio;
 
@@ -220,9 +212,7 @@ export class UserProfileController {
     async (req: updateProfileRequest, res: Response, next: NextFunction) => {
       const { error, value } = updateGenderSchema.validate(req.body);
 
-      if (error) {
-        return next(error);
-      }
+      if (error) return next(error);
 
       const gender: string = value.gender;
 
@@ -274,9 +264,7 @@ export class UserProfileController {
     async (req: changePasswordRequest, res: Response, next: NextFunction) => {
       const { error, value } = changePasswordSchema.validate(req.body);
 
-      if (error) {
-        return next(error);
-      }
+      if (error) return next(error);
 
       const { oldPassword, newPassword } = value;
 
@@ -410,9 +398,16 @@ export class UserProfileController {
 
       await this.userRepsitory.update({ id: userId }, { isActive: true });
 
+      const user = await this.userRepsitory.findOneBy({ id: userId });
+
       res.status(200).json({
         success: true,
         message: "account reactivated successfully",
+        user: {
+          id: user?.id,
+          userName: user?.userName,
+          isActive: user?.isActive,
+        },
       });
     }
   );
@@ -429,13 +424,6 @@ export class UserProfileController {
         take: 10,
       });
 
-      if (!suggestedUsers || suggestedUsers.length === 0) {
-        return res.status(200).json({
-          status: true,
-          data: [],
-        });
-      }
-
       const usersData = suggestedUsers.map((user) => {
         return {
           id: user.id,
@@ -446,6 +434,8 @@ export class UserProfileController {
 
       return res.status(200).json({
         status: true,
+        message:
+          suggestedUsers.length > 0 ? "suggested users" : "no suggested users",
         data: usersData,
       });
     }

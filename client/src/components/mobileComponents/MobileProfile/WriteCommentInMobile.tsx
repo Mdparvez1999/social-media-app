@@ -31,15 +31,19 @@ const WriteCommentInMobile = ({ postId }: { postId: string }) => {
 
       if (!response.ok) throw new Error(response.statusText);
 
-      const { data } = await response.json();
+      const data = await response.json();
+
+      if (data.status === "error" || data.status === "fail")
+        throw new Error(data.message);
 
       // Dispatch action to add the new comment to the Redux state
-      dispatch(addComment(data));
+      dispatch(addComment(data.data));
 
       setComment(""); // Clear the input field
     } catch (error) {
-      if (error instanceof Error) toast.error(error.message);
-      else toast.error("Something went wrong");
+      toast.error(
+        error instanceof Error ? error.message : "Something went wrong"
+      );
     } finally {
       setLoading(false);
     }

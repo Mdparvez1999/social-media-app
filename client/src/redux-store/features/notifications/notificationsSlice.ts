@@ -1,5 +1,11 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
+interface UserInfo {
+  id: string;
+  username: string;
+  profilePic: string;
+}
+
 interface NotificationState {
   id: string;
   message: string;
@@ -7,11 +13,8 @@ interface NotificationState {
   isRead: boolean;
   createdAt: Date;
   updatedAt: Date;
-  user: {
-    id: string;
-    username: string;
-    profilePic: string;
-  };
+  sentBy: UserInfo;
+  receivedBy: UserInfo;
 }
 
 export interface NotificationsState {
@@ -30,14 +33,12 @@ const notificationsSlice = createSlice({
       state.notifications = action.payload;
     },
     readNotification: (state, action: PayloadAction<string>) => {
-      if (state.notifications) {
-        state.notifications = state.notifications.map((notification) => {
-          if (notification.id === action.payload) {
-            return { ...notification, isRead: true };
-          }
-          return notification;
-        });
-      }
+      state.notifications = state.notifications.map((notification) => {
+        if (notification.id === action.payload) {
+          return { ...notification, isRead: true };
+        }
+        return notification;
+      });
     },
   },
 });

@@ -10,9 +10,14 @@ import { Message } from "../entities/message.entity";
 import { checkIsOnline, io } from "../server";
 
 export class ChatsController {
-  private conversationRepository = AppDataSource.getRepository(Conversations);
+  private get conversationRepository() {
+    return AppDataSource.getRepository(Conversations);
+  }
 
-  private MessageRepository = AppDataSource.getRepository(Message);
+  private get MessageRepository() {
+    return AppDataSource.getRepository(Message);
+  }
+
   public sendMessage = asyncHandler(
     async (req: Request, res: Response, next: NextFunction) => {
       const senderId: string = res.locals.user.id;

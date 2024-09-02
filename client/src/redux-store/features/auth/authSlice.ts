@@ -3,8 +3,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 interface AuthUser {
   id: string;
   userName: string;
-  email: string;
-  DOB: string;
+  isActive: boolean;
 }
 
 export interface AuthState {

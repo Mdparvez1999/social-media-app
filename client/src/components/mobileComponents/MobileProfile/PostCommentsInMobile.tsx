@@ -23,12 +23,10 @@ interface File {
   fileName: string;
   type: string;
 }
-
 interface PostLikes {
-  id: string;
-  isLiked: boolean;
-  liked_at: Date;
-  post: string;
+  postLikeId: string;
+  likedAt: Date;
+  postId: string;
   user: {
     id: string;
     profilePic: string;
@@ -61,8 +59,9 @@ const PostCommentsInMobile = ({
   isOpen,
   onClose,
 }: PostCommentsInMobileProps) => {
-  const { fetchComments } = useComment();
   const comments = useAppSelector((state) => state.comments.comments);
+
+  const { fetchComments } = useComment();
 
   useEffect(() => {
     const getComments = async () => {
@@ -78,7 +77,9 @@ const PostCommentsInMobile = ({
     getComments();
   }, [post, fetchComments]);
 
-  const noPostAndComments = post.caption === "" && comments.length === 0;
+  if (!post || !comments) return null;
+
+  const noPostAndComments = post?.caption === "" && comments.length === 0;
 
   return (
     <Drawer isOpen={isOpen} onClose={onClose} placement="bottom" size="full">
@@ -138,21 +139,25 @@ const PostCommentsInMobile = ({
                   mb={"12px"}
                 >
                   <Avatar
-                    src={`http://localhost:8000/uploads/profilePic/${comment.user.profilePic}`}
+                    src={
+                      comment?.user?.profilePic
+                        ? `http://localhost:8000/uploads/profilePic/${comment?.user?.profilePic}`
+                        : undefined
+                    }
                     size={"sm"}
-                    name={comment.user.userName}
+                    name={comment?.user?.userName}
                     crossOrigin="anonymous"
                   />
                   <Box display={"flex"} flexDirection={"column"} gap={"6px"}>
                     <Box display={"flex"} gap={"10px"} alignItems={"center"}>
                       <Heading fontSize={"1.3rem"}>
-                        {comment.user.userName}
+                        {comment?.user?.userName}
                       </Heading>
-                      <Text>{comment.comment}</Text>
+                      <Text>{comment?.comment}</Text>
                     </Box>
                     <Box>
                       <Text fontSize={"0.9rem"} color={"gray.700"}>
-                        {formatCreatedAtTime(comment.commentedAt)}
+                        {formatCreatedAtTime(comment?.commentedAt)}
                       </Text>
                     </Box>
                   </Box>

@@ -9,13 +9,14 @@ const EditEmail = () => {
   const profile = useAppSelector((state) => state.profile.profile);
 
   const [email, setEmail] = useState<string>(profile?.email || "");
+  const [loading, setLoading] = useState<boolean>(false);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const { value } = e.target;
-    setEmail(value);
+    setEmail(e.target.value);
   };
 
   const handleUpdateEmail = async () => {
+    setLoading(true);
     try {
       const response = await fetch("/api/user/profile/email", {
         method: "PATCH",
@@ -26,6 +27,8 @@ const EditEmail = () => {
         body: JSON.stringify({ email }),
       });
 
+      if (!response.ok) throw new Error(response.statusText);
+
       const data = await response.json();
 
       dispatch(updateEmail(data.email));
@@ -34,27 +37,34 @@ const EditEmail = () => {
     } catch (error) {
       if (error instanceof Error) toast.error(error.message);
       else toast.error("Something went wrong");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <>
-      <Box width={{ xs: "92%", md: "90%" }}>
-        <Text fontSize={"1.2rem"} fontWeight={"500"}>
-          Email
-        </Text>
-        <Box width="100%" display={"flex"} justifyContent={"space-between"}>
-          <Input
-            width={{ xs: "70%", md: "85%" }}
-            type="email"
-            placeholder={profile?.email ? profile?.email : "add email"}
-            value={profile?.email ? profile?.email : email}
-            onChange={handleChange}
-          />
-          <Button onClick={handleUpdateEmail}>Submit</Button>
-        </Box>
+    <Box width={{ xs: "92%", md: "90%" }}>
+      <Text fontSize={"1.2rem"} fontWeight={"500"}>
+        Email
+      </Text>
+      <Box
+        width="100%"
+        display={"flex"}
+        justifyContent={"space-between"}
+        alignItems={"center"}
+      >
+        <Input
+          width={{ xs: "70%", md: "85%" }}
+          type="email"
+          placeholder={profile?.email || "Add email"}
+          value={email}
+          onChange={handleChange}
+        />
+        <Button onClick={handleUpdateEmail} isLoading={loading}>
+          Submit
+        </Button>
       </Box>
-    </>
+    </Box>
   );
 };
 

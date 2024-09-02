@@ -6,12 +6,24 @@ interface File {
   type: string;
 }
 
+interface PostLikes {
+  postLikeId: string;
+  likedAt: Date;
+  postId: string;
+  user: {
+    id: string;
+    profilePic: string;
+    userName: string;
+  };
+}
+
 interface FeedState {
   id: string;
   caption: string;
   commentCount: number;
   likeCount: number;
   files: File[];
+  postlikes: PostLikes[];
   user: {
     id: string;
     profilePic: string;
@@ -52,6 +64,7 @@ const initialState: FeedSliceState = {
   error: null,
 };
 
+// Fetch user feed
 export const fetchUserFeed = createAsyncThunk<
   FeedState[],
   void,
@@ -92,17 +105,50 @@ const feedSlice = createSlice({
     setFeedPostComments(state, action: PayloadAction<CommentState[]>) {
       state.comments = action.payload;
     },
+
     addCommentToFeedPost(state, action: PayloadAction<CommentState>) {
       state.comments = [action.payload, ...state.comments];
     },
+
     clearFeed(state) {
-      (state.posts = []), (state.singlePost = null), (state.comments = []);
+      state.posts = [];
+      state.singlePost = null;
+      state.comments = [];
       state.addComment = null;
       state.loading = false;
       state.error = null;
     },
+
+    setSelectedFeedLikes: (state, action: PayloadAction<PostLikes[]>) => {
+      if (state.singlePost) {
+        state.singlePost.postlikes = action.payload;
+        state.singlePost.likeCount = action.payload.length;
+      }
+    },
+
+    likeSelectedFeedAction: (state, action: PayloadAction<PostLikes>) => {
+      if (state.singlePost && state.singlePost.id === action.payload.postId) {
+        state.singlePost.postlikes = [
+          ...state.singlePost.postlikes,
+          action.payload,
+        ];
+        state.singlePost.likeCount += 1;
+      }
+    },
+
+    unlikeSelectedFeedAction: (
+      state,
+      action: PayloadAction<{ postId: string; userId: string }>
+    ) => {
+      if (state.singlePost && state.singlePost.id === action.payload.postId) {
+        state.singlePost.postlikes = state.singlePost.postlikes.filter(
+          (like) => like.user.id !== action.payload.userId
+        );
+        state.singlePost.likeCount -= 1;
+      }
+    },
   },
-  extraReducers(builder) {
+  extraReducers: (builder) => {
     builder.addCase(fetchUserFeed.pending, (state) => {
       state.loading = true;
       state.error = null;
@@ -126,6 +172,9 @@ export const {
   setFeedPostComments,
   addCommentToFeedPost,
   clearFeed,
+  setSelectedFeedLikes,
+  likeSelectedFeedAction,
+  unlikeSelectedFeedAction,
 } = feedSlice.actions;
 
 export default feedSlice.reducer;

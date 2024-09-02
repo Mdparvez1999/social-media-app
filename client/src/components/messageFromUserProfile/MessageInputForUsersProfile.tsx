@@ -10,16 +10,17 @@ import {
 
 const MessageInputForUsersProfile = () => {
   const dispatch = useAppDispatch();
+
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState<boolean>(false);
 
   const selectedUsersMessage = useAppSelector(
     (state) => state.users.selectedUsersMessage
   );
-
   const messages = useAppSelector((state) => state.messages.messages);
 
   const handleSendMessage = async () => {
+    if (message.trim() === "") return toast.error("Message cannot be empty");
     setLoading(true);
     try {
       const response = await fetch(
@@ -34,7 +35,9 @@ const MessageInputForUsersProfile = () => {
         }
       );
 
-      const { data } = await response.json();
+      const data = await response.json();
+
+      console.log(data);
 
       if (data.status === "error" || data.status === "fail")
         throw new Error(data.message);
@@ -48,7 +51,9 @@ const MessageInputForUsersProfile = () => {
 
       setMessage("");
     } catch (error) {
-      if (error instanceof Error) toast.error(error.message);
+      toast.error(
+        error instanceof Error ? error.message : "Something went wrong"
+      );
     } finally {
       setLoading(false);
     }
@@ -72,6 +77,7 @@ const MessageInputForUsersProfile = () => {
         width={"12%"}
         isLoading={loading}
         onClick={handleSendMessage}
+        disabled={!message.trim()}
       >
         Send
       </Button>

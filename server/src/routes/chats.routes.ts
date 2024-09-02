@@ -3,7 +3,6 @@ import { ChatsController } from "../controllers/chats.controllers";
 import { auth } from "../middlewares/auth.Middleware";
 
 const router = express.Router();
-
 const chatsController = new ChatsController();
 
 router.get("/conversations", auth, chatsController.getAllConversations);

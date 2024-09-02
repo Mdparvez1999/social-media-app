@@ -9,12 +9,11 @@ import { useNavigate } from "react-router-dom";
 
 const Home = () => {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
 
   useEffect(() => {
     dispatch(fetchUserFeed());
   }, [dispatch]);
-
-  const navigate = useNavigate();
 
   const handleMessageClick = () => {
     navigate("/app/messagesinmobile");

@@ -8,14 +8,13 @@ interface useCreatePostReturnType {
 }
 
 const useCreatePost = (): useCreatePostReturnType => {
-  const [loading, setLoading] = useState(false);
-
+  const [loading, setLoading] = useState<boolean>(false);
   const navigate = useNavigate();
 
   const createPost = async (createPostData: FormData) => {
-    try {
-      setLoading(true);
+    setLoading(true);
 
+    try {
       const response = await fetch("/api/users/post/create", {
         method: "POST",
         credentials: "include",

@@ -1,6 +1,8 @@
-import { Box, Image } from "@chakra-ui/react";
+import { Box } from "@chakra-ui/react";
 import { useAppSelector } from "../../hooks/hooks";
-import { Carousel } from "react-responsive-carousel";
+import CustomCarousel from "../layouts/general/CustomCarousel";
+import { useEffect, useState } from "react";
+import PostImageSkeleton from "../../skeletons/PostImageSkeleton";
 
 const SelectedUsersPostImage = () => {
   const selectedUsersPost = useAppSelector(
@@ -9,29 +11,26 @@ const SelectedUsersPostImage = () => {
 
   const images = selectedUsersPost?.files;
 
-  return (
+  const [loading, setLoading] = useState<boolean>(true);
+
+  useEffect(() => {
+    if (images) setLoading(false);
+  }, [images]);
+
+  return loading ? (
+    <PostImageSkeleton />
+  ) : (
     <>
       <Box w={"100%"} h={"100%"}>
-        <Carousel
-          showThumbs={false}
-          showStatus={false}
-          autoPlay
-          infiniteLoop
-          useKeyboardArrows
-        >
-          {images?.map((image) => {
-            return (
-              <Image
-                key={image.fileName}
-                crossOrigin="anonymous"
-                w={"100%"}
-                h={"100%"}
-                objectFit={"cover"}
-                src={`http://localhost:8000/uploads/postFiles/${image.fileName}`}
-              />
-            );
-          })}
-        </Carousel>
+        <CustomCarousel
+          images={images?.map(
+            (image) =>
+              `http://localhost:8000/uploads/postFiles/${image.fileName}`
+          )}
+          width={"100%"}
+          height={"100%"}
+          objectFit={"contain"}
+        />
       </Box>
     </>
   );

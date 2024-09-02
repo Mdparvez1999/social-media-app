@@ -18,38 +18,48 @@ export class CommentsController {
     async (req: Request, res: Response, next: NextFunction) => {
       const { error, value } = commentSchema.validate(req.body);
 
-      if (error) {
-        return next(error);
-      }
+      if (error) return next(error);
 
       const comment: string = value.comment;
 
       const postId: string = req.params.id;
 
+      // Find the post by its ID
       const post: Post | null = (await PostUtils.findPostById(postId)) as Post;
 
+      // Get the ID of the currently authenticated user
       const userId: string = res.locals.user.id;
 
+      // Find the user who is writing the comment
       const user: Users | null = await UserUtils.findUserById(userId);
 
+      // Create a new Comment instance
       const newComment = new Comments();
-
       newComment.comment = comment;
       newComment.post = post;
       newComment.user = user;
 
+      // Save the comment to the database
       await this.commentRepository.save(newComment);
 
+      // Increment the comment count on the post
       post.commentCount += 1;
       await this.postRepository.save(post);
 
+      // Create a notification for the post owner
       const type = "comment";
       const message = `${user?.userName} commented on your post`;
-      await NotificationUtils.createNotification(type, message, post.user.id);
+
+      await NotificationUtils.createNotification(
+        type,
+        message,
+        user, // sentBy
+        post.user // receivedBy
+      );
 
       res.status(201).json({
         success: true,
-        message: "comment created successfully",
+        message: "Comment created successfully",
         data: {
           id: newComment.id,
           comment: newComment.comment,
@@ -69,9 +79,7 @@ export class CommentsController {
     async (req: Request, res: Response, next: NextFunction) => {
       const { error, value } = commentSchema.validate(req.body);
 
-      if (error) {
-        return next(error);
-      }
+      if (error) return next(error);
 
       const { comment } = value;
 
@@ -128,10 +136,11 @@ export class CommentsController {
         return next(new AppError("unauthorized", 401));
       }
 
-      await this.commentRepository.remove(commentToDelete);
-
-      commentToDelete.post.commentCount -= 1;
-      await this.postRepository.save(commentToDelete.post);
+      await AppDataSource.transaction(async (transactionalEntityManager) => {
+        await transactionalEntityManager.remove(commentToDelete);
+        commentToDelete.post.commentCount -= 1;
+        await this.postRepository.save(commentToDelete.post);
+      });
 
       res.status(200).json({
         success: true,

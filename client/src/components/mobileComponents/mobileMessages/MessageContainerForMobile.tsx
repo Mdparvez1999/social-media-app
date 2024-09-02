@@ -14,12 +14,11 @@ const MessageContainerForMobile = () => {
   );
 
   const navigate = useNavigate();
-
   const location = useLocation();
 
   const handleBackClick = () => {
     dispatch(clearConversation());
-    if (location && location.state.from) {
+    if (location.state?.from) {
       navigate(location.state.from, { replace: true });
     } else {
       navigate(-1);
@@ -46,7 +45,7 @@ const MessageContainerForMobile = () => {
                 crossOrigin="anonymous"
                 src={
                   selectedConversation?.participants[0].profilePic !== null
-                    ? `http://localhost:8000/uploads/profliePic/${selectedConversation?.participants[0].profilePic}`
+                    ? `http://localhost:8000/uploads/profilePic/${selectedConversation?.participants[0].profilePic}`
                     : undefined
                 }
                 name={selectedConversation?.participants[0].userName}

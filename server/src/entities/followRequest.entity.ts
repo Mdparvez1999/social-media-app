@@ -5,6 +5,7 @@ import {
   ManyToMany,
   ManyToOne,
   BeforeInsert,
+  Relation,
 } from "typeorm";
 import { v4 as uuidv4 } from "uuid";
 import { Users } from "./user.entity";
@@ -24,12 +25,12 @@ export class FollowRequest {
   @ManyToOne(() => Users, (user) => user.sentFollowRequest, {
     onDelete: "CASCADE",
   })
-  requestedUser!: Users;
+  requestedUser!: Relation<Users>;
 
   @ManyToOne(() => Users, (user) => user.recievedFollowRequest, {
     onDelete: "CASCADE",
   })
-  recievedUser!: Users;
+  receivedUser!: Relation<Users>;
 
   @BeforeInsert()
   addId() {

@@ -10,9 +10,7 @@ const MessageBodyForUsersProfile = () => {
   const selectedConversation = useAppSelector(
     (state) => state.messages.selectedConversation
   );
-
   const currentUser = useAppSelector((state) => state.auth.currentUser);
-
   const messages = useAppSelector((state) => state.messages.messages);
 
   useEffect(() => {
@@ -33,15 +31,15 @@ const MessageBodyForUsersProfile = () => {
           new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
       )
       .map((message) => {
-        const isSentByCurrentUser = message.sender.id === currentUser?.id;
+        const isSentByCurrentUser = message?.sender?.id === currentUser?.id;
 
         return {
           position: isSentByCurrentUser ? "right" : "left",
           type: "text",
-          text: message.message,
-          date: new Date(message.createdAt),
-          title: message.sender.userName,
-          id: message.id,
+          text: message?.message,
+          date: new Date(message?.createdAt),
+          title: message?.sender?.userName,
+          id: message?.id,
           focus: false,
           titleColor: "#000",
           forwarded: false,
@@ -70,7 +68,7 @@ const MessageBodyForUsersProfile = () => {
       flexDirection="column"
       ref={containerRef}
     >
-      {messages?.length > 0 ? (
+      {formattedMessages.length > 0 ? (
         <MessageList
           className="message-list"
           toBottomHeight={"100%"}

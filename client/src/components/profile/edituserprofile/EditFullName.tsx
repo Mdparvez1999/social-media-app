@@ -9,13 +9,14 @@ const EditFullName = () => {
   const profile = useAppSelector((state) => state.profile.profile);
 
   const [fullName, setFullName] = useState<string>(profile?.fullName || "");
+  const [loading, setLoading] = useState<boolean>(false);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const { value } = e.target;
-    setFullName(value);
+    setFullName(e.target.value);
   };
 
   const handleUpdateFullName = async () => {
+    setLoading(true);
     try {
       const response = await fetch("/api/user/profile/fullname", {
         method: "PATCH",
@@ -26,7 +27,12 @@ const EditFullName = () => {
         body: JSON.stringify({ fullName }),
       });
 
+      if (!response.ok) throw new Error(response.statusText);
+
       const data = await response.json();
+
+      if (data.status === "fail" || data.status === "error")
+        throw new Error(data.message);
 
       dispatch(updateFullName(data.fullName));
 
@@ -34,26 +40,29 @@ const EditFullName = () => {
     } catch (error) {
       if (error instanceof Error) toast.error(error.message);
       else toast.error("Something went wrong");
+    } finally {
+      setLoading(false);
     }
   };
+
   return (
-    <>
-      <Box width={{ xs: "92%", md: "90%" }}>
-        <Text fontSize={"1.2rem"} fontWeight={"500"}>
-          FullName
-        </Text>
-        <Box width="100%" display={"flex"} justifyContent={"space-between"}>
-          <Input
-            type="text"
-            width={{ xs: "70%", md: "85%" }}
-            placeholder={profile?.fullName ? profile.fullName : "add fullname"}
-            value={profile?.fullName ? profile.fullName : fullName}
-            onChange={handleChange}
-          />
-          <Button onClick={handleUpdateFullName}>Submit</Button>
-        </Box>
+    <Box width={{ xs: "92%", md: "90%" }}>
+      <Text fontSize={"1.2rem"} fontWeight={"500"}>
+        Full Name
+      </Text>
+      <Box width="100%" display={"flex"} justifyContent={"space-between"}>
+        <Input
+          type="text"
+          width={{ xs: "70%", md: "85%" }}
+          placeholder={profile?.fullName || "Add full name"}
+          value={fullName}
+          onChange={handleChange}
+        />
+        <Button onClick={handleUpdateFullName} isLoading={loading}>
+          Submit
+        </Button>
       </Box>
-    </>
+    </Box>
   );
 };
 

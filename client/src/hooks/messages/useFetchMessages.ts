@@ -8,6 +8,7 @@ const useFetchMessages = () => {
 
   const fetchAllMessages = useCallback(
     async (conversationId: string | undefined) => {
+      if (!conversationId) return;
       try {
         const response = await fetch(
           `/api/messages/all-messages/${conversationId}`,
@@ -17,12 +18,16 @@ const useFetchMessages = () => {
           }
         );
 
-        const { data } = await response.json();
+        const data = await response.json();
 
-        dispatch(setMessages(data));
+        if (data.status === "fail" || data.status === "error")
+          throw new Error(data.message);
+
+        dispatch(setMessages(data.data));
       } catch (error) {
-        if (error instanceof Error) toast.error(error.message);
-        else toast.error("Something went wrong");
+        toast.error(
+          error instanceof Error ? error.message : "Something went wrong"
+        );
       }
     },
     [dispatch]

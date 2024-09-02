@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../../hooks/hooks";
 import {
   setConversations,
@@ -8,6 +8,7 @@ import { toast } from "react-toastify";
 import { Avatar, Box, Divider, Text } from "@chakra-ui/react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { IoArrowBackOutline } from "react-icons/io5";
+import ConversationsInMobileSkeleton from "../../../mobileComponentSkeletons/ConversationsInMobileSkeleton";
 
 interface ParticipantsState {
   id: string;
@@ -28,12 +29,14 @@ interface ConversationsState {
 const ConversationsInMobile = () => {
   const dispatch = useAppDispatch();
 
-  const conversations = useAppSelector((state) => state.messages.conversations);
+  const [loading, setLoading] = useState<boolean>(false);
 
+  const conversations = useAppSelector((state) => state.messages.conversations);
   const currentUser = useAppSelector((state) => state.auth.currentUser);
 
   useEffect(() => {
     const fetchConversations = async () => {
+      setLoading(true);
       try {
         const response = await fetch("/api/messages/conversations", {
           method: "GET",
@@ -46,8 +49,11 @@ const ConversationsInMobile = () => {
 
         dispatch(setConversations(data.data));
       } catch (error) {
-        if (error instanceof Error) toast.error(error.message);
-        else toast.error("Something went wrong");
+        toast.error(
+          error instanceof Error ? error.message : "Something went wrong"
+        );
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -55,7 +61,6 @@ const ConversationsInMobile = () => {
   }, [dispatch]);
 
   const location = useLocation();
-
   const navigate = useNavigate();
 
   const handleConversationClick = (conversation: ConversationsState) => {
@@ -67,7 +72,9 @@ const ConversationsInMobile = () => {
     navigate("/app/home");
   };
 
-  return (
+  return loading ? (
+    <ConversationsInMobileSkeleton />
+  ) : (
     <Box
       height={"100%"}
       width={"100%"}
@@ -113,7 +120,7 @@ const ConversationsInMobile = () => {
               name={conversation.participants[0]?.userName}
               src={
                 conversation.participants[0]?.profilePic !== null
-                  ? `https://localhost:8000/uploads/profliePic/${conversation.participants[0]?.profilePic}`
+                  ? `https://localhost:8000/uploads/profilePic/${conversation.participants[0]?.profilePic}`
                   : undefined
               }
               crossOrigin="anonymous"

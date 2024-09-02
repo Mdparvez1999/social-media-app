@@ -2,6 +2,32 @@ import { Box, Heading, Text } from "@chakra-ui/react";
 import ConfirmDeactivateAccount from "./ConfirmDeactivateAccount";
 import ConfirmDeleteAccount from "./ConfirmDeleteAccount";
 
+const SettingSection = ({
+  title,
+  action,
+}: {
+  title: string;
+  action: JSX.Element;
+}) => {
+  return (
+    <Box
+      width={{ md: "85%" }}
+      display={"flex"}
+      justifyContent={"space-between"}
+      alignItems={"center"}
+      border={"1px solid #f2f2f2"}
+      borderRadius={"10px"}
+      boxShadow={"4px 4px 6px #ccc"}
+      p={"10px 20px"}
+    >
+      <Text fontSize={"1.2rem"} fontWeight={"500"}>
+        {title}
+      </Text>
+      {action}
+    </Box>
+  );
+};
+
 const AdvancedAccountSettings = () => {
   return (
     <>
@@ -18,37 +44,15 @@ const AdvancedAccountSettings = () => {
           Advanced settings
         </Heading>
 
-        <Box
-          width={{ md: "85%" }}
-          display={"flex"}
-          justifyContent={"space-between"}
-          alignItems={"center"}
-          border={"1px solid #f2f2f2"}
-          borderRadius={"10px"}
-          boxShadow={"4px 4px 6px #ccc"}
-          p={"10px 20px"}
-        >
-          <Text fontSize={"1.2rem"} fontWeight={"500"}>
-            Deactivate account
-          </Text>
-          <ConfirmDeactivateAccount />
-        </Box>
+        <SettingSection
+          title="Deactivate account"
+          action={<ConfirmDeactivateAccount />}
+        />
 
-        <Box
-          width={{ md: "85%" }}
-          display={"flex"}
-          justifyContent={"space-between"}
-          alignItems={"center"}
-          border={"1px solid #f2f2f2"}
-          borderRadius={"10px"}
-          boxShadow={"4px 4px 6px #ccc"}
-          p={"10px 20px"}
-        >
-          <Text fontSize={"1.2rem"} fontWeight={"500"}>
-            Delete account
-          </Text>
-          <ConfirmDeleteAccount />
-        </Box>
+        <SettingSection
+          title="Delete account"
+          action={<ConfirmDeleteAccount />}
+        />
       </Box>
     </>
   );

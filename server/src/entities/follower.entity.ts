@@ -1,11 +1,10 @@
 import {
   Entity,
-  Column,
   PrimaryGeneratedColumn,
   BeforeInsert,
-  ManyToMany,
   ManyToOne,
   CreateDateColumn,
+  Relation,
 } from "typeorm";
 import { v4 as uuidv4 } from "uuid";
 import { Users } from "./user.entity";
@@ -24,12 +23,12 @@ export class Follower {
   @ManyToOne(() => Users, (user) => user.followers, {
     onDelete: "CASCADE",
   })
-  followers!: Users;
+  followers!: Relation<Users>;
 
   @ManyToOne(() => Users, (user) => user.following, {
     onDelete: "CASCADE",
   })
-  following!: Users;
+  following!: Relation<Users>;
 
   @BeforeInsert()
   addId() {

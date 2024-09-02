@@ -14,15 +14,25 @@ import { Follower } from "../entities/follower.entity";
 import { In } from "typeorm";
 
 export class PostControllers {
-  private postRepository = AppDataSource.getRepository(Post);
+  private get postRepository() {
+    return AppDataSource.getRepository(Post);
+  }
 
-  private postFileRepository = AppDataSource.getRepository(PostFile);
+  private get postFileRepository() {
+    return AppDataSource.getRepository(PostFile);
+  }
 
-  private postLikeRepository = AppDataSource.getRepository(PostLike);
+  private get postLikeRepository() {
+    return AppDataSource.getRepository(PostLike);
+  }
 
-  private user = AppDataSource.getRepository(Users);
+  private get user() {
+    return AppDataSource.getRepository(Users);
+  }
 
-  private followerRepository = AppDataSource.getRepository(Follower);
+  private get followerRepository() {
+    return AppDataSource.getRepository(Follower);
+  }
 
   public createPost = asyncHandler(
     async (
@@ -38,9 +48,7 @@ export class PostControllers {
         return next(new AppError("please write something", 400));
       }
 
-      if (error) {
-        return next(error);
-      }
+      if (error) return next(error);
 
       const { caption } = value;
 
@@ -146,21 +154,23 @@ export class PostControllers {
 
       const allPosts = await this.postRepository.find({
         where: { user: { id: userId } },
-        relations: { files: true, user: true },
+        relations: ["files", "postlikes", "user", "postlikes.user"],
       });
-
-      if (!allPosts || allPosts.length === 0) {
-        return res.status(200).json({
-          success: true,
-          message: "No posts found",
-          data: [],
-        });
-      }
 
       const posts = allPosts.map((post) => {
         return {
           ...post,
           files: post.files.map((file) => file.fileName),
+          postlikes: post.postlikes.map((like) => ({
+            postLikeId: like.id,
+            likedAt: like.liked_at,
+            postId: post.id,
+            user: {
+              id: like.user.id,
+              userName: like.user.userName,
+              profilePic: like.user.profilePic,
+            },
+          })),
           user: {
             id: post.user.id,
             userName: post.user.userName,
@@ -171,8 +181,11 @@ export class PostControllers {
 
       return res.status(200).json({
         success: true,
-        message: "Posts fetched successfully",
-        data: posts,
+        message:
+          allPosts.length === 0
+            ? "No posts found"
+            : "Posts fetched successfully",
+        data: posts || [],
       });
     }
   );
@@ -183,21 +196,23 @@ export class PostControllers {
 
       const allPosts = await this.postRepository.find({
         where: { user: { id: userId } },
-        relations: { files: true, user: true },
+        relations: ["files", "user", "postlikes", "postlikes.user"],
       });
-
-      if (!allPosts || allPosts.length === 0) {
-        return res.status(200).json({
-          success: true,
-          message: "No posts found",
-          data: [],
-        });
-      }
 
       const posts = allPosts.map((post) => {
         return {
           ...post,
           files: post.files.map((file) => file.fileName),
+          postlikes: post.postlikes.map((like) => ({
+            postLikeId: like.id,
+            likedAt: like.liked_at,
+            postId: post.id,
+            user: {
+              id: like.user.id,
+              userName: like.user.userName,
+              profilePic: like.user.profilePic,
+            },
+          })),
           user: {
             id: post.user.id,
             userName: post.user.userName,
@@ -205,11 +220,14 @@ export class PostControllers {
           },
         };
       });
-      
+
       return res.status(200).json({
         success: true,
-        message: "Posts fetched successfully",
-        data: posts,
+        message:
+          allPosts.length === 0
+            ? "No posts found"
+            : "Posts fetched successfully",
+        data: posts || [],
       });
     }
   );
@@ -225,10 +243,34 @@ export class PostControllers {
         userId
       );
 
+      const responseData = {
+        id: post.id,
+        caption: post.caption,
+        likeCount: post.likeCount,
+        commentCount: post.commentCount,
+        files: post.files,
+        postlikes: post.postlikes.map((like) => ({
+          postLikeId: like.id,
+          likedAt: like.liked_at,
+          postId: post.id,
+          user: {
+            id: like.user.id,
+            userName: like.user.userName,
+            profilePic: like.user.profilePic,
+          },
+        })),
+        createdAt: post.createdAt,
+        user: {
+          id: post.user.id,
+          userName: post.user.userName,
+          profilePic: post.user.profilePic,
+        },
+      };
+
       return res.status(200).json({
         success: true,
         message: "Post fetched successfully",
-        data: post,
+        data: responseData,
       });
     }
   );
@@ -244,10 +286,34 @@ export class PostControllers {
         userId
       );
 
+      const responseData = {
+        id: post.id,
+        caption: post.caption,
+        likeCount: post.likeCount,
+        commentCount: post.commentCount,
+        files: post.files,
+        postlikes: post.postlikes.map((like) => ({
+          postLikeId: like.id,
+          likedAt: like.liked_at,
+          postId: post.id,
+          user: {
+            id: like.user.id,
+            userName: like.user.userName,
+            profilePic: like.user.profilePic,
+          },
+        })),
+        createdAt: post.createdAt,
+        user: {
+          id: post.user.id,
+          userName: post.user.userName,
+          profilePic: post.user.profilePic,
+        },
+      };
+
       return res.status(200).json({
         success: true,
         message: "Post fetched successfully",
-        data: post,
+        data: responseData,
       });
     }
   );
@@ -256,12 +322,16 @@ export class PostControllers {
     async (req: Request, res: Response, next: NextFunction) => {
       const postId: string = req.params.id;
 
+      // Find the post by its ID
       const post: Post | null = await PostUtils.findPostById(postId);
 
+      // Get the ID of the currently authenticated user
       const userId: string = res.locals.user.id;
 
+      // Find the user who is liking the post
       const user: Users | null = await UserUtils.findUserById(userId);
 
+      // Check if the user has already liked the post
       const alreadyLiked = await this.postLikeRepository.findOneBy({
         post: { id: postId },
         user: { id: userId },
@@ -270,38 +340,44 @@ export class PostControllers {
       if (alreadyLiked) {
         return res.status(200).json({
           success: true,
-          message: "you have already liked this post",
-          data: alreadyLiked,
+          message: "You have already liked this post",
         });
       }
 
+      // Create a new PostLike instance
       const postLike = new PostLike();
-
-      postLike.isLiked = true;
       postLike.post = post;
       postLike.user = user;
 
+      // Save the like to the database
       await this.postLikeRepository.save(postLike);
 
+      // Increment the like count on the post
       post.likeCount = post.likeCount + 1;
       await this.postRepository.save(post);
 
+      // Create a notification for the post owner
       const type = "like";
-      const message = `${user.userName} liked your post`;
-      await NotificationUtils.createNotification(type, message, post.user.id);
+      const message = `${user?.userName} liked your post`;
+
+      await NotificationUtils.createNotification(
+        type,
+        message,
+        user, // sentBy
+        post.user // receivedBy
+      );
 
       return res.status(200).json({
         success: true,
         message: "Post liked successfully",
         data: {
-          id: postLike.id,
-          isLiked: postLike.isLiked,
-          liked_at: postLike.liked_at,
-          post: post.id,
+          postLikeId: postLike.id,
+          likedAt: postLike.liked_at,
+          postId: postId,
           user: {
-            id: user.id,
-            userName: user.userName,
-            profilePic: user.profilePic,
+            id: postLike.user.id,
+            username: postLike.user.userName,
+            profilePic: postLike.user.profilePic,
           },
         },
       });
@@ -353,29 +429,26 @@ export class PostControllers {
         relations: { user: true },
       });
 
-      if (!postLikes || postLikes.length === 0) {
-        return res.status(200).json({
-          success: true,
-          message: "No post likes found",
-          data: [],
-        });
-      }
-
       const likedUser = postLikes.map((postLike) => {
         return {
           postLikeId: postLike.id,
-          userid: postLike.user.id,
-          isLiked: postLike.isLiked,
           likedAt: postLike.liked_at,
-          username: postLike.user.userName,
-          profilePic: postLike.user.profilePic,
+          postId: postId,
+          user: {
+            id: postLike.user.id,
+            username: postLike.user.userName,
+            profilePic: postLike.user.profilePic,
+          },
         };
       });
 
       return res.status(200).json({
         success: true,
-        message: "Post likes fetched successfully",
-        data: likedUser,
+        message:
+          postLikes.length === 0
+            ? "No likes found"
+            : "Post likes fetched successfully",
+        data: likedUser || [],
       });
     }
   );
@@ -395,17 +468,9 @@ export class PostControllers {
 
       const post = await this.postRepository.find({
         where: { user: { id: In(followingUsersIds) } },
-        relations: ["user", "files"],
+        relations: ["user", "files", "postlikes", "postlikes.user"],
         order: { createdAt: "DESC" },
       });
-
-      if (!post || post.length === 0) {
-        return res.status(200).json({
-          success: true,
-          message: "No posts found",
-          data: [],
-        });
-      }
 
       const responseData = post.map((post) => {
         return {
@@ -414,6 +479,16 @@ export class PostControllers {
           likeCount: post.likeCount,
           commentCount: post.commentCount,
           files: post.files,
+          postlikes: post.postlikes.map((like) => ({
+            postLikeId: like.id,
+            likedAt: like.liked_at,
+            postId: post.id,
+            user: {
+              id: like.user.id,
+              userName: like.user.userName,
+              profilePic: like.user.profilePic,
+            },
+          })),
           createdAt: post.createdAt,
           user: {
             id: post.user.id,
@@ -425,16 +500,54 @@ export class PostControllers {
 
       return res.status(200).json({
         success: true,
-        message: "Posts fetched successfully",
-        data: responseData,
+        message:
+          post.length === 0 ? "No posts found" : "Posts fetched successfully",
+        data: responseData || [],
       });
     }
   );
 
-  public test = asyncHandler(async (req: Request, res: Response) => {
-    return res.status(200).json({
-      success: true,
-      message: "hello world",
-    });
-  });
+  public getSingleFeedPost = asyncHandler(
+    async (req: Request, res: Response, next: NextFunction) => {
+      const postId: string = req.params.id;
+      const post = await PostUtils.findPostById(postId);
+
+      const userId: string = post?.user.id;
+
+      const feedPost: Post | null = await PostUtils.findPostWithPostIdAndUserId(
+        postId,
+        userId
+      );
+
+      const responseData = {
+        id: feedPost.id,
+        caption: feedPost.caption,
+        likeCount: feedPost.likeCount,
+        commentCount: feedPost.commentCount,
+        files: feedPost.files,
+        postlikes: feedPost.postlikes.map((like) => ({
+          postLikeId: like.id,
+          likedAt: like.liked_at,
+          postId: post.id,
+          user: {
+            id: like.user.id,
+            userName: like.user.userName,
+            profilePic: like.user.profilePic,
+          },
+        })),
+        createdAt: feedPost.createdAt,
+        user: {
+          id: feedPost.user.id,
+          userName: feedPost.user.userName,
+          profilePic: feedPost.user.profilePic,
+        },
+      };
+
+      return res.status(200).json({
+        success: true,
+        message: "Post fetched successfully",
+        data: responseData,
+      });
+    }
+  );
 }

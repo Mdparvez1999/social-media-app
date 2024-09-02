@@ -13,14 +13,14 @@ import { toast } from "react-toastify";
 import { ChangeEvent, FormEvent, useState } from "react";
 import useSignup from "../../../hooks/auth/useSignup";
 
-interface signUpState {
+interface SignUpState {
   userName: string;
   email: string;
   password: string;
 }
 
 const Signup = () => {
-  const [signup, setSignup] = useState<signUpState>({
+  const [signup, setSignup] = useState<SignUpState>({
     userName: "",
     email: "",
     password: "",
@@ -28,25 +28,27 @@ const Signup = () => {
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setSignup({ ...signup, [name]: value });
+    setSignup((prevstate) => ({ ...prevstate, [name]: value }));
   };
 
   const { loading, signUp } = useSignup();
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    if (loading) return;
     try {
       await signUp(signup);
     } catch (error) {
-      if (error instanceof Error) toast.error(error.message);
-      else toast.error("Something went wrong");
+      const errorMessage = error instanceof Error ? error.message : "";
+      toast.error(errorMessage);
     }
   };
   return (
     <Box
-      border="1px solid #f2f2f2"
-      width={{ sm: "350px", md: "390px" }}
-      margin={{ sm: "50px auto" }}
+      borderWidth={"1px"}
+      borderColor={"#f2f2f2"}
+      width={{ xs: "90%", md: "390px" }}
+      margin={{ xs: "90px auto", md: "50px auto" }}
       borderRadius={"10px"}
       boxShadow={"4px 4px 6px #ccc"}
     >
@@ -58,7 +60,7 @@ const Signup = () => {
       >
         Signup
       </Text>
-      <form className="signup-form">
+      <form>
         <Box padding={"10px"} margin={"2px 20px 2px 20px"}>
           <Text fontSize={{ sm: "0.9rem", md: "1rem" }}>User Name</Text>
           <Input borderRadius="50px" name="userName" onChange={handleChange} />
@@ -78,6 +80,7 @@ const Signup = () => {
         </Box>
         <Box padding={"10px"} margin={"2px 20px 2px 20px"}>
           <Button
+            type="submit"
             width="100%"
             borderRadius="30px"
             fontSize={{ sm: "1rem", md: "1.1rem" }}

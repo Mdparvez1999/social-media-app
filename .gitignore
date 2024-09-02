@@ -1,8 +1,14 @@
-# node modules
-server/node_modules
+# Ignore node_modules directory
+node_modules/
 
-# env
-server/.env
+# Ignore dist directory (compiled files)
+server/dist/
 
-# uploaded images
-/server/src/uploads/
+# Ignore environment variables
+.env
+
+# Ignore other potential build artifacts or log files
+*.log
+
+# Ignore uploads folder
+server/src/uploads/

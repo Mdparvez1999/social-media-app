@@ -26,18 +26,20 @@ interface SearchProps {
 
 const Search = ({ isOpen, onClose }: SearchProps) => {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
 
   const searchedUsers = useAppSelector((state) => state.users.users);
 
   const [searchTerm, setSearchTerm] = useState<string>("");
-
   const [loading, setLoading] = useState(false);
-
   const [searchResultVisible, setSearchResultVisible] = useState(false);
 
-  const navigate = useNavigate();
-
   const handleSearchClick = async () => {
+    if (!searchTerm) {
+      toast.error("Please enter a username");
+      return;
+    }
+
     try {
       setLoading(true);
       const response = await fetch(`/api/users/search?userName=${searchTerm}`, {
@@ -49,15 +51,17 @@ const Search = ({ isOpen, onClose }: SearchProps) => {
         throw new Error(response.statusText);
       }
 
-      const { data } = await response.json();
+      const data = await response.json();
 
-      dispatch(setUsers(data));
+      if (data.status === "error" || data.status === "fail")
+        throw new Error(data.message);
 
+      dispatch(setUsers(data.data));
       setSearchResultVisible(true);
     } catch (error) {
-      console.log(error);
-      if (error instanceof Error) toast.error(error.message);
-      else toast.error("Something went wrong");
+      toast.error(
+        error instanceof Error ? error.message : "Something went wrong"
+      );
     } finally {
       setLoading(false);
     }
@@ -69,16 +73,11 @@ const Search = ({ isOpen, onClose }: SearchProps) => {
     onClose();
   };
 
-  const handleViewUserProfile = async (userId: string) => {
-    try {
-      navigate(`/app/usersprofile/${userId}`);
-      window.location.reload();
-      setSearchResultVisible(false);
-      onClose();
-    } catch (error) {
-      if (error instanceof Error) toast.error(error.message);
-      else toast.error("Something went wrong");
-    }
+  const handleViewUserProfile = (userId: string) => {
+    navigate(`/app/usersprofile/${userId}`);
+    // window.location.reload();
+    setSearchResultVisible(false);
+    onClose();
   };
 
   return (
@@ -90,7 +89,10 @@ const Search = ({ isOpen, onClose }: SearchProps) => {
           <DrawerHeader>Search</DrawerHeader>
           <DrawerBody width={"100%"}>
             <Box display={"flex"} alignItems={"center"} gap={"15px"}>
-              <Input onChange={(e) => setSearchTerm(e.target.value)} />
+              <Input
+                autoFocus
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
               <Button onClick={handleSearchClick} isLoading={loading}>
                 <BiSearch size={30} />
               </Button>

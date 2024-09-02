@@ -1,7 +1,7 @@
-import { toast } from "react-toastify";
-
 const useUnlikePost = () => {
-  const unlikePost = async (postId: string | undefined) => {    
+  const unlikePost = async (postId: string | undefined) => {
+    if (!postId) return;
+
     try {
       const response = await fetch(`/api/users/post/unlike/${postId}`, {
         method: "POST",
@@ -14,8 +14,6 @@ const useUnlikePost = () => {
 
       if (data.status === "fail" || data.status === "error")
         throw new Error(data.message);
-
-      toast.success(data.message);
 
       return data;
     } catch (error) {

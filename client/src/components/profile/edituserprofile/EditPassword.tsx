@@ -37,7 +37,11 @@ const EditPassword = () => {
             display={"flex"}
             justifyContent={"space-between"}
           >
-            <Input width={{ xs: "70%", md: "75%" }} defaultValue="********" />
+            <Input
+              width={{ xs: "70%", md: "75%" }}
+              placeholder="********"
+              isReadOnly
+            />
             <Button
               onClick={onOpen}
               width={{ xs: "25%", md: "40%" }}
@@ -45,10 +49,7 @@ const EditPassword = () => {
             >
               update
             </Button>
-            <Button
-              onClick={onOpen}
-              display={{ xs: "none", md: "block" }}
-            >
+            <Button onClick={onOpen} display={{ xs: "none", md: "block" }}>
               Change Password
             </Button>
           </Box>

@@ -11,17 +11,26 @@ import { useAppSelector } from "../../hooks/hooks";
 import { useNavigate } from "react-router-dom";
 import ViewFollowersModal from "./ViewFollowersModal";
 import ViewFollowingUsersModal from "./ViewFollowingUsersModal";
+import { useEffect, useState } from "react";
+import ProfileDetailsSkeleton from "../../skeletons/profile/ProfileDetailSkeleton";
 
 const ProfileDetails = () => {
+  const navigate = useNavigate();
+
   const userProfile = useAppSelector((state) => state.profile.profile);
 
   const followersDisclosure = useDisclosure();
-
   const followingUsersDisclosure = useDisclosure();
 
-  const navigate = useNavigate();
+  const [loading, setLoading] = useState<boolean>(true);
 
-  return (
+  useEffect(() => {
+    if (userProfile) setLoading(false);
+  }, [userProfile]);
+
+  return loading ? (
+    <ProfileDetailsSkeleton />
+  ) : (
     <>
       <Box
         width={"70%"}

@@ -4,10 +4,10 @@ import { toast } from "react-toastify";
 import { useAppDispatch } from "../../hooks/hooks";
 import { addComment } from "../../redux-store/features/comments/commentsSlice";
 
-interface propsType {
+interface PropsType {
   postId: string | undefined;
 }
-const AddComment = ({ postId }: propsType) => {
+const AddComment = ({ postId }: PropsType) => {
   const [comment, setComment] = useState<string>("");
 
   const [loading, setLoading] = useState<boolean>(false);
@@ -37,7 +37,10 @@ const AddComment = ({ postId }: propsType) => {
 
       const data = await response.json();
 
-      dispatch(addComment(data));
+      if (data.status === "error" || data.status === "fail")
+        throw new Error(data.message);
+
+      dispatch(addComment(data.data));
     } catch (error) {
       console.log(error);
       if (error instanceof Error) toast.error(error.message);
@@ -55,7 +58,7 @@ const AddComment = ({ postId }: propsType) => {
     >
       <Input
         width={"78%"}
-        ml={"10px"}
+        ml={"2px"}
         placeholder="write a comment"
         name="comment"
         borderRadius={"10px"}

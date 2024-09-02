@@ -23,90 +23,94 @@ import SelectedUsersFollowing from "../../../components/users/SelectedUsersFollo
 import { IoArrowBack } from "react-icons/io5";
 import { setProfile } from "../../../redux-store/features/profile/profileSlice";
 import useFetchCurrentUsersProfile from "../../../hooks/profile/useFetchCurrentUsersProfile";
+import SelectedUsersProfileDetailsInMobileSkeleton from "../../../mobileComponentSkeletons/SelectedUsersProfileDetailsInMobileSkeleton";
 
 const SelectedUsersProfileDetailsInMobile = React.memo(() => {
   const dispatch = useDispatch();
+
+  const followersDisclosure = useDisclosure();
+  const followingUsersDisclosure = useDisclosure();
+
   const { userId } = useParams<{ userId: string }>();
+
   const { fetchUsersProfile } = useFetchUsersProfile();
 
   if (!userId) throw new Error("Something went wrong");
 
   const hasFetchedData = useRef(false);
-  const selectedUserData = useAppSelector((state) => state.users.selectedUser);
 
+  const selectedUserData = useAppSelector((state) => state.users.selectedUser);
   const currentUsersFollowing = useAppSelector(
     (state) => state.profile.following
   );
 
-  const followersDisclosure = useDisclosure();
-  const followingUsersDisclosure = useDisclosure();
-
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState<boolean>(false);
 
   const { followUser } = useFollowUser();
   const { unfollowUser } = useUnfollowUser();
 
+  const [isFollowing, setIsFollowing] = useState(false);
+
+  useEffect(() => {
+    if (selectedUserData && currentUsersFollowing) {
+      setIsFollowing(
+        currentUsersFollowing?.some((user) => user?.id === selectedUserData?.id)
+      );
+    }
+  }, [selectedUserData, currentUsersFollowing]);
+
   useEffect(() => {
     const fetchSelectedUsersData = async () => {
+      setLoading(true);
       dispatch(clearSelecetedUsersData());
       try {
         const userdata = await fetchUsersProfile(userId);
-        dispatch(setSelectedUser(userdata));
+        dispatch(setSelectedUser(userdata.data));
       } catch (error) {
-        if (error instanceof Error) toast.error(error.message);
-        else toast.error("Something went wrong");
+        toast.error(
+          error instanceof Error ? error.message : "Something went wrong"
+        );
+      } finally {
+        setLoading(false);
+        hasFetchedData.current = true;
       }
     };
 
     if (!hasFetchedData.current) {
       fetchSelectedUsersData();
-      hasFetchedData.current = true;
     }
-  }, [userId, dispatch, fetchUsersProfile]);
-
-  const [isFollowing, setIsFollowing] = useState(
-    currentUsersFollowing?.some((user) => user?.id === selectedUserData?.id)
-  );
-
-  useEffect(() => {
-    setIsFollowing(
-      currentUsersFollowing?.some((user) => user?.id === selectedUserData?.id)
-    );
-  }, [currentUsersFollowing, selectedUserData]);
+  }, [userId, dispatch, fetchUsersProfile, isFollowing]);
 
   const { fetchCurrentUserProfile } = useFetchCurrentUsersProfile();
 
   const followOrUnfollowUserClick = useCallback(async () => {
     if (!selectedUserData) return;
 
-    setLoading(true);
-
     try {
       if (isFollowing) {
-        await unfollowUser(selectedUserData?.id);
+        await unfollowUser(selectedUserData.id);
+        setIsFollowing(false);
       } else {
-        await followUser(selectedUserData?.id);
+        await followUser(selectedUserData.id);
+        setIsFollowing(true);
       }
-
-      const updatedUserData = await fetchUsersProfile(userId);
-      dispatch(setSelectedUser(updatedUserData));
+      const updatedUsersData = await fetchUsersProfile(userId);
+      dispatch(setSelectedUser(updatedUsersData.data));
 
       const updatedCurrentUsersData = await fetchCurrentUserProfile();
-      dispatch(setProfile(updatedCurrentUsersData));
-
-      setIsFollowing(!isFollowing);
+      dispatch(setProfile(updatedCurrentUsersData.data));
     } catch (error) {
       toast.error("Something went wrong");
     } finally {
       setLoading(false);
     }
   }, [
-    isFollowing,
     selectedUserData,
-    followUser,
-    unfollowUser,
+    isFollowing,
     fetchUsersProfile,
     fetchCurrentUserProfile,
+    followUser,
+    unfollowUser,
     userId,
     dispatch,
   ]);
@@ -118,7 +122,9 @@ const SelectedUsersProfileDetailsInMobile = React.memo(() => {
     navigate("/app/messagesinmobile", { state: { from: location } });
   }, [navigate, location]);
 
-  return (
+  return loading ? (
+    <SelectedUsersProfileDetailsInMobileSkeleton />
+  ) : (
     <Box
       width={"100%"}
       height={"100%"}
@@ -215,19 +221,19 @@ const SelectedUsersProfileDetailsInMobile = React.memo(() => {
       </Box>
       <Box
         display={"flex"}
-        justifyContent={"space-between"}
         alignItems={"center"}
+        gap={"15px"}
         px={"20px"}
-        my={"14px"}
+        my={"16px"}
       >
         <Button
-          width={"48%"}
           onClick={followOrUnfollowUserClick}
           isLoading={loading}
+          width={"160px"}
         >
           {isFollowing ? "Unfollow" : "Follow"}
         </Button>
-        <Button width={"48%"} onClick={handleMessageClick}>
+        <Button onClick={handleMessageClick} w={"160px"}>
           Message
         </Button>
       </Box>

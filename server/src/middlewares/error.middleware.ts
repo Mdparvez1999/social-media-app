@@ -1,6 +1,3 @@
-// duplicate email error
-// code: '23505',
-// detail: 'Key (email)=(user@gmail.com) already exists.'
 import { Request, Response, NextFunction } from "express";
 import { AppError } from "../utils/AppError";
 import { ValidationError } from "joi";
@@ -51,7 +48,7 @@ const errorResponse = (err: AppError, res: Response) => {
   if (!err.isOperational) {
     res.status(err.statusCode).json({
       status: err.status,
-      message: "something went wrong",
+      message: "something went wrong,please try again later",
     });
   } else {
     res.status(err.statusCode).json({

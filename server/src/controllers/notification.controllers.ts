@@ -8,7 +8,10 @@ import { AppError } from "../utils/AppError";
 import { NotificationUtils } from "../utils/notification.utils";
 
 export class NotificationControllers {
-  private notificationRepository = AppDataSource.getRepository(Notifications);
+  private get notificationRepository() {
+    return AppDataSource.getRepository(Notifications);
+  }
+
   public getAllNotifications = asyncHandler(
     async (req: Request, res: Response, next: NextFunction) => {
       const userId: string = res.locals.user.id;
@@ -17,18 +20,11 @@ export class NotificationControllers {
 
       const allNotifications = await this.notificationRepository
         .createQueryBuilder("notification")
-        .leftJoinAndSelect("notification.user", "user")
-        .where("notification.userId = :userId", { userId })
+        .leftJoinAndSelect("notification.sentBy", "sentBy")
+        .leftJoinAndSelect("notification.receivedBy", "receivedBy")
+        .where("notification.receivedBy.id = :userId", { userId })
         .orderBy("notification.createdAt", "DESC")
         .getMany();
-
-      if (!allNotifications || allNotifications.length === 0) {
-        return res.status(200).json({
-          success: true,
-          message: "No notifications found",
-          data: [],
-        });
-      }
 
       const notifications = allNotifications.map((notification) => {
         return {
@@ -38,18 +34,26 @@ export class NotificationControllers {
           isRead: notification.isRead,
           createdAt: notification.createdAt,
           updatedAt: notification.updatedAt,
-          user: {
-            id: notification.user.id,
-            username: notification.user.userName,
-            profilePic: notification.user.profilePic,
+          sentBy: {
+            id: notification.sentBy.id,
+            username: notification.sentBy.userName,
+            profilePic: notification.sentBy.profilePic,
+          },
+          receivedBy: {
+            id: notification.receivedBy.id,
+            username: notification.receivedBy.userName,
+            profilePic: notification.receivedBy.profilePic,
           },
         };
       });
 
       return res.status(200).json({
         success: true,
-        message: "Notifications retrieved successfully",
-        data: notifications,
+        message:
+          allNotifications.length > 0
+            ? "Notifications retrieved successfully"
+            : "No notifications found",
+        data: notifications || [],
       });
     }
   );
@@ -59,25 +63,46 @@ export class NotificationControllers {
       const notificationId: string = req.params.id;
       const userId: string = res.locals.user.id;
 
+      // Check if the user exists
       await UserUtils.checkUserExists(userId);
 
+      // Find the notification by ID
       const notification = await NotificationUtils.findNotificationById(
         notificationId
       );
 
-      if (notification.user.id !== userId) {
+      // Check if the notification was received by the current user
+      if (notification.receivedBy.id !== userId) {
         return next(
           new AppError("You are not authorized to read this notification", 403)
         );
       }
 
+      // Mark the notification as read
       notification.isRead = true;
       await this.notificationRepository.save(notification);
 
       return res.status(200).json({
         success: true,
         message: "Notification read successfully",
-        data: notification,
+        data: {
+          id: notification.id,
+          message: notification.message,
+          type: notification.type,
+          isRead: notification.isRead,
+          createdAt: notification.createdAt,
+          updatedAt: notification.updatedAt,
+          sentBy: {
+            id: notification.sentBy.id,
+            username: notification.sentBy.userName,
+            profilePic: notification.sentBy.profilePic,
+          },
+          receivedBy: {
+            id: notification.receivedBy.id,
+            username: notification.receivedBy.userName,
+            profilePic: notification.receivedBy.profilePic,
+          },
+        },
       });
     }
   );
@@ -87,13 +112,16 @@ export class NotificationControllers {
       const notificationId: string = req.params.id;
       const userId: string = res.locals.user.id;
 
+      // Find the user
       const user: Users | null = await UserUtils.findUserById(userId);
 
+      // Find the notification by ID
       const notification = await NotificationUtils.findNotificationById(
         notificationId
       );
 
-      if (notification.user.id !== userId && user?.role !== "admin") {
+      // Check if the user is authorized to delete the notification
+      if (notification.receivedBy.id !== userId && user.role !== "admin") {
         return next(
           new AppError(
             "You are not authorized to delete this notification",
@@ -102,7 +130,9 @@ export class NotificationControllers {
         );
       }
 
+      // Delete the notification
       await this.notificationRepository.delete({ id: notificationId });
+
       return res.status(200).json({
         success: true,
         message: "Notification deleted successfully",
@@ -114,10 +144,12 @@ export class NotificationControllers {
     async (req: Request, res: Response, next: NextFunction) => {
       const userId: string = res.locals.user.id;
 
+      // Find the user
       const user: Users | null = await UserUtils.findUserById(userId);
 
+      // Find all notifications received by the user
       const allNotifications = await this.notificationRepository.find({
-        where: { user },
+        where: { receivedBy: user },
       });
 
       if (!allNotifications || allNotifications.length === 0) {
@@ -128,10 +160,11 @@ export class NotificationControllers {
         });
       }
 
+      // Check if any notification is not received by the user and the user is not an admin
       if (
         allNotifications.some(
           (notification) =>
-            notification.user.id !== userId && user?.role !== "admin"
+            notification.receivedBy.id !== userId && user.role !== "admin"
         )
       ) {
         return next(
@@ -142,7 +175,9 @@ export class NotificationControllers {
         );
       }
 
-      await this.notificationRepository.delete({ user });
+      // Delete all notifications received by the user
+      await this.notificationRepository.delete({ receivedBy: user });
+
       return res.status(200).json({
         success: true,
         message: "All notifications deleted successfully",
@@ -154,10 +189,12 @@ export class NotificationControllers {
     async (req: Request, res: Response, next: NextFunction) => {
       const userId: string = res.locals.user.id;
 
+      // Find the user
       const user: Users | null = await UserUtils.findUserById(userId);
 
+      // Find all notifications received by the user
       const allNotifications = await this.notificationRepository.find({
-        where: { user },
+        where: { receivedBy: user },
       });
 
       if (!allNotifications || allNotifications.length === 0) {
@@ -168,10 +205,11 @@ export class NotificationControllers {
         });
       }
 
+      // Check if any notification is not received by the user and the user is not an admin
       if (
         allNotifications.some(
           (notification) =>
-            notification.user.id !== userId && user?.role !== "admin"
+            notification.receivedBy.id !== userId && user.role !== "admin"
         )
       ) {
         return next(
@@ -179,7 +217,11 @@ export class NotificationControllers {
         );
       }
 
-      await this.notificationRepository.update({ user }, { isRead: true });
+      // Mark all notifications as read
+      await this.notificationRepository.update(
+        { receivedBy: user },
+        { isRead: true }
+      );
 
       return res.status(200).json({
         success: true,

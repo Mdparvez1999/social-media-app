@@ -1,8 +1,5 @@
 import { useState } from "react";
 import { toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
-import { useAppDispatch } from "../hooks";
-import { setCurrentUser } from "../../redux-store/features/auth/authSlice";
 
 interface loginDataType {
   email: string;
@@ -10,10 +7,7 @@ interface loginDataType {
 }
 
 const useLogin = () => {
-  const dispatch = useAppDispatch();
   const [loading, setLoading] = useState(false);
-
-  const navigate = useNavigate();
 
   const loginUser = async (logindata: loginDataType) => {
     const isValidData = loginDataValidation(logindata);
@@ -31,18 +25,15 @@ const useLogin = () => {
 
       const data = await response.json();
 
-      if (data.status === "fail") {
+      if (data.status === "fail" || data.status === "error") {
         throw new Error(data.message);
       }
 
-      dispatch(setCurrentUser(data.user));
-
-      toast.success(data.message);
-
-      navigate("/app/home");
+      return data;
     } catch (error) {
-      if (error instanceof Error) toast.error(error.message);
-      else toast.error("Something went wrong");
+      toast.error(
+        error instanceof Error ? error.message : "Something went wrong"
+      );
     } finally {
       setLoading(false);
     }
@@ -58,7 +49,8 @@ const loginDataValidation = (logindata: loginDataType) => {
     return false;
   }
 
-  if (!email.includes("@") || !email.includes(".")) {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
     toast.error("Please enter a valid email");
     return false;
   }

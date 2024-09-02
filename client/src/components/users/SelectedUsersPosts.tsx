@@ -1,87 +1,45 @@
-import { Grid, Image, Text, useDisclosure } from "@chakra-ui/react";
-import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
-import { useEffect, useState } from "react";
-import { setSelectedUsersPosts } from "../../redux-store/features/users/userSlice";
-import { toast } from "react-toastify";
+import { Box, Grid, Text, useDisclosure } from "@chakra-ui/react";
+import { useAppSelector } from "../../hooks/hooks";
 import ViewSelectedUsersPost from "./ViewSelectedUsersPost";
+import { useState } from "react";
+import CustomCarousel from "../layouts/general/CustomCarousel";
 
 const SelectedUsersPosts = () => {
-  const dispatch = useAppDispatch();
-  const selectedUser = useAppSelector((state) => state.users.selectedUser);
-
   const selectedUserPosts = useAppSelector(
     (state) => state.users.selectedUsersPosts
   );
 
-  const [loading, setLoading] = useState(false);
-
   const [postId, setPostId] = useState<string | null>(null);
-
   const { isOpen, onOpen, onClose } = useDisclosure();
-  useEffect(() => {
-    const fetchCurrentUserPosts = async () => {
-      setLoading(true);
-      try {
-        const response = await fetch(
-          `/api/users/post/get-all/${selectedUser?.id}`,
-          {
-            method: "GET",
-            credentials: "include",
-          }
-        );
-
-        const { data } = await response.json();
-
-        if (data.status === "fail" || data.status === "error") {
-          throw new Error(data.message);
-        }
-
-        dispatch(setSelectedUsersPosts(data));
-      } catch (error) {
-        if (error instanceof Error) toast.error(error.message);
-        else toast.error("Something went wrong");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    if (selectedUser?.id) {
-      fetchCurrentUserPosts();
-    }
-  }, [dispatch, selectedUser?.id]);
-
-  if (loading) {
-    return <Text>Loading...</Text>;
-  }
 
   const handleViewEachPost = (id: string) => {
     setPostId(id);
     onOpen();
   };
 
+  const sortedPosts = [...selectedUserPosts].sort(
+    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+  );
+
   return (
     <Grid templateColumns="repeat(3, 1fr)" gap={4} margin="10px" padding="10px">
-      {selectedUserPosts.length > 0 ? (
-        selectedUserPosts
-          .slice()
-          .sort(
-            (a, b) =>
-              new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-          )
-          .map((post) =>
-            post.files.map((file) => (
-              <Image
-                src={`http://localhost:8000/uploads/postFiles/${file}`}
-                w="100%"
-                h="100%"
-                key={`${post.id}-${file}`}
-                objectFit="cover"
-                crossOrigin="anonymous"
-                cursor="pointer"
-                onClick={() => handleViewEachPost(post.id)}
-              />
-            ))
-          )
+      {sortedPosts.length > 0 ? (
+        sortedPosts.map((post) => (
+          <Box
+            height={"100%"}
+            key={post.id}
+            onClick={() => handleViewEachPost(post.id)}
+            cursor="pointer"
+          >
+            <CustomCarousel
+              images={post?.files?.map(
+                (file) => `http://localhost:8000/uploads/postFiles/${file}`
+              )}
+              width="500px"
+              height="220px"
+            />
+          </Box>
+        ))
       ) : (
         <Text fontSize="2xl" m={"60px 0 0 300px"} w={"100%"}>
           No posts

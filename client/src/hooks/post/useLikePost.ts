@@ -2,6 +2,8 @@ import { toast } from "react-toastify";
 
 const useLikePostHook = () => {
   const likePost = async (postId: string | undefined) => {
+    if (!postId) return;
+    
     try {
       const response = await fetch(`/api/users/post/like/${postId}`, {
         method: "POST",

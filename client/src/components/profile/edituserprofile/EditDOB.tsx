@@ -9,6 +9,7 @@ const EditDOB = () => {
   const profile = useAppSelector((state) => state.profile.profile);
 
   const [DOB, setDOB] = useState<string | null>(profile?.DOB || "");
+  const [loading, setLoading] = useState<boolean>(false);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;
@@ -16,6 +17,7 @@ const EditDOB = () => {
   };
 
   const handleUpdateDOB = async () => {
+    setLoading(true);
     try {
       const response = await fetch("/api/user/profile/DOB", {
         method: "PATCH",
@@ -32,26 +34,29 @@ const EditDOB = () => {
 
       toast.success(data.message);
     } catch (error) {
-      if (error instanceof Error) toast.error(error.message);
-      else toast.error("Something went wrong");
+      toast.error(
+        error instanceof Error ? error.message : "Something went wrong"
+      );
+    } finally {
+      setLoading(false);
     }
   };
   return (
-    <>
-      <Box width={{ xs: "92%", md: "90%" }}>
-        <Text fontSize={"1.2rem"} fontWeight={"500"}>
-          DOB
-        </Text>
-        <Box width="100%" display={"flex"} justifyContent={"space-between"}>
-          <Input
-            type="date"
-            width={{ xs: "70%", md: "85%" }}
-            onChange={handleChange}
-          />
-          <Button onClick={handleUpdateDOB}>Submit</Button>
-        </Box>
+    <Box width={{ xs: "92%", md: "90%" }}>
+      <Text fontSize={"1.2rem"} fontWeight={"500"}>
+        DOB
+      </Text>
+      <Box width="100%" display={"flex"} justifyContent={"space-between"}>
+        <Input
+          type="date"
+          width={{ xs: "70%", md: "85%" }}
+          onChange={handleChange}
+        />
+        <Button onClick={handleUpdateDOB} isLoading={loading}>
+          Submit
+        </Button>
       </Box>
-    </>
+    </Box>
   );
 };
 

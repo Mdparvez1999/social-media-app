@@ -2,6 +2,7 @@ import { toast } from "react-toastify";
 
 const useDeletePost = () => {
   const deletePost = async (id: string | undefined) => {
+    if (!id) return;
     try {
       const response = await fetch(`/api/users/post/delete/${id}`, {
         method: "DELETE",

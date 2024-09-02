@@ -4,7 +4,6 @@ import { auth } from "../middlewares/auth.Middleware";
 import { profilePicUpload } from "../config/multer.config";
 
 const router: express.Router = express.Router();
-
 const userProfileController = new UserProfileController();
 
 router.get("/", auth, userProfileController.getUserProfile);
@@ -36,7 +35,7 @@ router.patch("/public", auth, userProfileController.publicProfile);
 
 router.patch("/deactivate", auth, userProfileController.deActivateProfile);
 
-router.patch("/reactivate", auth, userProfileController.reActivateProfile);
+router.patch("/activate", auth, userProfileController.reActivateProfile);
 
 router.delete("/", auth, userProfileController.deleteProfile);
 

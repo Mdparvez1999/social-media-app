@@ -6,6 +6,7 @@ import ProfilePostsMobile from "../../components/mobileComponents/MobileProfile/
 
 const Profile = () => {
   const isMobile = useBreakpointValue({ xs: true, md: false });
+
   return (
     <Box
       width={"100%"}

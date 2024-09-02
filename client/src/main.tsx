@@ -24,16 +24,16 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
       <Provider store={store}>
         <SocketContextProvider>
           <App />
+          <ToastContainer
+            position="top-center"
+            autoClose={2000}
+            newestOnTop={false}
+            closeOnClick
+            draggable
+            pauseOnHover={false}
+          />
         </SocketContextProvider>
       </Provider>
     </ChakraProvider>
-    <ToastContainer
-      position="top-center"
-      autoClose={2000}
-      newestOnTop={false}
-      closeOnClick
-      draggable
-      pauseOnHover={false}
-    />
   </Router>
 );

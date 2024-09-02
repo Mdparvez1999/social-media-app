@@ -3,7 +3,6 @@ import { CommentsController } from "../controllers/comment.controllers";
 import { auth } from "../middlewares/auth.Middleware";
 
 const router: express.Router = express.Router();
-
 const commentsController = new CommentsController();
 
 router.post("/write/:id", auth, commentsController.writeComment);

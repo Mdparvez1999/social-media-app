@@ -21,7 +21,7 @@ export const updateDOBSchema = joi.object({
 });
 
 export const updateBioSchema = joi.object({
-  bio: joi.string().required(),
+  bio: joi.string().min(0).required(),
 });
 
 export const updateGenderSchema = joi.object({

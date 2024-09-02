@@ -27,9 +27,9 @@ export const SocketContextProvider = ({
         query: { userId: currentUser.id },
       });
 
-      newSocket.on("connect", () => {
-        console.log("Socket connected ");
-      });
+      // newSocket.on("connect", () => {
+      //   console.log("Socket connected ");
+      // });
 
       newSocket.on("connect_error", (error) => {
         console.error("Socket connection error:", error);

@@ -14,32 +14,28 @@ import SelectedUsersPostImage from "./SelectedUsersPostImage";
 import useFetchSelectedusersPost from "../../hooks/usersprofile/useFetchSelectedusersPost";
 import SelectedUsersPostDetails from "./SelectedUsersPostDetails";
 
-interface propsType {
+interface PropsType {
   isOpen: boolean;
   onClose: () => void;
   id: string | null;
 }
 
-const ViewSelectedUsersPost = ({ isOpen, onClose, id }: propsType) => {
+const ViewSelectedUsersPost = ({ isOpen, onClose, id }: PropsType) => {
   const selecteduser = useAppSelector((state) => state.users.selectedUser);
-
   const userId: string | undefined = selecteduser?.id;
 
+  const dispatch = useAppDispatch();
   const { fetchSelectedUsersPost } = useFetchSelectedusersPost();
 
-  const dispatch = useAppDispatch();
-
   useEffect(() => {
-    const fetchPost = async () => {
-      if (id && isOpen) {
-        try {
-          const data = await fetchSelectedUsersPost({ postId: id, userId });
-          console.log(data);
+    if (!isOpen || !userId || !id) return;
 
-          dispatch(setSelectedUsersSinglePost(data));
-        } catch (error) {
-          toast.error("Something went wrong");
-        }
+    const fetchPost = async () => {
+      try {
+        const data = await fetchSelectedUsersPost({ postId: id, userId });
+        dispatch(setSelectedUsersSinglePost(data));
+      } catch (error) {
+        toast.error("Failed to load the post. Please try again.");
       }
     };
 

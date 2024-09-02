@@ -3,7 +3,6 @@ import { NotificationControllers } from "../controllers/notification.controllers
 import { auth } from "../middlewares/auth.Middleware";
 
 const router: express.Router = express.Router();
-
 const notificationController = new NotificationControllers();
 
 router.get("/", auth, notificationController.getAllNotifications);

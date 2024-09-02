@@ -8,9 +8,14 @@ import {
   ModalContent,
   ModalHeader,
   ModalOverlay,
+  Spinner,
   Text,
 } from "@chakra-ui/react";
-import { useAppSelector } from "../../hooks/hooks";
+import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
+import { useCallback, useEffect, useRef } from "react";
+import UseFetchSelectedUsersFollowers from "../../hooks/usersprofile/useFetchSelectedUsersFollowers";
+import { toast } from "react-toastify";
+import { setSelectedUsersFollowers } from "../../redux-store/features/users/userSlice";
 
 interface SelectedUsersUsersProps {
   isOpen: boolean;
@@ -21,23 +26,54 @@ const SelectedUsersFollowers = ({
   isOpen,
   onClose,
 }: SelectedUsersUsersProps) => {
-  const SelectedUsersFollowers = useAppSelector(
+  const selectedUsersFollowers = useAppSelector(
     (state) => state.users.selectedUsersFollowers
   );
+
+  const hasFetched = useRef(false);
+
+  const dispatch = useAppDispatch();
+
+  const { fetchSelectedUsersFollowers } = UseFetchSelectedUsersFollowers();
+
+  const loadUsersData = useCallback(async () => {
+    try {
+      const followersData = await fetchSelectedUsersFollowers();
+      dispatch(setSelectedUsersFollowers(followersData.data));
+      hasFetched.current = true;
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Something went wrong"
+      );
+    }
+  }, [dispatch, fetchSelectedUsersFollowers]);
+
+  useEffect(() => {
+    if (isOpen && !hasFetched.current) loadUsersData();
+  }, [isOpen, loadUsersData]);
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
       <ModalContent maxWidth={{ xs: "95vw", md: "390px" }}>
-        <ModalCloseButton />
+        <ModalCloseButton size={"1rem"} m={"15px 10px 0 0"} />
         <ModalHeader>
           <Text textAlign={"center"}>Users</Text>
         </ModalHeader>
         <Divider width={"85%"} margin={"auto"} />
         <ModalBody>
           <Box>
-            {SelectedUsersFollowers?.length > 0 ? (
-              SelectedUsersFollowers?.map((user) =>
+            {!hasFetched.current ? (
+              <Box
+                display="flex"
+                justifyContent="center"
+                alignItems="center"
+                height="100px"
+              >
+                <Spinner />
+              </Box>
+            ) : selectedUsersFollowers?.length > 0 ? (
+              selectedUsersFollowers.map((user) =>
                 user ? (
                   <Box
                     key={user.id}
@@ -58,23 +94,23 @@ const SelectedUsersFollowers = ({
                             ? `http://localhost:8000/uploads/profilePic/${user.profilePic}`
                             : undefined
                         }
-                        name={user?.username}
+                        name={user?.userName}
                       />
                       <Box mb={"8px"}>
                         <Text fontWeight={"bold"} fontSize={"1.3rem"}>
-                          {user?.username}
+                          {user?.userName}
                         </Text>
                         {user?.fullName && (
                           <Text fontSize={"1rem"}>{user.fullName}</Text>
                         )}
                       </Box>
                     </Box>
-                    {/* <Button>follow/unfollow</Button> */}
+                    {/* <Button>Follow/Unfollow</Button> */}
                   </Box>
                 ) : null
               )
             ) : (
-              <Text textAlign={"center"}>no users</Text>
+              <Text textAlign={"center"}>No users found.</Text>
             )}
           </Box>
         </ModalBody>

@@ -10,7 +10,6 @@ import { useAppSelector } from "./hooks/hooks";
 import ViewUserProfile from "./components/profile/edituserprofile/ViewUserProfileDetails";
 import EditGeneralDetails from "./components/profile/edituserprofile/EditGeneralDetails";
 import EditPassword from "./components/profile/edituserprofile/EditPassword";
-import PrivacySettings from "./components/profile/edituserprofile/PrivacySettings";
 import AdvancedAccountSettings from "./components/profile/edituserprofile/AdvancedAccountSettings";
 
 import UsersProfile from "./components/users/UsersProfile";
@@ -24,7 +23,6 @@ import MessageContainerForMobile from "./components/mobileComponents/mobileMessa
 
 function App() {
   const currentUser = useAppSelector((state) => state.auth.currentUser);
-
   const userData = localStorage.getItem("currentUser");
 
   return (
@@ -74,7 +72,6 @@ function HeroRoutes() {
           <Route index element={<EditGeneralDetails />} />
           <Route path="generaldetails" element={<EditGeneralDetails />} />
           <Route path="passwordsettings" element={<EditPassword />} />
-          <Route path="privacysettings" element={<PrivacySettings />} />
           <Route
             path="advancedsettings"
             element={<AdvancedAccountSettings />}

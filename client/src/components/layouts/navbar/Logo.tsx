@@ -4,7 +4,7 @@ const Logo = () => {
   return (
     <>
       <Box width={"100%"} margin={"30px"} textAlign={"center"}>
-        <Heading size={"lg"}>LOGO</Heading>
+        <Heading size={"lg"}>SMA</Heading>
       </Box>
     </>
   );

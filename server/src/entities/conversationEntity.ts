@@ -1,11 +1,12 @@
 import {
+  BeforeInsert,
   Column,
   CreateDateColumn,
   Entity,
   ManyToMany,
-  ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
+  Relation,
   UpdateDateColumn,
 } from "typeorm";
 import { v4 as uuidv4 } from "uuid";
@@ -23,12 +24,12 @@ export class Conversations {
   @ManyToMany(() => Users, (user) => user.conversations, {
     onDelete: "CASCADE",
   })
-  participants!: Users[];
+  participants!: Relation<Users>[];
 
   @OneToMany(() => Message, (message) => message.conversation, {
     onDelete: "CASCADE",
   })
-  messages!: Message[];
+  messages!: Relation<Message>[];
 
   @CreateDateColumn()
   createdAt!: Date;
@@ -39,6 +40,7 @@ export class Conversations {
   @Column({ default: false })
   isGroup!: boolean;
 
+  @BeforeInsert()
   addId() {
     this.id = uuidv4();
   }

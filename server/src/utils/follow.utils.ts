@@ -5,10 +5,13 @@ import { AppError } from "./AppError";
 import { Follower } from "../entities/follower.entity";
 
 export class FollowUtils {
-  private static followRequestRepository =
-    AppDataSource.getRepository(FollowRequest);
+  private static get followRequestRepository() {
+    return AppDataSource.getRepository(FollowRequest);
+  }
 
-  private static followerRepository = AppDataSource.getRepository(Follower);
+  private static get followerRepository() {
+    return AppDataSource.getRepository(Follower);
+  }
 
   public static async ensureNoPendingFollowRequest(
     senderId: string,
@@ -17,13 +20,13 @@ export class FollowUtils {
     const followRequest = await this.followRequestRepository.findOne({
       where: {
         requestedUser: { id: senderId },
-        recievedUser: { id: receiverId },
+        receivedUser: { id: receiverId },
         status: "pending",
       },
     });
 
     if (followRequest) {
-      throw new AppError("Follow request already sent", 400);
+      throw new AppError("A follow request is already pending.", 400);
     }
   }
 
@@ -50,10 +53,10 @@ export class FollowUtils {
     const followRequest = await this.followRequestRepository.findOne({
       where: {
         id: followRequestId,
-        recievedUser: { id: userId },
+        requestedUser: { id: userId },
         status: "pending",
       },
-      relations: ["requestedUser", "recievedUser"],
+      relations: ["requestedUser", "receivedUser"],
     });
 
     if (!followRequest) {
@@ -67,10 +70,12 @@ export class FollowUtils {
     userId: string,
     followRequestId: string
   ): Promise<FollowRequest | null> {
+    console.log("getPendingFollowRequestByReceiverId", followRequestId);
+
     const followRequest = await this.followRequestRepository.findOne({
       where: {
         id: followRequestId,
-        recievedUser: { id: userId },
+        receivedUser: { id: userId },
         status: "pending",
       },
       relations: ["requestedUser", "receivedUser"],

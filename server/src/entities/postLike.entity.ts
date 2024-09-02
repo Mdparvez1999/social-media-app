@@ -1,10 +1,11 @@
 import {
   Entity,
-  Column,
   PrimaryGeneratedColumn,
   BeforeInsert,
   ManyToOne,
   CreateDateColumn,
+  Index,
+  Relation,
 } from "typeorm";
 import { v4 as uuidv4 } from "uuid";
 import { Post } from "./post.entity";
@@ -18,20 +19,17 @@ export class PostLike {
   @CreateDateColumn()
   liked_at!: Date;
 
-  @Column({
-    default: false,
-  })
-  isLiked!: boolean;
-
   @ManyToOne(() => Post, (post) => post.postlikes, {
     onDelete: "CASCADE",
   })
-  post!: Post;
+  @Index()
+  post!: Relation<Post>;
 
   @ManyToOne(() => Users, (users) => users.postLikes, {
     onDelete: "CASCADE",
   })
-  user!: Users;
+  @Index()
+  user!: Relation<Users>;
 
   @BeforeInsert()
   addId() {

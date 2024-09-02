@@ -8,9 +8,14 @@ import {
   ModalContent,
   ModalHeader,
   ModalOverlay,
+  Spinner,
   Text,
 } from "@chakra-ui/react";
-import { useAppSelector } from "../../hooks/hooks";
+import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
+import { useCallback, useEffect, useRef } from "react";
+import { setSelectedUsersFollowing } from "../../redux-store/features/users/userSlice";
+import { toast } from "react-toastify";
+import useFetchSelectedUsersFollowing from "../../hooks/usersprofile/useFetchSelectedUsersFollowing";
 
 interface SelectedUsersFollowingProps {
   isOpen: boolean;
@@ -25,19 +30,49 @@ const SelectedUsersFollowing = ({
     (state) => state.users.selectedUsersFollowing
   );
 
+  const hasFetched = useRef(false);
+
+  const dispatch = useAppDispatch();
+
+  const { fetchSelectedUsersFollowing } = useFetchSelectedUsersFollowing();
+
+  const loadUsersData = useCallback(async () => {
+    try {
+      const followingData = await fetchSelectedUsersFollowing();
+      dispatch(setSelectedUsersFollowing(followingData.data));
+      hasFetched.current = true;
+    } catch (error) {
+      if (error instanceof Error) toast.error(error.message);
+      else toast.error("Something went wrong");
+    }
+  }, [dispatch, fetchSelectedUsersFollowing]);
+
+  useEffect(() => {
+    if (isOpen && !hasFetched.current) loadUsersData();
+  }, [isOpen, loadUsersData]);
+
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
       <ModalContent maxWidth={{ xs: "95vw", md: "390px" }}>
-        <ModalCloseButton />
+        <ModalCloseButton size={"1rem"} m={"15px 10px 0 0"} />
         <ModalHeader>
           <Text textAlign={"center"}>Following</Text>
         </ModalHeader>
         <Divider width={"85%"} margin={"auto"} />
         <ModalBody>
           <Box>
-            {selectedUsersFollowing?.length > 0 ? (
-              selectedUsersFollowing?.map((user) => (
+            {!hasFetched.current ? (
+              <Box
+                display="flex"
+                justifyContent="center"
+                alignItems="center"
+                height="100px"
+              >
+                <Spinner />
+              </Box>
+            ) : selectedUsersFollowing?.length > 0 ? (
+              selectedUsersFollowing.map((user) => (
                 <Box
                   key={user.id}
                   display={"flex"}
@@ -57,22 +92,22 @@ const SelectedUsersFollowing = ({
                           ? `http://localhost:8000/uploads/profilePic/${user.profilePic}`
                           : undefined
                       }
-                      name={user.username}
+                      name={user.userName}
                     />
                     <Box mb={"8px"}>
                       <Text fontWeight={"bold"} fontSize={"1.3rem"}>
-                        {user.username}
+                        {user.userName}
                       </Text>
                       {user.fullName && (
                         <Text fontSize={"1rem"}>{user.fullName}</Text>
                       )}
                     </Box>
                   </Box>
-                  {/* <Button>unfollow</Button> */}
+                  {/* Add follow/unfollow functionality if needed */}
                 </Box>
               ))
             ) : (
-              <Text textAlign={"center"}>not following anyone</Text>
+              <Text textAlign={"center"}>You are not following anyone.</Text>
             )}
           </Box>
         </ModalBody>

@@ -25,98 +25,103 @@ import SelectedUsersFollowing from "./SelectedUsersFollowing";
 import { setSelectedConversation } from "../../redux-store/features/messages/messagesSlice";
 import useFetchCurrentUsersProfile from "../../hooks/profile/useFetchCurrentUsersProfile";
 import { setProfile } from "../../redux-store/features/profile/profileSlice";
+import UsersProfileDetailsSkeleton from "../../skeletons/UsersProfileDetailsSkeleton";
 
 const UsersProfileDetails = () => {
   const dispatch = useDispatch();
+  const followersDisclosure = useDisclosure();
+  const followingUsersDisclosure = useDisclosure();
   const { userId } = useParams<{ userId: string }>();
+
   const { fetchUsersProfile } = useFetchUsersProfile();
+  const { fetchCurrentUserProfile } = useFetchCurrentUsersProfile();
+  const { followUser } = useFollowUser();
+  const { unfollowUser } = useUnfollowUser();
+  const navigate = useNavigate();
 
   if (!userId) throw new Error("Something went wrong");
 
   const hasFetchedData = useRef(false);
-  const selectedUserData = useAppSelector((state) => state.users.selectedUser);
 
+  const selectedUserData = useAppSelector((state) => state.users.selectedUser);
   const currentUsersFollowing = useAppSelector(
     (state) => state.profile.following
   );
+  const conversations = useAppSelector((state) => state.messages.conversations);
 
-  const followersDisclosure = useDisclosure();
-  const followingUsersDisclosure = useDisclosure();
+  const [pageLoading, setPageLoading] = useState<boolean>(true);
+  const [followLoading, setFollowLoading] = useState<boolean>(false);
+  const [isFollowing, setIsFollowing] = useState<boolean>(false);
 
-  const [loading, setLoading] = useState(false);
+  useEffect(() => {
+    if (selectedUserData) {
+      setPageLoading(false);
+    }
+  }, [selectedUserData]);
 
-  const { followUser } = useFollowUser();
-  const { unfollowUser } = useUnfollowUser();
+  useEffect(() => {
+    if (selectedUserData && currentUsersFollowing) {
+      setIsFollowing(
+        currentUsersFollowing?.some((user) => user?.id === selectedUserData?.id)
+      );
+    }
+  }, [selectedUserData, currentUsersFollowing]);
 
   useEffect(() => {
     const fetchSelectedUsersData = async () => {
+      setPageLoading(true);
       dispatch(clearSelecetedUsersData());
       try {
         const userdata = await fetchUsersProfile(userId);
-        dispatch(setSelectedUser(userdata));
+        dispatch(setSelectedUser(userdata.data));
       } catch (error) {
-        if (error instanceof Error) toast.error(error.message);
-        else toast.error("Something went wrong");
+        toast.error(
+          error instanceof Error ? error.message : "Something went wrong"
+        );
+      } finally {
+        setPageLoading(false);
+        hasFetchedData.current = true;
       }
     };
 
     if (!hasFetchedData.current) {
       fetchSelectedUsersData();
-      hasFetchedData.current = true;
     }
-  }, [userId, dispatch, fetchUsersProfile]);
-
-  const [isFollowing, setIsFollowing] = useState(
-    currentUsersFollowing?.some((user) => user?.id === selectedUserData?.id)
-  );
-
-  useEffect(() => {
-    setIsFollowing(
-      currentUsersFollowing?.some((user) => user?.id === selectedUserData?.id)
-    );
-  }, [currentUsersFollowing, selectedUserData?.id]);
-
-  const { fetchCurrentUserProfile } = useFetchCurrentUsersProfile();
+  }, [userId, dispatch, fetchUsersProfile, isFollowing]);
 
   const followOrUnfollowUserClick = useCallback(async () => {
     if (!selectedUserData) return;
 
-    setLoading(true);
-
+    setFollowLoading(true);
     try {
       if (isFollowing) {
-        await unfollowUser(selectedUserData?.id);
+        await unfollowUser(selectedUserData.id);
+        setIsFollowing(false);
       } else {
-        await followUser(selectedUserData?.id);
+        await followUser(selectedUserData.id);
+        setIsFollowing(true);
       }
 
       const updatedUsersData = await fetchUsersProfile(userId);
-      dispatch(setSelectedUser(updatedUsersData));
+      dispatch(setSelectedUser(updatedUsersData.data));
 
       const updatedCurrentUsersData = await fetchCurrentUserProfile();
-      dispatch(setProfile(updatedCurrentUsersData));
-
-      setIsFollowing(!isFollowing);
+      dispatch(setProfile(updatedCurrentUsersData.data));
     } catch (error) {
       toast.error("Something went wrong");
     } finally {
-      setLoading(false);
+      setFollowLoading(false);
     }
   }, [
     selectedUserData,
-    setLoading,
     isFollowing,
+    fetchUsersProfile,
+    fetchCurrentUserProfile,
     followUser,
     unfollowUser,
-    fetchUsersProfile,
     userId,
     dispatch,
-    fetchCurrentUserProfile,
   ]);
-
-  const navigate = useNavigate();
-
-  const conversations = useAppSelector((state) => state.messages.conversations);
 
   const handleMessageClick = () => {
     const existingConversation = conversations.filter(
@@ -130,7 +135,9 @@ const UsersProfileDetails = () => {
     navigate("/app/messages");
   };
 
-  return (
+  return pageLoading ? (
+    <UsersProfileDetailsSkeleton />
+  ) : (
     <>
       <Box
         width={"70%"}
@@ -173,6 +180,7 @@ const UsersProfileDetails = () => {
             alignItems={"center"}
             mb={"20px"}
             width={"90%"}
+            gap={"14px"}
           >
             <Box>
               <Heading size={"lg"} fontWeight={"500"}>
@@ -180,10 +188,17 @@ const UsersProfileDetails = () => {
               </Heading>
             </Box>
             <Box display={"flex"} gap={"20px"}>
-              <Button onClick={followOrUnfollowUserClick} isLoading={loading}>
+              <Button
+                onClick={followOrUnfollowUserClick}
+                isLoading={followLoading}
+                width={"100px"}
+              >
                 {isFollowing ? "Unfollow" : "Follow"}
               </Button>
-              <Button onClick={handleMessageClick}>Message</Button>
+
+              <Button onClick={handleMessageClick} width={"100px"}>
+                Message
+              </Button>
             </Box>
           </Box>
           <Box

@@ -13,6 +13,7 @@ import useDeletePost from "../../hooks/post/useDeletePost";
 import { useAppSelector } from "../../hooks/hooks";
 import { toast } from "react-toastify";
 import EditPost from "./EditPost";
+import { useCallback } from "react";
 
 const PostOptions = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -20,24 +21,24 @@ const PostOptions = () => {
 
   const { deletePost } = useDeletePost();
 
-  const handleDeleteClick = async () => {
+  const handleDeleteClick = useCallback(async () => {
     try {
       await deletePost(post?.id);
       setTimeout(() => {
         window.location.replace("/app/profile");
       }, 2500);
     } catch (error) {
-      toast.error("Something went wrong");
+      toast.error("Failed to delete post. Please try again.");
     }
-  };
+  }, [deletePost, post?.id]);
 
-  const handleEditClick = async () => {
+  const handleEditClick = useCallback(async () => {
     try {
       onOpen();
     } catch (error) {
       toast.error("Something went wrong");
     }
-  };
+  }, [onOpen]);
 
   return (
     <>

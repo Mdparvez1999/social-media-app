@@ -1,6 +1,5 @@
 import { Box, Heading, ListItem, UnorderedList } from "@chakra-ui/react";
 import { MdSecurity } from "react-icons/md";
-import { RiChatPrivateLine } from "react-icons/ri";
 import { IoSettingsOutline, IoOptionsOutline } from "react-icons/io5";
 import { Link as ChakraLink } from "@chakra-ui/react";
 import { Link } from "react-router-dom";
@@ -21,9 +20,34 @@ const UserProfileSideBar = ({ onClose }: UserProfileSideBarProps) => {
     try {
       await logoutUser();
     } catch (error) {
-      toast.error("Something went wrong");
+      toast.error("Logout failed. Please try again.");
     }
   };
+
+  const profileSideBarItems = [
+    {
+      to: "/app/profiledata/generaldetails",
+      label: "General",
+      icon: IoOptionsOutline,
+    },
+    {
+      to: "/app/profiledata/passwordsettings",
+      label: "Password",
+      icon: MdSecurity,
+    },
+    {
+      to: "/app/profiledata/advancedsettings",
+      label: "Advanced",
+      icon: IoSettingsOutline,
+    },
+    {
+      to: "/app/profiledata/logout",
+      label: "Logout",
+      icon: FiLogOut,
+      onClick: handleLogout,
+    },
+  ];
+
   return (
     <>
       <Heading
@@ -40,112 +64,30 @@ const UserProfileSideBar = ({ onClose }: UserProfileSideBarProps) => {
         listStyleType={"none"}
         padding={{ xs: "0", md: "8px" }}
       >
-        <ListItem
-          mb={{ xs: "20px", md: "16px" }}
-          width={"100%"}
-          onClick={onClose}
-        >
-          <ChakraLink
-            as={Link}
-            to={"/app/profiledata/generaldetails"}
-            display={"flex"}
-            alignItems={"center"}
-            fontSize={{ xs: "1.5rem", md: "1.3rem" }}
-            fontWeight={"500"}
-            _hover={{ textDecoration: "none" }}
-            m={"10px 0"}
+        {profileSideBarItems.map(({ to, label, icon: Icon, onClick }) => (
+          <ListItem
+            mb={{ xs: "20px", md: "16px" }}
+            width={"100%"}
+            onClick={onClose}
           >
-            <Box mr={{ xs: "20px", md: "15px" }}>
-              <IoSettingsOutline />
-            </Box>
-            General
-          </ChakraLink>
-        </ListItem>
-
-        <ListItem
-          mb={{ xs: "20px", md: "16px" }}
-          width={"100%"}
-          onClick={onClose}
-        >
-          <ChakraLink
-            as={Link}
-            to={"/app/profiledata/passwordsettings"}
-            display={"flex"}
-            alignItems={"center"}
-            fontSize={{ xs: "1.5rem", md: "1.3rem" }}
-            fontWeight={"500"}
-            _hover={{ textDecoration: "none" }}
-          >
-            <Box mr={{ xs: "20px", md: "15px" }}>
-              <MdSecurity />
-            </Box>
-            Password
-          </ChakraLink>
-        </ListItem>
-
-        <ListItem
-          mb={{ xs: "20px", md: "16px" }}
-          width={"100%"}
-          onClick={onClose}
-        >
-          <ChakraLink
-            as={Link}
-            to={"/app/profiledata/privacysettings"}
-            display={"flex"}
-            alignItems={"center"}
-            fontSize={{ xs: "1.5rem", md: "1.3rem" }}
-            fontWeight={"500"}
-            _hover={{ textDecoration: "none" }}
-          >
-            <Box mr={{ xs: "20px", md: "15px" }}>
-              <RiChatPrivateLine />
-            </Box>
-            Privacy
-          </ChakraLink>
-        </ListItem>
-
-        <ListItem
-          mb={{ xs: "20px", md: "16px" }}
-          width={"100%"}
-          onClick={onClose}
-        >
-          <ChakraLink
-            as={Link}
-            to={"/app/profiledata/advancedsettings"}
-            display={"flex"}
-            alignItems={"center"}
-            fontSize={{ xs: "1.5rem", md: "1.3rem" }}
-            fontWeight={"500"}
-            _hover={{ textDecoration: "none" }}
-          >
-            <Box mr={{ xs: "20px", md: "15px" }}>
-              <IoOptionsOutline />
-            </Box>
-            Advanced
-          </ChakraLink>
-        </ListItem>
-
-        <ListItem
-          width={"100%"}
-          mb={"14px"}
-          display={{ xs: "block", md: "none" }}
-        >
-          <ChakraLink
-            as={Link}
-            to={"/login"}
-            onClick={handleLogout}
-            display={"flex"}
-            alignItems={"center"}
-            fontSize={{ xs: "1.5rem", md: "1.3rem" }}
-            fontWeight={"500"}
-            _hover={{ textDecoration: "none" }}
-          >
-            <Box mr={{ xs: "20px", md: "15px" }}>
-              <FiLogOut size={"1.5rem"} />
-            </Box>
-            Logout
-          </ChakraLink>
-        </ListItem>
+            <ChakraLink
+              as={Link}
+              to={to}
+              display={"flex"}
+              alignItems={"center"}
+              fontSize={{ xs: "1.5rem", md: "1.3rem" }}
+              fontWeight={"500"}
+              _hover={{ textDecoration: "none" }}
+              m={"10px 0"}
+              onClick={onClick}
+            >
+              <Box mr={{ xs: "20px", md: "15px" }}>
+                <Icon />
+              </Box>
+              {label}
+            </ChakraLink>
+          </ListItem>
+        ))}
       </UnorderedList>
     </>
   );

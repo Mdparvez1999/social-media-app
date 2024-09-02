@@ -16,20 +16,19 @@ const useLogout = () => {
 
       const data = await response.json();
 
-      if (data.error) {
-        throw new Error(data.error);
-      }
+      if (data.status === "fail" || data.status === "error")
+        throw new Error(data.message);
 
       dispatch(logoutCurrentUser());
-
       dispatch(clearFeed());
 
       toast.success(data.message);
 
       navigate("/login");
     } catch (error) {
-      if (error instanceof Error) toast.error(error.message);
-      else toast.error("Something went wrong");
+      toast.error(
+        error instanceof Error ? error.message : "Something went wrong"
+      );
     }
   };
   return { logoutUser };

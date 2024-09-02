@@ -4,10 +4,17 @@ import { Post } from "../entities/post.entity";
 import { AppError } from "./AppError";
 
 export class PostUtils {
-  private static postRepository = AppDataSource.getRepository(Post);
-  private static commentRepository = AppDataSource.getRepository(Comments);
+  private static get postRepository() {
+    return AppDataSource.getRepository(Post);
+  }
+
+  private static get commentRepository() {
+    return AppDataSource.getRepository(Comments);
+  }
 
   public static async findPostById(id: string): Promise<Post> {
+    if (!id) throw new AppError("Post id is required", 400);
+
     const post = await this.postRepository.findOne({
       where: { id },
       relations: { user: true },
@@ -21,6 +28,8 @@ export class PostUtils {
   }
 
   public static async checkPostExists(id: string): Promise<void> {
+    if (!id) throw new AppError("Post id is required", 400);
+
     const post = await this.postRepository.findOneBy({ id });
 
     if (!post) {
@@ -32,6 +41,9 @@ export class PostUtils {
     postId: string,
     userId: string
   ): Promise<void> {
+    if (!postId || !userId)
+      throw new AppError("post id and user id are required", 400);
+
     const post = await this.postRepository.findOne({
       where: { id: postId, user: { id: userId } },
       relations: { user: true },
@@ -46,9 +58,12 @@ export class PostUtils {
     postId: string,
     userId: string
   ): Promise<Post> {
+    if (!postId || !userId)
+      throw new AppError("post id and user id are required", 400);
+
     const post = await this.postRepository.findOne({
       where: { id: postId, user: { id: userId } },
-      relations: ["files", "postlikes", "user"],
+      relations: ["files", "postlikes", "user", "postlikes.user"],
     });
 
     if (!post) {
@@ -59,6 +74,8 @@ export class PostUtils {
   }
 
   public static async findCommentByCommentId(id: string): Promise<Comments> {
+    if (!id) throw new AppError("comment id is required", 400);
+
     const comment = await this.commentRepository.findOne({
       where: { id },
       relations: ["post", "user"],
@@ -75,6 +92,9 @@ export class PostUtils {
     userId: string,
     commentId: string
   ): Promise<Comments> {
+    if (!userId || !commentId)
+      throw new AppError("user id and comment id are required", 400);
+
     const comment = await this.commentRepository.findOne({
       where: {
         id: commentId,
@@ -82,6 +102,7 @@ export class PostUtils {
       },
       relations: { user: true },
     });
+
     if (!comment) {
       throw new AppError("comment not found", 404);
     }

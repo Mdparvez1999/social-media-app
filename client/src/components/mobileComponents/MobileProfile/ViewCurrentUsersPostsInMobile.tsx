@@ -1,34 +1,35 @@
-import { useEffect } from "react";
-import { Box, Avatar, Text, Image } from "@chakra-ui/react";
+import { Box, Avatar, Text } from "@chakra-ui/react";
 import { useAppSelector } from "../../../hooks/hooks";
 import PostOptions from "../../posts/PostOptions";
 import LikeAndComments from "./LikeAndComments";
 import { formatCreatedAtTime } from "../../../utils/formatTimes.utils";
 import { IoArrowBack } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
+import CustomCarouselForMobile from "../../layouts/general/CustomCarouselForMobile";
+import { useEffect, useState } from "react";
+import ViewEachPostInMobileSkeleton from "../../../mobileComponentSkeletons/ViewEachPostInMobileSkeleton";
 
 const ViewCurrentUsersPostsInMobile = () => {
-  const currentUserPost = useAppSelector((state) => state.posts.singlePost);
+  const [loading, setLoading] = useState<boolean>(true);
 
+  const currentUserPost = useAppSelector((state) => state.posts.singlePost);
   const currentUser = useAppSelector((state) => state.profile.profile);
 
-  useEffect(() => {
-    if (currentUserPost) {
-      document
-        .getElementById(`post-${currentUserPost.id}`)
-        ?.scrollIntoView({ behavior: "smooth" });
-    }
-  }, [currentUserPost]);
-
   const navigate = useNavigate();
-
-  if (!currentUserPost) return null;
 
   const handleBackClick = () => {
     navigate(-1);
   };
 
-  return (
+  useEffect(() => {
+    if (currentUser && currentUserPost) setLoading(false);
+  }, [currentUser, currentUserPost]);
+
+  if (!currentUserPost) return null;
+
+  return loading ? (
+    <ViewEachPostInMobileSkeleton />
+  ) : (
     <Box>
       <Box
         display={"flex"}
@@ -53,21 +54,19 @@ const ViewCurrentUsersPostsInMobile = () => {
         </Box>
       </Box>
       <Box>
-        {currentUserPost?.files.map((file) => (
-          <Image
-            key={file.fileName + Math.random()}
-            src={`http://localhost:8000/uploads/postFiles/${file}`}
-            w={"100%"}
-            h={"auto"}
-            objectFit={"cover"}
-            crossOrigin="anonymous"
-          />
-        ))}
+        <CustomCarouselForMobile
+          images={currentUserPost?.files.map(
+            (file) => `http://localhost:8000/uploads/postFiles/${file}`
+          )}
+          width={"100%"}
+          height={"240px"}
+          objectFit="contain"
+        />
       </Box>
-      <Box px={"10px"} mt={"8px"}>
+      <Box px={"6px"} mt={"14px"}>
         <LikeAndComments post={currentUserPost} />
       </Box>
-      <Box p={"8px"}>
+      <Box p={"4px 0px 0px 10px"} fontWeight={"500"} fontSize={"1.2rem"}>
         <Text>{currentUserPost?.caption}</Text>
         <Text>{formatCreatedAtTime(currentUserPost.createdAt)}</Text>
       </Box>

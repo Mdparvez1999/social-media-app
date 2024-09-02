@@ -17,6 +17,7 @@ import { toast } from "react-toastify";
 
 const PrivacySettingConfirm = () => {
   const profile = useAppSelector((state) => state.profile.profile);
+
   const { isOpen, onClose, onOpen } = useDisclosure();
   const cancelref = useRef(null);
 
@@ -44,7 +45,7 @@ const PrivacySettingConfirm = () => {
         leastDestructiveRef={cancelref}
       >
         <AlertDialogOverlay>
-          <AlertDialogContent maxWidth={{ xs: "350px", md: "100%" }}>
+          <AlertDialogContent maxWidth={{ xs: "350px", md: "38%" }}>
             <AlertDialogHeader
               fontSize="lg"
               fontWeight="bold"

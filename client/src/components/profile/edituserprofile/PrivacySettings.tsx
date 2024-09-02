@@ -2,6 +2,7 @@ import { Box, Heading, Text } from "@chakra-ui/react";
 import PrivacySettingConfirm from "./PrivacySettingConfirm";
 
 const PrivacySettings = () => {
+  
   return (
     <>
       <Box

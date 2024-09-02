@@ -1,84 +1,79 @@
-import { useEffect } from "react";
-import { useParams } from "react-router-dom";
 import { useAppSelector } from "../../../hooks/hooks";
-import { scroller } from "react-scroll";
-import { Avatar, Box, Image, Text } from "@chakra-ui/react";
-import LikeAndComments from "../../mobileComponents/MobileProfile/LikeAndComments";
+import { Avatar, Box, Text } from "@chakra-ui/react";
 import { formatCreatedAtTime } from "../../../utils/formatTimes.utils";
 import { IoArrowBack } from "react-icons/io5";
+import CustomCarouselForMobile from "../../layouts/general/CustomCarouselForMobile";
+import PostOptions from "../../posts/PostOptions";
+import { useNavigate } from "react-router-dom";
+import SelectedUsersPostLikeAndComment from "../MobileProfile/SelectedUsersPostLikeAndComment";
+import { useEffect, useState } from "react";
+import ViewEachPostInMobileSkeleton from "../../../mobileComponentSkeletons/ViewEachPostInMobileSkeleton";
 
 const ViewSelectedUsersPostInMobile = () => {
-  const { postId } = useParams();
+  const [loading, setLoading] = useState<boolean>(true);
 
   const selectedUsersPosts = useAppSelector(
-    (state) => state.users.selectedUsersPosts
+    (state) => state.users.selectedUsersSinglePost
   );
-
   const selectedUser = useAppSelector((state) => state.users.selectedUser);
 
-  // Find the index of the post based on the postId
-  const initialPostIndex = selectedUsersPosts.findIndex(
-    (post) => post.id === postId
-  );
-
-  // Scroll to the post on mount
   useEffect(() => {
-    if (initialPostIndex !== -1) {
-      scroller.scrollTo(`post-${postId}`, {
-        duration: 800,
-        delay: 0,
-        smooth: "easeInOutQuart",
-        offset: -50, // adjust this value according to your needs
-      });
+    if (selectedUsersPosts) {
+      setLoading(false);
     }
-  }, [initialPostIndex, postId]);
+  }, [selectedUsersPosts]);
 
-  return (
+  const navigate = useNavigate();
+
+  if (!selectedUsersPosts) return null;
+
+  const handleBackClick = () => {
+    navigate(-1);
+  };
+
+  return loading ? (
+    <ViewEachPostInMobileSkeleton />
+  ) : (
     <Box>
-      <Box p={"10px"}></Box>
-      {selectedUsersPosts.length > 0
-        ? selectedUsersPosts.map((post) => (
-            <Box key={post.id} id={`post-${post.id}`}>
-              <Box
-                display={"flex"}
-                alignItems={"center"}
-                gap={"16px"}
-                p={"10px"}
-              >
-                <IoArrowBack
-                  size={"1.8rem"}
-                  cursor={"pointer"}
-                  onClick={() => window.history.back()}
-                />
-                <Box display={"flex"} gap={"15px"} alignItems={"center"}>
-                  <Avatar src={selectedUser?.profilePic} size={"sm"} />
-                  <Text fontWeight="bold" fontSize={"1.5rem"}>
-                    {selectedUser?.userName}
-                  </Text>
-                </Box>
-              </Box>
-              <Box>
-                {post.files.map((file) => (
-                  <Image
-                    key={file.fileName + Math.random()}
-                    src={`http://localhost:8000/uploads/postFiles/${file}`}
-                    w={"100%"}
-                    h={"auto"}
-                    objectFit={"cover"}
-                    crossOrigin="anonymous"
-                  />
-                ))}
-              </Box>
-              <Box px={"10px"} mt={"8px"}>
-                <LikeAndComments post={post} />
-              </Box>
-              <Box p={"8px"}>
-                <Text>{post.caption}</Text>
-                <Text>{formatCreatedAtTime(post.createdAt)}</Text>
-              </Box>
-            </Box>
-          ))
-        : null}
+      <Box
+        display={"flex"}
+        justifyContent={"space-between"}
+        alignItems={"center"}
+        gap={"16px"}
+        p={"10px"}
+      >
+        <Box display={"flex"} gap={"15px"} alignItems={"center"}>
+          <IoArrowBack
+            size={"1.8rem"}
+            cursor={"pointer"}
+            onClick={handleBackClick}
+          />
+          <Avatar src={selectedUser?.profilePic} size={"sm"} />
+          <Text fontWeight="bold" fontSize={"1.5rem"}>
+            {selectedUser?.userName}
+          </Text>
+        </Box>
+        <Box>
+          <PostOptions />
+        </Box>
+      </Box>
+      <Box>
+        <CustomCarouselForMobile
+          images={selectedUsersPosts?.files.map(
+            (file) => `http://localhost:8000/uploads/postFiles/${file}`
+          )}
+          width={"100%"}
+          height={"240px"}
+          objectFit="contain"
+        />
+      </Box>
+      <Box px={"6px"} mt={"14px"}>
+        <SelectedUsersPostLikeAndComment post={selectedUsersPosts} />
+      </Box>
+      <Box p={"4px 0px 0px 10px"} fontWeight={"500"} fontSize={"1.2rem"}>
+        <Text>{selectedUsersPosts?.caption}</Text>
+        <Text>{formatCreatedAtTime(selectedUsersPosts.createdAt)}</Text>
+      </Box>
     </Box>
   );
 };

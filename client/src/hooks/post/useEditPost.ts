@@ -2,6 +2,8 @@ import { toast } from "react-toastify";
 
 const useEditPost = () => {
   const editPost = async (id: string | undefined, caption: string) => {
+    if (!id) return;
+
     try {
       const response = await fetch(`/api/users/post/update/${id}`, {
         method: "PUT",
@@ -13,8 +15,6 @@ const useEditPost = () => {
           caption,
         }),
       });
-
-      if (!response.ok) throw new Error(response.statusText);
 
       const data = await response.json();
 

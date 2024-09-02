@@ -5,6 +5,7 @@ import {
   Entity,
   ManyToOne,
   PrimaryGeneratedColumn,
+  Relation,
   UpdateDateColumn,
 } from "typeorm";
 import { v4 as uuidv4 } from "uuid";
@@ -16,21 +17,21 @@ export class Message {
   @PrimaryGeneratedColumn("uuid")
   id!: string;
 
-  @Column({})
+  @Column()
   message!: string;
 
   @ManyToOne(() => Users, (user) => user.sentMessages, { onDelete: "CASCADE" })
-  sender!: Users;
+  sender!: Relation<Users>;
 
   @ManyToOne(() => Users, (user) => user.recievedMessages, {
     onDelete: "CASCADE",
   })
-  reciever!: Users;
+  reciever!: Relation<Users>;
 
   @ManyToOne(() => Conversations, (conversation) => conversation.messages, {
     onDelete: "CASCADE",
   })
-  conversation!: Conversations;
+  conversation!: Relation<Conversations>;
 
   @CreateDateColumn()
   createdAt!: Date;

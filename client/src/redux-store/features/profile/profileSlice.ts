@@ -19,20 +19,41 @@ interface ProfileState {
 
 interface FollowersAndFollowingState {
   id: string;
-  username: string;
+  userName: string;
   fullName: string;
   profilePic: string;
+}
+
+interface UserInfo {
+  id: string;
+  username: string;
+  profilePic: string;
+}
+
+interface FollowRequestState {
+  id: string;
+  status: string;
+  requestedUser: UserInfo;
+  receivedUser: UserInfo;
 }
 
 export interface ProfileSliceState {
   profile: ProfileState | null;
   followers: FollowersAndFollowingState[];
   following: FollowersAndFollowingState[];
+  followRequests: FollowRequestState[];
+  sentRequests: FollowRequestState[];
+  setSingleSentRequest: FollowRequestState | null;
 }
 
-const initialState = {
+const initialState: ProfileSliceState = {
   profile: null,
-} as ProfileSliceState;
+  followers: [],
+  following: [],
+  followRequests: [],
+  sentRequests: [],
+  setSingleSentRequest: null,
+};
 
 const profileSlice = createSlice({
   name: "SET_PROFILE",
@@ -61,6 +82,18 @@ const profileSlice = createSlice({
     },
     removeFollowing: (state, action: PayloadAction<string>) => {
       state.following = state.following.filter(
+        (user) => user?.id !== action.payload
+      );
+    },
+
+    addFollowers: (
+      state,
+      action: PayloadAction<FollowersAndFollowingState>
+    ) => {
+      state.followers = [action.payload, ...state.followers];
+    },
+    removeFollowers: (state, action: PayloadAction<string>) => {
+      state.followers = state.followers.filter(
         (user) => user.id !== action.payload
       );
     },
@@ -104,6 +137,34 @@ const profileSlice = createSlice({
         state.profile.isActive = action.payload;
       }
     },
+    setFollowRequests: (state, action: PayloadAction<FollowRequestState[]>) => {
+      state.followRequests = action.payload;
+    },
+    addFollowRequest: (state, action: PayloadAction<FollowRequestState>) => {
+      state.followRequests = [action.payload, ...state.followRequests];
+    },
+    removeFollowRequest: (state, action: PayloadAction<string>) => {
+      state.followRequests = state.followRequests.filter(
+        (request) => request.id !== action.payload
+      );
+    },
+    setSentRequests: (state, action: PayloadAction<FollowRequestState[]>) => {
+      state.sentRequests = action.payload;
+    },
+    setSingleSentRequest: (
+      state,
+      action: PayloadAction<FollowRequestState>
+    ) => {
+      state.setSingleSentRequest = action.payload;
+    },
+    addSentRequest: (state, action: PayloadAction<FollowRequestState>) => {
+      state.sentRequests = [action.payload, ...state.sentRequests];
+    },
+    removeSentRequest: (state, action: PayloadAction<string>) => {
+      state.sentRequests = state.sentRequests.filter(
+        (request) => request.id !== action.payload
+      );
+    },
   },
 });
 
@@ -113,6 +174,8 @@ export const {
   setFollowingUsers,
   addFollowing,
   removeFollowing,
+  addFollowers,
+  removeFollowers,
   updateProfilePic,
   updateFullName,
   updateBio,
@@ -121,6 +184,13 @@ export const {
   updateGender,
   updatePrivacy,
   updateActiveStatus,
+  setFollowRequests,
+  addFollowRequest,
+  removeFollowRequest,
+  setSentRequests,
+  setSingleSentRequest,
+  addSentRequest,
+  removeSentRequest,
 } = profileSlice.actions;
 
 export default profileSlice.reducer;

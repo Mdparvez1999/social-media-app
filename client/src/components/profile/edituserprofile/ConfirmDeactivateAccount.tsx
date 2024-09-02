@@ -7,22 +7,22 @@ import {
   AlertDialogHeader,
   AlertDialogOverlay,
   Button,
-  Switch,
   useDisclosure,
 } from "@chakra-ui/react";
-import { useRef } from "react";
-import { useAppDispatch, useAppSelector } from "../../../hooks/hooks";
+import { useRef, useState } from "react";
+import { useAppDispatch } from "../../../hooks/hooks";
 import { updateActiveStatus } from "../../../redux-store/features/profile/profileSlice";
 import { toast } from "react-toastify";
+import { logoutCurrentUser } from "../../../redux-store/features/auth/authSlice";
 
 const ConfirmDeactivateAccount = () => {
-  const profile = useAppSelector((state) => state.profile.profile);
   const { isOpen, onOpen, onClose } = useDisclosure();
-
   const cancelRef = useRef(null);
-
   const dispatch = useAppDispatch();
+  const [loading, setLoading] = useState<boolean>(false);
+
   const handleDeactivate = async () => {
+    setLoading(true);
     try {
       const response = await fetch("/api/user/profile/deactivate", {
         method: "PATCH",
@@ -40,17 +40,22 @@ const ConfirmDeactivateAccount = () => {
         throw new Error(data.message);
 
       dispatch(updateActiveStatus(data.isActive));
+      dispatch(logoutCurrentUser());
 
       toast.success(data.message);
       onClose();
     } catch (error) {
-      if (error instanceof Error) toast.error(error.message);
-      else toast.error("Something went wrong");
+      toast.error(
+        error instanceof Error ? error.message : "Something went wrong"
+      );
+    } finally {
+      setLoading(false);
     }
   };
+
   return (
     <>
-      <Switch onChange={onOpen} isChecked={profile?.isActive} />
+      <Button onClick={onOpen}>Confirm</Button>
 
       <AlertDialog
         isOpen={isOpen}
@@ -58,7 +63,7 @@ const ConfirmDeactivateAccount = () => {
         onClose={onClose}
       >
         <AlertDialogOverlay>
-          <AlertDialogContent maxWidth={{ xs: "350px", md: "100%" }}>
+          <AlertDialogContent maxWidth={{ xs: "350px", md: "50%" }}>
             <AlertDialogHeader>Deactivate account</AlertDialogHeader>
             <AlertDialogCloseButton />
             <AlertDialogBody>
@@ -67,7 +72,13 @@ const ConfirmDeactivateAccount = () => {
               your account?
             </AlertDialogBody>
             <AlertDialogFooter>
-              <Button onClick={handleDeactivate}>Deactivate</Button>
+              <Button
+                onClick={handleDeactivate}
+                isLoading={loading}
+                loadingText="Deactivating"
+              >
+                Deactivate
+              </Button>
               <Button onClick={onClose} ml={"16px"}>
                 Cancel
               </Button>

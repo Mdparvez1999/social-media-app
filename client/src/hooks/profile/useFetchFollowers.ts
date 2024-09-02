@@ -3,9 +3,11 @@ import { useAppSelector } from "../hooks";
 
 const useFetchFollowers = () => {
   const currentUser = useAppSelector((state) => state.auth.currentUser);
+
   const fetchFollowers = async () => {
+    if (!currentUser) return;
     try {
-      const response = await fetch(`/api/users/followers/${currentUser?.id}`, {
+      const response = await fetch(`/api/users/followers/${currentUser.id}`, {
         method: "GET",
         credentials: "include",
       });

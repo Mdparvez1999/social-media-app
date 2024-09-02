@@ -7,11 +7,6 @@ interface useSignupProps {
   email: string;
   password: string;
 }
-interface SignupResponse {
-  error?: string;
-  message?: string;
-  userData?: unknown;
-}
 
 interface useSignupReturnType {
   loading: boolean;
@@ -24,7 +19,6 @@ const useSignup = (): useSignupReturnType => {
 
   const signUp = async (signupData: useSignupProps) => {
     const isValid = signUpValidation(signupData);
-
     if (!isValid) return;
 
     try {
@@ -37,19 +31,18 @@ const useSignup = (): useSignupReturnType => {
         },
       });
 
-      const data: SignupResponse = await response.json();
+      const data = await response.json();
 
-      if (data.error) {
-        throw new Error(data.error);
-      }
+      if (data.status === "fail" || data.status === "error")
+        throw new Error(data.message);
 
       localStorage.setItem("userData", JSON.stringify(data));
-
-      toast.success(data.message);
+      toast.success("Signup successful!");
       navigate("/app/home");
     } catch (error) {
-      if (error instanceof Error) toast.error(error.message);
-      else toast.error("Something went wrong");
+      toast.error(
+        error instanceof Error ? error.message : "Something went wrong"
+      );
     } finally {
       setLoading(false);
     }
@@ -70,8 +63,9 @@ const signUpValidation = (signupData: useSignupProps): boolean => {
     return false;
   }
 
-  if (!email.includes("@") || !email.includes(".")) {
-    toast.error("Please enter a valid email address");
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    toast.error("Please enter a valid email");
     return false;
   }
 

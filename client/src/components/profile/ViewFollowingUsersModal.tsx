@@ -79,10 +79,10 @@ const ViewFollowingUsersModal = React.memo(
           </ModalHeader>
           <Divider width={"85%"} margin={"auto"} />
           <ModalBody>
-            <Box>
+            <Box maxHeight={"300px"} overflowY={"auto"}>
               {currentUserFollowing && currentUserFollowing.length > 0 ? (
                 currentUserFollowing.map((user) => {
-                  const isFollowing = followingState[user.id];
+                  const isFollowing = followingState[user?.id];
                   return (
                     <Box
                       key={user.id}
@@ -103,11 +103,11 @@ const ViewFollowingUsersModal = React.memo(
                               ? `http://localhost:8000/uploads/profilePic/${user?.profilePic}`
                               : undefined
                           }
-                          name={user.username}
+                          name={user.userName}
                         />
                         <Box mb={"8px"}>
                           <Text fontWeight={"bold"} fontSize={"1.3rem"}>
-                            {user.username}
+                            {user.userName}
                           </Text>
                           {user.fullName && (
                             <Text fontSize={"1rem"}>{user.fullName}</Text>

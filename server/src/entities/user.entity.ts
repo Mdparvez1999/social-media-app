@@ -6,6 +6,8 @@ import {
   OneToMany,
   ManyToMany,
   JoinTable,
+  Index,
+  Relation,
 } from "typeorm";
 import { v4 as uuidv4 } from "uuid";
 import { PostLike } from "./postLike.entity";
@@ -25,6 +27,7 @@ export class Users {
   @Column({
     nullable: false,
   })
+  @Index()
   userName!: string;
 
   @Column({
@@ -37,6 +40,7 @@ export class Users {
     unique: true,
     nullable: false,
   })
+  @Index()
   email!: string;
 
   @Column({
@@ -98,50 +102,56 @@ export class Users {
   forgotPasswordExpiry!: Date | null;
 
   @OneToMany(() => Post, (post) => post.user, { cascade: true })
-  posts!: Post[];
+  posts!: Relation<Post>[];
 
   @OneToMany(() => PostLike, (postlike) => postlike.user, { cascade: true })
-  postLikes!: PostLike[];
+  postLikes!: Relation<PostLike>[];
 
   @OneToMany(() => Comments, (comment) => comment.user, { cascade: true })
-  comments!: Comments[];
+  comments!: Relation<Comments>[];
 
   @OneToMany(() => Follower, (follower) => follower.followers, {
     cascade: true,
   })
-  followers!: Follower[];
+  followers!: Relation<Follower>[];
 
   @OneToMany(() => Follower, (follower) => follower.following, {
     cascade: true,
   })
-  following!: Follower[];
+  following!: Relation<Follower>[];
 
   @OneToMany(
     () => FollowRequest,
     (followRequest) => followRequest.requestedUser,
     { cascade: true }
   )
-  sentFollowRequest!: FollowRequest[];
+  sentFollowRequest!: Relation<FollowRequest>[];
 
   @OneToMany(
     () => FollowRequest,
-    (followRequest) => followRequest.recievedUser,
+    (followRequest) => followRequest.receivedUser,
     {
       cascade: true,
     }
   )
-  recievedFollowRequest!: FollowRequest[];
+  recievedFollowRequest!: Relation<FollowRequest>[];
 
-  @OneToMany(() => Notifications, (notification) => notification.user, {
+  // Updated relationships for Notifications
+  @OneToMany(() => Notifications, (notification) => notification.sentBy, {
     cascade: true,
   })
-  notifications!: Notifications[];
+  sentNotifications!: Relation<Notifications>[];
+
+  @OneToMany(() => Notifications, (notification) => notification.receivedBy, {
+    cascade: true,
+  })
+  receivedNotifications!: Relation<Notifications>[];
 
   @OneToMany(() => Message, (message) => message.sender, { cascade: true })
-  sentMessages!: Message[];
+  sentMessages!: Relation<Message>[];
 
   @OneToMany(() => Message, (message) => message.reciever, { cascade: true })
-  recievedMessages!: Message[];
+  recievedMessages!: Relation<Message>[];
 
   @ManyToMany(
     () => Conversations,
@@ -149,7 +159,7 @@ export class Users {
     { cascade: true }
   )
   @JoinTable()
-  conversations!: Conversations[];
+  conversations!: Relation<Conversations>[];
 
   @BeforeInsert()
   addId() {

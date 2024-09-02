@@ -7,6 +7,8 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   ManyToOne,
+  Index,
+  Relation,
 } from "typeorm";
 import { v4 as uuidv4 } from "uuid";
 import { PostFile } from "./postFile.entity";
@@ -36,18 +38,20 @@ export class Post {
   commentCount!: number;
 
   @ManyToOne(() => Users, (user) => user.posts, { onDelete: "CASCADE" })
-  user!: Users;
+  @Index()
+  user!: Relation<Users>;
 
   @OneToMany(() => PostFile, (postfile) => postfile.post, { cascade: true })
-  files!: PostFile[];
+  files!: Relation<PostFile>[];
 
   @OneToMany(() => PostLike, (postlike) => postlike.post, { cascade: true })
-  postlikes!: PostLike[];
+  postlikes!: Relation<PostLike>[];
 
   @OneToMany(() => Comments, (comments) => comments.post, { cascade: true })
-  comments!: Comments[];
+  comments!: Relation<Comments>[];
 
   @CreateDateColumn()
+  @Index()
   createdAt!: Date;
 
   @UpdateDateColumn()

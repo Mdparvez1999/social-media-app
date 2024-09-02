@@ -4,6 +4,8 @@ import {
   PrimaryGeneratedColumn,
   ManyToOne,
   BeforeInsert,
+  Index,
+  Relation,
 } from "typeorm";
 import { v4 as uuidv4 } from "uuid";
 import { Post } from "./post.entity";
@@ -20,7 +22,8 @@ export class PostFile {
   type!: string;
 
   @ManyToOne(() => Post, (post) => post.files, { onDelete: "CASCADE" })
-  post!: Post;
+  @Index()
+  post!: Relation<Post>;
 
   @BeforeInsert()
   addId() {

@@ -5,7 +5,9 @@ import { Users } from "../entities/user.entity";
 import { UserUtils } from "../utils/user.utils";
 
 export class AdminController {
-  private userRepository = AppDataSource.getRepository(Users);
+  private get userRepository() {
+    return AppDataSource.getRepository(Users);
+  }
 
   public getAllUsers = asyncHandler(
     async (req: Request, res: Response, next: NextFunction) => {
@@ -40,7 +42,7 @@ export class AdminController {
     async (req: Request, res: Response, next: NextFunction) => {
       const id: string = req.params.id;
 
-      const user: Users | null = await UserUtils.findUserById(id);
+      await UserUtils.findUserById(id);
 
       await this.userRepository.delete({ id });
 

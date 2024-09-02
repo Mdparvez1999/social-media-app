@@ -2,7 +2,7 @@ import { Outlet, useLocation } from "react-router-dom";
 import Navbar from "../../components/layouts/navbar/Navbar";
 import MobileNavbar from "../../components/mobileComponents/MobileNavbar/MobileNavbar";
 import { Box } from "@chakra-ui/react";
-import { useAppDispatch } from "../../hooks/hooks";
+import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
 import useFetchFollowers from "../../hooks/profile/useFetchFollowers";
 import useFetchFollowingUsers from "../../hooks/profile/useFetchFollowingUsers";
 import { useEffect } from "react";
@@ -10,36 +10,46 @@ import { toast } from "react-toastify";
 import {
   setFollowers,
   setFollowingUsers,
+  setFollowRequests,
   setProfile,
+  setSentRequests,
 } from "../../redux-store/features/profile/profileSlice";
 import useFetchCurrentUsersProfile from "../../hooks/profile/useFetchCurrentUsersProfile";
+import useFetchFollowRequests from "../../hooks/profile/useFetchFollowRequests";
+import useFetchSentRequests from "../../hooks/profile/useFetchSentRequests";
 
 const Hero = () => {
   const dispatch = useAppDispatch();
-
   const location = useLocation();
+
+  const currentUser = useAppSelector((state) => state.auth.currentUser);
 
   const { fetchFollowers } = useFetchFollowers();
   const { fetchFollowingUsers } = useFetchFollowingUsers();
-
   const { fetchCurrentUserProfile } = useFetchCurrentUsersProfile();
+  const { fetchFollowRequests } = useFetchFollowRequests();
+  const { fetchSentRequests } = useFetchSentRequests();
 
   useEffect(() => {
     const loadUserData = async () => {
       try {
-        const currentUsersProfileData = await fetchCurrentUserProfile();
+        const [currentUsersProfileData, followRequestsData] = await Promise.all(
+          [fetchCurrentUserProfile(), fetchFollowRequests()]
+        );
+
         dispatch(setProfile(currentUsersProfileData));
+        dispatch(
+          setFollowRequests(followRequestsData.data.followRequests || [])
+        );
       } catch (error) {
-        if (error instanceof Error) {
-          toast.error(error.message);
-        } else {
-          toast.error("Something went wrong");
-        }
+        toast.error(
+          error instanceof Error ? error.message : "Something went wrong"
+        );
       }
     };
 
     loadUserData();
-  }, [dispatch, fetchCurrentUserProfile]);
+  }, [dispatch, fetchCurrentUserProfile, fetchFollowRequests]);
 
   useEffect(() => {
     const loadUsersData = async () => {
@@ -57,6 +67,21 @@ const Hero = () => {
 
     loadUsersData();
   }, [dispatch, fetchFollowers, fetchFollowingUsers]);
+
+  useEffect(() => {
+    const loadSentRequests = async () => {
+      try {
+        const sentRequestsData = await fetchSentRequests(currentUser?.id);
+        dispatch(setSentRequests(sentRequestsData.sentRequests || []));
+      } catch (error) {
+        toast.error(
+          error instanceof Error ? error.message : "Something went wrong"
+        );
+      }
+    };
+
+    loadSentRequests();
+  }, [dispatch, fetchSentRequests, currentUser?.id]);
 
   const isMessagePage =
     location.pathname.startsWith("/app/messagesinmobile") ||

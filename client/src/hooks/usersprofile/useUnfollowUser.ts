@@ -6,20 +6,25 @@ import { removeSelectedUsersFollower } from "../../redux-store/features/users/us
 const useUnfollowUser = () => {
   const dispatch = useAppDispatch();
   const unfollowUser = async (id: string | undefined) => {
+    if (!id) return;
+
     try {
       const response = await fetch(`/api/users/unfollow/${id}`, {
         method: "DELETE",
         credentials: "include",
       });
 
-      const { data } = await response.json();
+      const data = await response.json();
 
-      dispatch(removeFollowing(data.following));
-      dispatch(removeSelectedUsersFollower(data.follower));
+      if (data.status === "fail" || data.status === "error")
+        return toast.error(data.message);
+
+      dispatch(removeFollowing(data.data.following.id));
+      dispatch(removeSelectedUsersFollower(data.data.follower.id));
     } catch (error) {
-      if (error instanceof Error) toast.error(error.message);
-      else toast.error("Something went wrong");
-      console.log(error);
+      toast.error(
+        error instanceof Error ? error.message : "Something went wrong"
+      );
     }
   };
 

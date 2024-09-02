@@ -22,6 +22,7 @@ interface ChangePasswordModalProps {
 const ChangePasswordModal = ({ isOpen, onClose }: ChangePasswordModalProps) => {
   const [oldPassword, setOldPassword] = useState<string>("");
   const [newPassword, setNewPassword] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.name === "oldPassword") {
@@ -32,6 +33,12 @@ const ChangePasswordModal = ({ isOpen, onClose }: ChangePasswordModalProps) => {
   };
 
   const handleUpdatePassword = async () => {
+    if (!oldPassword || !newPassword) {
+      toast.error("Please fill in both fields.");
+      return;
+    }
+
+    setLoading(true);
     try {
       const response = await fetch("/api/user/profile/change-password", {
         method: "PUT",
@@ -49,17 +56,25 @@ const ChangePasswordModal = ({ isOpen, onClose }: ChangePasswordModalProps) => {
 
       const data = await response.json();
 
+      if (data.status === "fail" || data.status === "error")
+        throw new Error(data.message);
+
       toast.success(data.message);
+
+      setOldPassword("");
+      setNewPassword("");
     } catch (error) {
       if (error instanceof Error) toast.error(error.message);
       else toast.error("Something went wrong");
+    } finally {
+      setLoading(false);
     }
   };
   return (
     <>
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
-        <ModalContent maxWidth={{ xs: "350px", md: "100%" }}>
+        <ModalContent maxWidth={{ xs: "350px", md: "35%" }}>
           <ModalHeader textAlign={"center"}>Change Password</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
@@ -77,6 +92,7 @@ const ChangePasswordModal = ({ isOpen, onClose }: ChangePasswordModalProps) => {
                 type="password"
                 name="oldPassword"
                 onChange={handleChange}
+                autoFocus
               />
             </Box>
             <Box
@@ -96,7 +112,9 @@ const ChangePasswordModal = ({ isOpen, onClose }: ChangePasswordModalProps) => {
             </Box>
           </ModalBody>
           <ModalFooter>
-            <Button onClick={handleUpdatePassword}>update</Button>
+            <Button onClick={handleUpdatePassword} isLoading={loading}>
+              update
+            </Button>
           </ModalFooter>
         </ModalContent>
       </Modal>

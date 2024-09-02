@@ -4,14 +4,25 @@ import { FaVideo } from "react-icons/fa6";
 import MessageBody from "./MessageBody";
 import MessaggeInput from "./MessaggeInput";
 import { useAppSelector } from "../../hooks/hooks";
+import { useMemo } from "react";
 
 const MessageContainer = () => {
   const selectedConversation = useAppSelector(
     (state) => state.messages.selectedConversation
   );
+
+  const memoizedConversation = useMemo(
+    () => selectedConversation,
+    [selectedConversation]
+  );
+
+  const profilePicUrl = memoizedConversation?.participants[0].profilePic
+    ? `http://localhost:8000/uploads/profliePic/${memoizedConversation?.participants[0].profilePic}`
+    : undefined;
+
   return (
     <Box height={"100vh"} width={"100%"}>
-      {selectedConversation ? (
+      {memoizedConversation ? (
         <>
           <Box
             className="header"
@@ -22,12 +33,8 @@ const MessageContainer = () => {
           >
             <Box display={"flex"} gap={"14px"} alignItems={"center"}>
               <Avatar
-                name={selectedConversation?.participants[0].userName}
-                src={
-                  selectedConversation?.participants[0].profilePic !== null
-                    ? `http://localhost:8000/uploads/profliePic/${selectedConversation?.participants[0].profilePic}`
-                    : undefined
-                }
+                name={memoizedConversation?.participants[0].userName}
+                src={profilePicUrl}
                 crossOrigin="anonymous"
               />
               <Text fontSize={"1.2rem"} fontWeight={"500"}>

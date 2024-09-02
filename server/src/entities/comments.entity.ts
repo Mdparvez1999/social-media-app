@@ -6,6 +6,8 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   BeforeInsert,
+  Index,
+  Relation,
 } from "typeorm";
 import { v4 as uuidv4 } from "uuid";
 import { Post } from "./post.entity";
@@ -20,10 +22,12 @@ export class Comments {
   comment!: string;
 
   @ManyToOne(() => Post, (post) => post.comments, { onDelete: "CASCADE" })
-  post!: Post;
+  @Index()
+  post!: Relation<Post>;
 
   @ManyToOne(() => Users, (users) => users.comments, { onDelete: "CASCADE" })
-  user!: Users;
+  @Index()
+  user!: Relation<Users>;
 
   @CreateDateColumn()
   commentedAt!: Date;

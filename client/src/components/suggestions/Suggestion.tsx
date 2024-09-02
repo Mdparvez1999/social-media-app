@@ -2,10 +2,8 @@ import { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
 import { setSuggestedUsers } from "../../redux-store/features/suggestedUsers/suggestedUsersSlice";
 import { toast } from "react-toastify";
-import { Avatar, Box, Button, Text } from "@chakra-ui/react";
+import { Avatar, Box, Button, Text, Spinner } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
-// import useFollowUser from "../../hooks/usersprofile/useFollowUser";
-// import useUnfollowUser from "../../hooks/usersprofile/useUnfollowUser";
 
 const Suggestion = () => {
   const dispatch = useAppDispatch();
@@ -24,12 +22,16 @@ const Suggestion = () => {
           credentials: "include",
         });
 
-        const { data } = await response.json();
+        if (!response.ok) {
+          throw new Error("Failed to fetch suggested users");
+        }
 
+        const { data } = await response.json();
         dispatch(setSuggestedUsers(data));
       } catch (error) {
-        if (error instanceof Error) toast.error(error.message);
-        else toast.error("Something went wrong");
+        toast.error(
+          error instanceof Error ? error.message : "Something went wrong"
+        );
       } finally {
         setLoading(false);
       }
@@ -44,76 +46,58 @@ const Suggestion = () => {
     navigate(`/app/usersprofile/${userId}`);
   };
 
-  // const selectedUserData = useAppSelector((state) => state.users.selectedUser);
-
-  // const currentUsersFollowing = useAppSelector(
-  //   (state) => state.profile.following
-  // );
-
-  // const followedUser = currentUsersFollowing?.find(
-  //   (user) => user.id === selectedUserData?.id
-  // );
-
-  // const [btnLoading, setBtnLoading] = useState(false);
-
-  // const { followUser } = useFollowUser();
-
-  // const { unfollowUser } = useUnfollowUser();
-
-  // const followOrUnfollowUserClick = async (userId: string) => {
-  //   setBtnLoading(true);
-
-  //   try {
-  //     if (followedUser) {
-  //       await unfollowUser(userId);
-  //     } else {
-  //       await followUser(userId);
-  //     }
-  //   } catch (error) {
-  //     toast.error("Something went wrong");
-  //   } finally {
-  //     setBtnLoading(false);
-  //   }
-  // };
-
   return (
-    <Box p={"10px 10px"}>
-      {loading && <p>Loading...</p>}
-
-      <Text fontSize={"1.2rem"} fontWeight={"500"} mb={"20px"}>
-        Suggested for you
-      </Text>
-
-      {!loading &&
-        suggestedUsers &&
-        suggestedUsers.length > 0 &&
-        suggestedUsers.map((user) => (
-          <Box
-            key={user.id}
-            display={"flex"}
-            justifyContent={"space-between"}
-            alignItems={"center"}
-          >
+    <Box p={"10px"}>
+      {loading ? (
+        <Box
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+          height="100px"
+        >
+          <Spinner />
+        </Box>
+      ) : suggestedUsers && suggestedUsers.length > 0 ? (
+        <>
+          <Text fontSize={"1.2rem"} fontWeight={"500"} mb={"20px"}>
+            Suggested for you
+          </Text>
+          {suggestedUsers.map((user) => (
             <Box
+              key={user.id}
               display={"flex"}
-              gap={"10px"}
+              justifyContent={"space-between"}
               alignItems={"center"}
-              mb={"18px"}
-              cursor={"pointer"}
-              onClick={() => handleViewUserProfile(user.id)}
+              mb={"6px"}
+              p={"10px"}
             >
-              <Avatar name={user.userName} />
-              <Text>{user.userName}</Text>
+              <Box
+                display={"flex"}
+                gap={"10px"}
+                alignItems={"center"}
+                cursor={"pointer"}
+                onClick={() => handleViewUserProfile(user.id)}
+              >
+                <Avatar
+                  name={user.userName}
+                  src={
+                    user.profilePic
+                      ? `http://localhost:8000/uploads/profilePic/${user.profilePic}`
+                      : undefined
+                  }
+                  crossOrigin="anonymous"
+                />
+                <Text fontWeight={"medium"} fontSize={"1.2rem"} mb={"10px"}>
+                  {user.userName}
+                </Text>
+              </Box>
+              <Button>Follow</Button>
             </Box>
-            <Button
-            // isLoading={btnLoading}
-            // onClick={() => followOrUnfollowUserClick(user.id)}
-            >
-              {/* {followedUser ? "Unfollow" : "Follow"} */}
-              follow
-            </Button>
-          </Box>
-        ))}
+          ))}
+        </>
+      ) : (
+        <Text textAlign={"center"}>No suggested users at the moment.</Text>
+      )}
     </Box>
   );
 };

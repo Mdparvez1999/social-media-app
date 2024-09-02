@@ -10,26 +10,34 @@ const useFollowUser = () => {
     (state) => state.profile.following
   );
   const followUser = async (id: string | undefined) => {
+    if (!id) return;
+
     try {
       const response = await fetch(`/api/users/follow/${id}`, {
         method: "POST",
         credentials: "include",
       });
 
-      const { data } = await response.json();
+      const data = await response.json();
+
+      if (data.status === "fail" || data.status === "error") {
+        return toast.success(data.message);
+      }
 
       const existingFollowingUser = currentUsersFollowing?.some(
-        (user) => user.id === data.following.id
+        (user) => user?.id === data.data.following?.id
       );
 
       if (!existingFollowingUser) {
         dispatch(addSelectedUsersFollower(data.follower));
-        dispatch(addFollowing(data.following));
+        dispatch(addFollowing(data.data.following));
       }
+
+      return data;
     } catch (error) {
-      if (error instanceof Error) toast.error(error.message);
-      else toast.error("Something went wrong");
-      console.log(error);
+      toast.error(
+        error instanceof Error ? error.message : "Something went wrong"
+      );
     }
   };
 

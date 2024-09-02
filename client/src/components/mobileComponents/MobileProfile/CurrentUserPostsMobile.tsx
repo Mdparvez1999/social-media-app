@@ -1,5 +1,5 @@
-import { Grid, Image } from "@chakra-ui/react";
-import { useEffect } from "react";
+import { Box, Grid } from "@chakra-ui/react";
+import { useEffect, useMemo, useState } from "react";
 import { toast } from "react-toastify";
 import { useAppDispatch, useAppSelector } from "../../../hooks/hooks";
 import {
@@ -8,13 +8,20 @@ import {
   setSinglePost,
 } from "../../../redux-store/features/post/postsSlice";
 import { useNavigate } from "react-router-dom";
+import CustomCarouselForMobile from "../../layouts/general/CustomCarouselForMobile";
+import PostsMobileSkeleton from "../../../mobileComponentSkeletons/PostsMobileSkeleton";
 
 const CurrentUserPostsMobile = () => {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+
   const currentUserPosts = useAppSelector((state) => state.posts.posts);
+
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const fetchCurrentUserPosts = async () => {
+      setLoading(true);
       try {
         const response = await fetch("/api/users/post/get-all", {
           method: "GET",
@@ -29,42 +36,52 @@ const CurrentUserPostsMobile = () => {
 
         dispatch(setPosts(data.data));
       } catch (error) {
-        if (error instanceof Error) toast.error(error.message);
-        else toast.error("Something went wrong");
+        toast.error(
+          error instanceof Error ? error.message : "Something went wrong"
+        );
+      } finally {
+        setLoading(false);
       }
     };
     fetchCurrentUserPosts();
   }, [dispatch]);
-
-  const navigate = useNavigate();
 
   const handleViewEachPost = (post: PostState) => {
     dispatch(setSinglePost(post));
     navigate(`/app/viewpost/${post.id}`);
   };
 
-  return (
-    <Grid templateColumns={"repeat(3, 1fr)"} gap={1} margin={"5px"}>
-      {currentUserPosts
-        .slice()
+  const sortedPosts = useMemo(
+    () =>
+      currentUserPosts
+        ?.slice()
         .sort(
           (a, b) =>
             new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-        )
-        .map((post) =>
-          post.files.map((file) => (
-            <Image
-              src={`http://localhost:8000/uploads/postFiles/${file}`}
-              w={"100%"}
-              h={"100%"}
-              key={`${post.id}-${file}`}
-              objectFit={"cover"}
-              crossOrigin="anonymous"
-              cursor={"pointer"}
-              onClick={() => handleViewEachPost(post)}
-            />
-          ))
-        )}
+        ),
+    [currentUserPosts]
+  );
+
+  return loading ? (
+    <PostsMobileSkeleton />
+  ) : (
+    <Grid templateColumns={"repeat(3, 1fr)"} gap={1} margin={"5px"}>
+      {sortedPosts.map((post) => (
+        <Box
+          height={"100%"}
+          key={post.id}
+          cursor={"pointer"}
+          onClick={() => handleViewEachPost(post)}
+        >
+          <CustomCarouselForMobile
+            images={post.files.map(
+              (file) => `http://localhost:8000/uploads/postFiles/${file}`
+            )}
+            width={"500px"}
+            height={"85px"}
+          />
+        </Box>
+      ))}
     </Grid>
   );
 };

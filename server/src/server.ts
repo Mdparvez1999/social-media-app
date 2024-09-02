@@ -26,7 +26,11 @@ export const checkIsOnline = (receiverId: string) => {
 io.on("connection", (socket) => {
   const userId = socket.handshake.query.userId as string;
 
-  if (!userId) return;
+  if (!userId) {
+    console.error("User ID not provided in the handshake query.");
+    socket.disconnect();
+    return;
+  }
 
   onlineUsersMap[userId] = socket.id;
 
@@ -39,4 +43,10 @@ const PORT: number = parseInt(process.env.PORT || "8000", 10);
 
 server.listen(PORT, () => {
   console.log(`Server is running on port http://localhost:${PORT}`);
+});
+
+process.on("SIGTERM", () => {
+  server.close(() => {
+    console.log("Server shutting down...");
+  });
 });
