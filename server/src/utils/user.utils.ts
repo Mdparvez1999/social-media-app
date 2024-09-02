@@ -24,12 +24,12 @@ export class UserUtils {
     return user;
   }
 
-  public static async findUserByEmail(email: string): Promise<Users> {
+  public static async findUserByEmail(email: string): Promise<Users | null> {
     if (!email) throw new AppError("user email is required", 400);
 
     const user = await this.userRepository.findOneBy({ email });
 
-    if (!user) throw new AppError("Email already exists", 400);
+    if (user) throw new AppError("Email already exists", 400);
 
     return user;
   }

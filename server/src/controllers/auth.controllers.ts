@@ -77,6 +77,10 @@ export class AuthController {
 
       const user = await UserUtils.findUserByEmail(email);
 
+      if (!user) {
+        return next(new AppError("Invalid credentials", 400));
+      }
+
       const correctPassword = await comparePassword(password, user.password);
 
       if (!correctPassword) {
@@ -110,6 +114,10 @@ export class AuthController {
       const { email } = value;
 
       const user: Users | null = await UserUtils.findUserByEmail(email);
+
+      if (!user) {
+        return next(new AppError("Invalid credentials", 400));
+      }
 
       const forgotPasswordToken: string = genForgotPasswordToken();
 
