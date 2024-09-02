@@ -2,7 +2,7 @@
 node_modules/
 
 # Ignore dist directory (compiled files)
-server/dist/
+server/src/
 
 # Ignore environment variables
 .env
