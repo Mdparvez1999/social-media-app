@@ -36,11 +36,7 @@ export class AuthController {
       const { userName, email, DOB, password, gender } = value;
       const profilePicName: string | undefined = req.file?.filename;
 
-      const existingUser: Users = await UserUtils.findUserByEmail(email);
-
-      if (existingUser) {
-        return next(new AppError("Email already exists", 400));
-      }
+      await UserUtils.findUserByEmail(email);
 
       const hashedPassword: string = await hashPassword(password);
 

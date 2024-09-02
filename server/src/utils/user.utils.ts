@@ -29,9 +29,7 @@ export class UserUtils {
 
     const user = await this.userRepository.findOneBy({ email });
 
-    if (!user) {
-      throw new AppError("user not found", 404);
-    }
+    if (!user) throw new AppError("Email already exists", 400);
 
     return user;
   }
