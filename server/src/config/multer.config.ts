@@ -2,6 +2,7 @@ import { Request } from "express";
 import multer, { MulterError } from "multer";
 import path from "path";
 import fs from "fs";
+import { fileURLToPath } from "url";
 
 // Define allowed file types
 const allowedFileTypes = [
@@ -40,12 +41,16 @@ const createStorage = (destinationFolder: string) =>
     },
   });
 
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+const __rootDir = path.resolve(__dirname, "../..");
+
 // Create storage configurations
 const profilePicStorage = createStorage(
-  path.join(__dirname, "uploads/profilePic")
+  path.join(__rootDir, "dist/uploads/profilePic")
 );
 const postFilesStorage = createStorage(
-  path.join(__dirname, "uploads/postFiles")
+  path.join(__rootDir, "dist/uploads/postFiles")
 );
 
 // File filter for allowed file types

@@ -5,8 +5,8 @@
   "main": "dist/server.js",
   "scripts": {
     "start-dev": "nodemon --exec ts-node src/server.ts",
-    "build": "tsc && copyfiles -u 2 server/src/uploads/**/* server/dist && node server/add-js-extension.js",
-    "start": "set NODE_ENV=production&& node server/dist/server.js"
+    "start": "set NODE_ENV=production&& node server/dist/server.js",
+    "build": "npm install && tsc && copyfiles -u 2 server/src/uploads/**/* server/dist && node server/add-js-extension.js && npm install --prefix client && npm run build --prefix client"
   },
   "type": "module",
   "author": "MD Parvez",
