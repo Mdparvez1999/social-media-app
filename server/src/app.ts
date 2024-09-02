@@ -54,6 +54,9 @@ app.use(
   })
 );
 
+// set trust proxy
+app.set("trust proxy", true);
+
 // data parsing Middlewares
 app.use(cookieParser());
 app.use(express.json({ limit: "50mb" }));

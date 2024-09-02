@@ -23,13 +23,12 @@ export const SocketContextProvider = ({
 
   useEffect(() => {
     if (currentUser) {
-      const newSocket: Socket = io("http://localhost:8000", {
-        query: { userId: currentUser.id },
-      });
-
-      // newSocket.on("connect", () => {
-      //   console.log("Socket connected ");
-      // });
+      const newSocket: Socket = io(
+        "https://social-media-app-wbm2.onrender.com",
+        {
+          query: { userId: currentUser.id },
+        }
+      );
 
       newSocket.on("connect_error", (error) => {
         console.error("Socket connection error:", error);
