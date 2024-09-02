@@ -1,7 +1,6 @@
 import "reflect-metadata";
 import express, { Application, Request, Response, NextFunction } from "express";
 import cookieParser from "cookie-parser";
-
 import helmet from "helmet";
 import { AppDataSource } from "./config/DB_Connection";
 import CORS from "cors";
@@ -17,6 +16,7 @@ import { errorHandler } from "./middlewares/error.middleware";
 import { apiLimiter } from "./config/rate_Limit.cofig";
 import path from "path";
 import { fileURLToPath } from "url";
+import fs from "fs";
 
 // create express app
 export const app: Application = express();
@@ -24,7 +24,15 @@ export const app: Application = express();
 // Create __dirname equivalent in ESM
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
+// Ensure the uploads directory exists
+const uploadsDir = path.join(__dirname, "uploads");
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
+
+// Serve the uploads directory
+app.use("/uploads", express.static(uploadsDir));
 
 // security middlewares
 app.use(helmet());
