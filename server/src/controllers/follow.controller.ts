@@ -299,7 +299,8 @@ export class FollowController {
       if (followRequest.requestedUser.id !== user.id && user.role !== "admin") {
         return next(new AppError("unauthorized", 401));
       }
-      const response = await this.followRequestRepository.remove(followRequest);
+
+      await this.followRequestRepository.remove(followRequest);
 
       return res.status(200).json({
         status: "success",
@@ -355,8 +356,6 @@ export class FollowController {
       )) as Follower;
 
       await this.followerRepository.remove(follower);
-
-      console.log("unfollowed user successfully", follower);
 
       return res.status(200).json({
         status: "success",

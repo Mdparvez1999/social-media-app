@@ -37,6 +37,25 @@ app.use("/uploads", express.static(uploadsDir));
 // security middlewares
 app.use(helmet());
 
+// security middlewares with customized csp
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'"],
+        connectSrc: ["'self'"],
+        imgSrc: [
+          "'self'",
+          "'data:'",
+          "https://social-media-app-wbm2.onrender.com/uploads",
+        ],
+        styleSrc: ["'self'", "'unsafe-inline'"],
+      },
+    },
+  })
+);
+
 // database connection
 AppDataSource.initialize()
   .then(() => {
@@ -54,8 +73,10 @@ app.use(
   })
 );
 
+const isProduction = process.env.NODE_ENV === "production";
+
 // set trust proxy
-app.set("trust proxy", true);
+app.set("trust proxy", isProduction ? true : false);
 
 // data parsing Middlewares
 app.use(cookieParser());

@@ -22,10 +22,6 @@ const Conversations = () => {
           credentials: "include",
         });
 
-        if (!response.ok) {
-          throw new Error("Failed to fetch conversations");
-        }
-
         const data = await response.json();
 
         if (data.status === "error" || data.status === "fail")
@@ -66,30 +62,41 @@ const Conversations = () => {
         <Text>messages</Text>
       </Box>
       <Box maxHeight={"100vh"} width={"100%"} p={"10px 22px"}>
-        {conversations?.map((conversation) => (
-          <Box
-            key={conversation.id}
-            display={"flex"}
-            gap={"18px"}
-            mb={"24px"}
-            cursor={"pointer"}
-            onClick={() => dispatch(setSelectedConversation(conversation))}
+        {conversations && conversations.length > 0 ? (
+          conversations.map((conversation) => (
+            <Box
+              key={conversation.id}
+              display={"flex"}
+              gap={"18px"}
+              mb={"24px"}
+              cursor={"pointer"}
+              onClick={() => dispatch(setSelectedConversation(conversation))}
+            >
+              <Avatar
+                size={{ xs: "lg", md: "md" }}
+                name={conversation.participants[0]?.userName}
+                src={
+                  conversation.participants[0]?.profilePic !== null
+                    ? `https://localhost:8000/uploads/profliePic/${conversation.participants[0]?.profilePic}`
+                    : undefined
+                }
+                crossOrigin="anonymous"
+              />
+              <Text fontSize={{ xs: "1.4rem", md: "1.2rem" }} pt={"12px"}>
+                {conversation.participants[0]?.userName}
+              </Text>
+            </Box>
+          ))
+        ) : (
+          <Text
+            fontSize={{ xs: "1.3rem", md: "1.2rem" }}
+            color={"gray.500"}
+            textAlign={"center"}
+            mt={"20px"}
           >
-            <Avatar
-              size={{ xs: "lg", md: "md" }}
-              name={conversation.participants[0]?.userName}
-              src={
-                conversation.participants[0]?.profilePic !== null
-                  ? `https://localhost:8000/uploads/profliePic/${conversation.participants[0]?.profilePic}`
-                  : undefined
-              }
-              crossOrigin="anonymous"
-            />
-            <Text fontSize={{ xs: "1.4rem", md: "1.2rem" }} pt={"12px"}>
-              {conversation.participants[0]?.userName}
-            </Text>
-          </Box>
-        ))}
+            No conversations yet.
+          </Text>
+        )}
       </Box>
     </Box>
   );

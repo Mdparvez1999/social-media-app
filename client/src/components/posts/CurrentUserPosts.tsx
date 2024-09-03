@@ -45,6 +45,7 @@ const CurrentUserPosts = () => {
   const [postId, setPostId] = useState<string | null>(null);
 
   const { onOpen, isOpen, onClose } = useDisclosure();
+
   const handleViewEachPost = useCallback(
     (id: string) => {
       setPostId(id);
@@ -82,7 +83,8 @@ const CurrentUserPosts = () => {
         >
           <CustomCarousel
             images={post.files.map(
-              (file) => `http://localhost:8000/uploads/postFiles/${file}`
+              (file) =>
+                `https://social-media-app-wbm2.onrender.com/uploads/postFiles/${file}`
             )}
             width={"500px"}
             height={"220px"}

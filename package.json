@@ -4,7 +4,7 @@
   "description": "",
   "main": "dist/server.js",
   "scripts": {
-    "start-dev": "nodemon --exec ts-node src/server.ts",
+    "start-dev": "nodemon",
     "start": "set NODE_ENV=production&& node server/dist/server.js",
     "build": "npm install && tsc && copyfiles -u 2 server/src/uploads/**/* server/dist && node server/add-js-extension.js && npm install --prefix client && npm run build --prefix client"
   },

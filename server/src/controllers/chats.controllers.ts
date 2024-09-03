@@ -139,9 +139,9 @@ export class ChatsController {
         .orderBy("conversation.updatedAt", "DESC")
         .getMany();
 
-      if (!conversations || conversations.length === 0) {
-        return next(new AppError("No conversations found", 404));
-      }
+      // if (!conversations || conversations.length === 0) {
+      //   return next(new AppError("No conversations found", 404));
+      // }
 
       const serializedConversations = conversations.map((conversation) => ({
         id: conversation.id,
@@ -161,8 +161,11 @@ export class ChatsController {
 
       res.status(200).json({
         success: true,
-        message: "Conversations found",
-        data: serializedConversations,
+        message:
+          conversations.length > 0
+            ? "Conversations found"
+            : "No conversations found",
+        data: serializedConversations || [],
       });
     }
   );

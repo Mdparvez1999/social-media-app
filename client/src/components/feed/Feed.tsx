@@ -64,6 +64,7 @@ const Feed = () => {
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
+    console.log("feed", feed);
     if (feed) {
       setTimeout(() => {
         setLoading(false);
@@ -94,9 +95,18 @@ const Feed = () => {
   return loading ? (
     <FeedSkeleton />
   ) : (
-    <>
-      <Box padding={"10px 20px"} borderRadius={"10px"}>
-        {feed?.map((post) => (
+    <Box padding={"10px 20px"} borderRadius={"10px"}>
+      {feed.length === 0 ? (
+        <Text
+          fontSize={{ xs: "1.1rem", md: "1.3rem" }}
+          textAlign={"center"}
+          mt={"20px"}
+        >
+          Welcome! There are no posts in your feed yet. Start following users to
+          see their posts here.
+        </Text>
+      ) : (
+        feed.map((post) => (
           <Card
             key={post.id}
             maxWidth={"sm"}
@@ -171,9 +181,9 @@ const Feed = () => {
               </Box>
             </CardFooter>
           </Card>
-        ))}
-      </Box>
-    </>
+        ))
+      )}
+    </Box>
   );
 };
 
