@@ -1,8 +1,13 @@
 import { toast } from "react-toastify";
 import { useAppSelector } from "../hooks";
+import { FollowersAndFollowingState } from "../../redux-store/features/users/userSlice";
+import useFetchGetObjectUrlForAllProfilePics from "./useFetchGetObjectUrlForAllProfilePics";
 
 const useFetchSelectedUsersFollowing = () => {
   const selectedUser = useAppSelector((state) => state.users.selectedUser);
+
+  const { fetchGetObjectUrlForAllProfilePics } =
+    useFetchGetObjectUrlForAllProfilePics();
 
   const fetchSelectedUsersFollowing = async () => {
     if (!selectedUser) return;
@@ -20,7 +25,43 @@ const useFetchSelectedUsersFollowing = () => {
       if (data.status === "error" || data.status === "fail")
         throw new Error(data.message);
 
-      return data;
+      const followingUsersData = data.data;
+
+      const uniqueProfilePicUrls = new Map();
+
+      followingUsersData.map((user: FollowersAndFollowingState) => {
+        const { id: userId, profilePic } = user;
+
+        if (!uniqueProfilePicUrls.has(userId)) {
+          uniqueProfilePicUrls.set(userId, profilePic);
+        }
+      });
+
+      const followersProfilePicUrl: string[] = [
+        ...uniqueProfilePicUrls.values(),
+      ];
+
+      const profilePicUrls: string[] | undefined =
+        await fetchGetObjectUrlForAllProfilePics(followersProfilePicUrl);
+
+      const updatedSelectedUsersFollowing = followingUsersData.map(
+        (user: FollowersAndFollowingState) => {
+          const userId = user.id;
+
+          const updatedSelectedUsersFollowing = { ...user };
+
+          const newProfilePic = profilePicUrls?.find((url) => {
+            return url.includes(uniqueProfilePicUrls.get(userId));
+          });
+
+          if (newProfilePic)
+            updatedSelectedUsersFollowing.profilePic = newProfilePic;
+
+          return updatedSelectedUsersFollowing;
+        }
+      );
+
+      return updatedSelectedUsersFollowing;
     } catch (error) {
       toast.error(
         error instanceof Error ? error.message : "Something went wrong"

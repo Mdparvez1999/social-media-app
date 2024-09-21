@@ -14,45 +14,16 @@ import { PiDotsThreeOutlineVertical } from "react-icons/pi";
 import { formatCreatedAtTime } from "../../utils/formatTimes.utils";
 import Content from "./Content";
 import WriteComment from "./WriteComment";
-import { setFeedSinglePost } from "../../redux-store/features/feed/feedSlice";
+import {
+  FeedState,
+  setFeedSinglePost,
+} from "../../redux-store/features/feed/feedSlice";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import useFetchPostLikes from "../../hooks/post/useFetchPostLikes";
 import LikeAndCommentsFeedPost from "./LikeAndCommentsFeedPost";
 import FeedSkeleton from "../../skeletons/FeedSkeleton";
-
-interface File {
-  id: string;
-  fileName: string;
-  type: string;
-}
-
-interface PostLikes {
-  postLikeId: string;
-  likedAt: Date;
-  postId: string;
-  user: {
-    id: string;
-    profilePic: string;
-    userName: string;
-  };
-}
-
-interface FeedState {
-  id: string;
-  caption: string;
-  commentCount: number;
-  likeCount: number;
-  files: File[];
-  postlikes: PostLikes[];
-  user: {
-    id: string;
-    profilePic: string;
-    userName: string;
-  };
-  createdAt: Date;
-}
 
 const Feed = () => {
   const feed = useAppSelector((state) => state.feed.posts);
@@ -64,13 +35,12 @@ const Feed = () => {
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    console.log("feed", feed);
     if (feed) {
       setTimeout(() => {
         setLoading(false);
       }, 300);
     }
-  }, [feed]);
+  }, [feed, singlePost]);
 
   const handleViewUserProfile = (userId: string) => {
     navigate(`/app/usersprofile/${userId}`);
@@ -130,11 +100,7 @@ const Feed = () => {
                 onClick={() => handleViewUserProfile(post.user.id)}
               >
                 <Avatar
-                  src={
-                    post.user.profilePic
-                      ? `http://localhost:8000/uploads/profilePic/${post.user.profilePic}`
-                      : undefined
-                  }
+                  src={post.user.profilePic ? post.user.profilePic : undefined}
                   name={post.user.userName}
                   crossOrigin="anonymous"
                 />
@@ -151,7 +117,7 @@ const Feed = () => {
             </CardHeader>
             <CardBody my={"4px"} p={0}>
               <Box>
-                <Content file={post.files} />
+                <Content files={post.files} />
               </Box>
             </CardBody>
             <CardFooter

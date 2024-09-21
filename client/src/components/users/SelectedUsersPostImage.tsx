@@ -23,10 +23,7 @@ const SelectedUsersPostImage = () => {
     <>
       <Box w={"100%"} h={"100%"}>
         <CustomCarousel
-          images={images?.map(
-            (image) =>
-              `http://localhost:8000/uploads/postFiles/${image.fileName}`
-          )}
+          images={images?.map((image) => `${image}`)}
           width={"100%"}
           height={"100%"}
           objectFit={"contain"}

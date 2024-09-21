@@ -55,6 +55,7 @@ const CustomCarousel = ({
         objectFit={objectFit} // Use "cover" to maintain aspect ratio and cover the entire box
         objectPosition={"center"}
         alt={`image ${currentIndex + 1}`}
+        loading="lazy"
         borderRadius={"md"}
         transition="opacity 0.3s ease-in-out"
       />

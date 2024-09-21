@@ -17,6 +17,9 @@ import {
 import useFetchCurrentUsersProfile from "../../hooks/profile/useFetchCurrentUsersProfile";
 import useFetchFollowRequests from "../../hooks/profile/useFetchFollowRequests";
 import useFetchSentRequests from "../../hooks/profile/useFetchSentRequests";
+import useFetchGetObjectProfilePicUrl from "../../hooks/profile/useFetchGetObjectProfilePicUrl";
+import useFetchConversations from "../../hooks/messages/useFetchConversations";
+import { setConversations } from "../../redux-store/features/messages/messagesSlice";
 
 const Hero = () => {
   const dispatch = useAppDispatch();
@@ -30,6 +33,8 @@ const Hero = () => {
   const { fetchFollowRequests } = useFetchFollowRequests();
   const { fetchSentRequests } = useFetchSentRequests();
 
+  const { fetchGetObjectProfilePicUrl } = useFetchGetObjectProfilePicUrl();
+
   useEffect(() => {
     const loadUserData = async () => {
       try {
@@ -37,6 +42,11 @@ const Hero = () => {
           [fetchCurrentUserProfile(), fetchFollowRequests()]
         );
 
+        const profilePicUrl = await fetchGetObjectProfilePicUrl(
+          currentUsersProfileData.profilePic
+        );
+
+        currentUsersProfileData.profilePic = profilePicUrl;
         dispatch(setProfile(currentUsersProfileData));
         dispatch(
           setFollowRequests(followRequestsData.data.followRequests || [])
@@ -49,7 +59,12 @@ const Hero = () => {
     };
 
     loadUserData();
-  }, [dispatch, fetchCurrentUserProfile, fetchFollowRequests]);
+  }, [
+    dispatch,
+    fetchCurrentUserProfile,
+    fetchFollowRequests,
+    fetchGetObjectProfilePicUrl,
+  ]);
 
   useEffect(() => {
     const loadUsersData = async () => {
@@ -58,7 +73,12 @@ const Hero = () => {
         dispatch(setFollowers(followersData));
 
         const followingData = await fetchFollowingUsers();
-        dispatch(setFollowingUsers(followingData));
+
+        if (Array.isArray(followingData)) {
+          dispatch(setFollowingUsers(followingData));
+        } else {
+          dispatch(setFollowingUsers([]));
+        }
       } catch (error) {
         if (error instanceof Error) toast.error(error.message);
         else toast.error("Something went wrong");
@@ -82,6 +102,23 @@ const Hero = () => {
 
     loadSentRequests();
   }, [dispatch, fetchSentRequests, currentUser?.id]);
+
+  const { fetchConversations } = useFetchConversations();
+
+  useEffect(() => {
+    const fetchUserConversations = async () => {
+      try {
+        const conversationData = await fetchConversations();
+        dispatch(setConversations(conversationData));
+      } catch (error) {
+        toast.error(
+          error instanceof Error ? error.message : "Something went wrong"
+        );
+      }
+    };
+
+    fetchUserConversations();
+  }, [dispatch, fetchConversations]);
 
   const isMessagePage =
     location.pathname.startsWith("/app/messagesinmobile") ||

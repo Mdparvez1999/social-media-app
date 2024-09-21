@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-interface Comment {
+export interface CommentState {
   id: string;
   comment: string;
   commentedAt: Date;
@@ -13,7 +13,7 @@ interface Comment {
 }
 
 export interface CommentsState {
-  comments: Comment[];
+  comments: CommentState[];
 }
 
 const initialState: CommentsState = {

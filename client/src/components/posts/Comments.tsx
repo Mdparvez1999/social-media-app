@@ -48,11 +48,7 @@ const Comments = ({ postId }: propsType) => {
           <Avatar
             size={"sm"}
             crossOrigin="anonymous"
-            src={
-              post.user.profilePic
-                ? `http://localhost:8000/uploads/profilePic/${post.user.profilePic}`
-                : undefined
-            }
+            src={post.user.profilePic}
             name={post?.user.userName}
           />
           <Box>
@@ -78,11 +74,7 @@ const Comments = ({ postId }: propsType) => {
               <Avatar
                 size={"sm"}
                 crossOrigin="anonymous"
-                src={
-                  comment?.user?.profilePic
-                    ? `http://localhost:8000/uploads/profilePic/${comment.user.profilePic}`
-                    : undefined
-                }
+                src={comment?.user?.profilePic}
                 name={comment?.user?.userName}
               />
               <Box>

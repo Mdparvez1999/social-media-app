@@ -32,9 +32,7 @@ const SelectedUsersPosts = () => {
             cursor="pointer"
           >
             <CustomCarousel
-              images={post?.files?.map(
-                (file) => `http://localhost:8000/uploads/postFiles/${file}`
-              )}
+              images={post?.files?.map((file) => `${file}`)}
               width="500px"
               height="220px"
             />

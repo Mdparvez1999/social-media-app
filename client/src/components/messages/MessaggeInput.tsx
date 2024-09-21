@@ -9,7 +9,7 @@ const MessaggeInput = () => {
   const { loading, sendMessage } = useSendMessage();
 
   const handleSendMessage = async () => {
-    if (!message.trim()) return; // Prevent sending empty messages
+    if (!message.trim()) return; 
     try {
       await sendMessage(message);
       setMessage("");

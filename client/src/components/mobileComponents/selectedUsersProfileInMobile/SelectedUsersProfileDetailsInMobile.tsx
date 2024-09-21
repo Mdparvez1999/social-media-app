@@ -24,6 +24,7 @@ import { IoArrowBack } from "react-icons/io5";
 import { setProfile } from "../../../redux-store/features/profile/profileSlice";
 import useFetchCurrentUsersProfile from "../../../hooks/profile/useFetchCurrentUsersProfile";
 import SelectedUsersProfileDetailsInMobileSkeleton from "../../../mobileComponentSkeletons/SelectedUsersProfileDetailsInMobileSkeleton";
+import useFetchGetObjectProfilePicUrl from "../../../hooks/profile/useFetchGetObjectProfilePicUrl";
 
 const SelectedUsersProfileDetailsInMobile = React.memo(() => {
   const dispatch = useDispatch();
@@ -59,19 +60,28 @@ const SelectedUsersProfileDetailsInMobile = React.memo(() => {
     }
   }, [selectedUserData, currentUsersFollowing]);
 
+  const { fetchGetObjectProfilePicUrl } = useFetchGetObjectProfilePicUrl();
+
   useEffect(() => {
     const fetchSelectedUsersData = async () => {
       setLoading(true);
       dispatch(clearSelecetedUsersData());
       try {
         const userdata = await fetchUsersProfile(userId);
+        const profilePicUrl = await fetchGetObjectProfilePicUrl(
+          userdata.data.profilePic
+        );
+
+        userdata.data.profilePic = profilePicUrl;
         dispatch(setSelectedUser(userdata.data));
       } catch (error) {
         toast.error(
           error instanceof Error ? error.message : "Something went wrong"
         );
       } finally {
-        setLoading(false);
+        setTimeout(() => {
+          setLoading(false);
+        }, 1000);
         hasFetchedData.current = true;
       }
     };
@@ -79,7 +89,13 @@ const SelectedUsersProfileDetailsInMobile = React.memo(() => {
     if (!hasFetchedData.current) {
       fetchSelectedUsersData();
     }
-  }, [userId, dispatch, fetchUsersProfile, isFollowing]);
+  }, [
+    userId,
+    dispatch,
+    fetchUsersProfile,
+    isFollowing,
+    fetchGetObjectProfilePicUrl,
+  ]);
 
   const { fetchCurrentUserProfile } = useFetchCurrentUsersProfile();
 
@@ -156,11 +172,7 @@ const SelectedUsersProfileDetailsInMobile = React.memo(() => {
           <Avatar
             size={"lg"}
             crossOrigin="anonymous"
-            src={
-              selectedUserData?.profilePic
-                ? `http://localhost:8000/uploads/profilePic/${selectedUserData?.profilePic}`
-                : undefined
-            }
+            src={selectedUserData?.profilePic}
             name={selectedUserData?.userName}
           />
         </Box>

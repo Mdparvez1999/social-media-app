@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { PostLikes, PostState } from "../post/postsSlice";
 
 interface UserState {
   id: string;
@@ -17,40 +18,7 @@ interface SelectedUserState {
   followingCount: number;
 }
 
-interface File {
-  id: string;
-  fileName: string;
-  type: string;
-}
-
-interface PostLikes {
-  postLikeId: string;
-  likedAt: Date;
-  postId: string;
-  user: {
-    id: string;
-    profilePic: string;
-    userName: string;
-  };
-}
-
-export interface PostState {
-  id: string;
-  caption: string;
-  commentCount: number;
-  likeCount: number;
-  files: File[];
-  postlikes: PostLikes[];
-  user: {
-    id: string;
-    profilePic: string;
-    userName: string;
-  };
-  createdAt: Date;
-  updatedAt: Date;
-}
-
-interface FollowersAndFollowingState {
+export interface FollowersAndFollowingState {
   id: string;
   userName: string;
   fullName: string;
@@ -150,7 +118,7 @@ const userSlice = createSlice({
     },
     setSelectedPostLikes: (state, action: PayloadAction<PostLikes[]>) => {
       if (state.selectedUsersSinglePost) {
-        state.selectedUsersSinglePost.postlikes = action.payload;
+        state.selectedUsersSinglePost.postLikes = action.payload;
       }
     },
     likeSelectedPostAction: (state, action: PayloadAction<PostLikes>) => {
@@ -158,8 +126,8 @@ const userSlice = createSlice({
         state.selectedUsersSinglePost &&
         state.selectedUsersSinglePost.id === action.payload.postId
       ) {
-        state.selectedUsersSinglePost.postlikes = [
-          ...state.selectedUsersSinglePost.postlikes,
+        state.selectedUsersSinglePost.postLikes = [
+          ...state.selectedUsersSinglePost.postLikes,
           action.payload,
         ];
         state.selectedUsersSinglePost.likeCount =
@@ -174,8 +142,8 @@ const userSlice = createSlice({
         state.selectedUsersSinglePost &&
         state.selectedUsersSinglePost.id === action.payload.postId
       ) {
-        state.selectedUsersSinglePost.postlikes =
-          state.selectedUsersSinglePost.postlikes.filter(
+        state.selectedUsersSinglePost.postLikes =
+          state.selectedUsersSinglePost.postLikes.filter(
             (like) => like.user.id !== action.payload.userId
           );
         state.selectedUsersSinglePost.likeCount =

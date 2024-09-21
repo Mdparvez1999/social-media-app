@@ -17,39 +17,10 @@ import { useComment } from "../../../hooks/comments/useComment";
 import { toast } from "react-toastify";
 import { formatCreatedAtTime } from "../../../utils/formatTimes.utils";
 import WriteCommentInMobile from "./WriteCommentInMobile";
+import { PostState } from "../../../redux-store/features/post/postsSlice";
 
-interface File {
-  id: string;
-  fileName: string;
-  type: string;
-}
-interface PostLikes {
-  postLikeId: string;
-  likedAt: Date;
-  postId: string;
-  user: {
-    id: string;
-    profilePic: string;
-    userName: string;
-  };
-}
-interface Post {
-  id: string;
-  caption: string;
-  commentCount: number;
-  likeCount: number;
-  files: File[];
-  postlikes: PostLikes[];
-  user: {
-    id: string;
-    profilePic: string;
-    userName: string;
-  };
-  createdAt: Date;
-  updatedAt: Date;
-}
 interface PostCommentsInMobileProps {
-  post: Post;
+  post: PostState;
   isOpen: boolean;
   onClose: () => void;
 }
@@ -102,11 +73,7 @@ const PostCommentsInMobile = ({
                   size={"sm"}
                   name={post?.user.userName}
                   crossOrigin="anonymous"
-                  src={
-                    post.user.profilePic
-                      ? `http://localhost:8000/uploads/profilePic/${post.user.profilePic}`
-                      : undefined
-                  }
+                  src={post.user.profilePic}
                 />
                 <Box display={"flex"} flexDirection={"column"} gap={"6px"}>
                   <Box display={"flex"} gap={"10px"} alignItems={"center"}>
@@ -139,11 +106,7 @@ const PostCommentsInMobile = ({
                   mb={"12px"}
                 >
                   <Avatar
-                    src={
-                      comment?.user?.profilePic
-                        ? `http://localhost:8000/uploads/profilePic/${comment?.user?.profilePic}`
-                        : undefined
-                    }
+                    src={comment?.user?.profilePic}
                     size={"sm"}
                     name={comment?.user?.userName}
                     crossOrigin="anonymous"

@@ -3,6 +3,7 @@ import { ChangeEvent, useRef, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../../hooks/hooks";
 import { updateProfilePic } from "../../../redux-store/features/profile/profileSlice";
 import { toast } from "react-toastify";
+import useEditProfilePic from "../../../hooks/profile/useEditProfilePic";
 
 const EditProfilePic = () => {
   const profile = useAppSelector((state) => state.profile.profile);
@@ -35,24 +36,15 @@ const EditProfilePic = () => {
     }
   };
 
+  const { editProfilePic } = useEditProfilePic();
+
   const updateProfilePicture = async (profilePic: File | null) => {
     try {
       if (profilePic) {
         const formData = new FormData();
         formData.append("profilePic", profilePic);
 
-        const response = await fetch("/api/user/profile/profilePic", {
-          method: "PATCH",
-          credentials: "include",
-          body: formData,
-        });
-
-        if (!response.ok) throw new Error(response.statusText);
-
-        const data = await response.json();
-
-        if (data.status === "fail" || data.status === "error")
-          throw new Error(data.message);
+        const data = await editProfilePic(formData);
 
         dispatch(updateProfilePic(data.profilePic));
 
@@ -79,11 +71,7 @@ const EditProfilePic = () => {
           <Avatar
             size={"md"}
             crossOrigin="anonymous"
-            src={
-              profile?.profilePic
-                ? `http://localhost:8000/uploads/profilePic/${profile?.profilePic}`
-                : undefined
-            }
+            src={profile?.profilePic}
             name={profile?.userName}
           />
           <Heading fontSize={"1.2rem"} fontWeight={"500"}>

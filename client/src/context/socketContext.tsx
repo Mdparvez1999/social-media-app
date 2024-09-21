@@ -22,29 +22,22 @@ export const SocketContextProvider = ({
   const [socket, setSocket] = useState<Socket | null>(null);
 
   useEffect(() => {
-    if (currentUser) {
-      const newSocket: Socket = io(
-        "https://social-media-app-wbm2.onrender.com",
-        {
-          query: { userId: currentUser.id },
-        }
-      );
-
-      newSocket.on("connect_error", (error) => {
-        console.error("Socket connection error:", error);
-      });
-
-      setSocket(newSocket);
-
-      return () => {
-        newSocket.disconnect();
-        setSocket(null);
-      };
-    } else {
-      socket?.disconnect();
-
-      setSocket(null);
-    }
+    // if (currentUser) {
+    // const newSocket: Socket = io("http://localhost:8000", {
+    //   query: { userId: currentUser.id },
+    // });
+    //   newSocket.on("connect_error", (error) => {
+    //     console.error("Socket connection error:", error);
+    //   });
+    //   setSocket(newSocket);
+    //   return () => {
+    //     newSocket.disconnect();
+    //     setSocket(null);
+    //   };
+    // } else {
+    //   socket?.disconnect();
+    //   setSocket(null);
+    // }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentUser]);
 

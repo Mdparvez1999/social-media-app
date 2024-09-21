@@ -34,7 +34,7 @@ export class AuthController {
       if (error) return next(error);
 
       const { userName, email, DOB, password, gender } = value;
-      const profilePicName: string | undefined = req.file?.filename;
+      // const profilePicName: string | undefined = req.file?.filename;
 
       await UserUtils.findUserByEmail(email);
 
@@ -45,7 +45,7 @@ export class AuthController {
         email,
         DOB,
         password: hashedPassword,
-        profilePic: profilePicName,
+        // profilePic: profilePicName,
         gender,
       });
 

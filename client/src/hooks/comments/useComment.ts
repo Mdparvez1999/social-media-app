@@ -1,11 +1,17 @@
 import { toast } from "react-toastify";
-import { setComment } from "../../redux-store/features/comments/commentsSlice";
+import {
+  CommentState,
+  setComment,
+} from "../../redux-store/features/comments/commentsSlice";
 import { useAppDispatch } from "../hooks";
 import { useCallback } from "react";
+import useFetchGetObjectUrlForAllProfilePics from "../usersprofile/useFetchGetObjectUrlForAllProfilePics";
 
 export const useComment = () => {
   const dispatch = useAppDispatch();
 
+  const { fetchGetObjectUrlForAllProfilePics } =
+    useFetchGetObjectUrlForAllProfilePics();
   const fetchComments = useCallback(
     async (postId: string | undefined) => {
       if (!postId) return;
@@ -21,11 +27,44 @@ export const useComment = () => {
           throw new Error(data.message);
 
         dispatch(setComment(data.data));
+
+        const uniqueProfilePicUrls = new Map();
+
+        data.data.forEach((comment: CommentState) => {
+          const { id: userId, profilePic } = comment.user;
+
+          if (!uniqueProfilePicUrls.has(userId)) {
+            uniqueProfilePicUrls.set(userId, profilePic);
+          }
+        });
+
+        const userProfilePicsUrl = [...uniqueProfilePicUrls.values()];
+
+        const profilePicUrls = await fetchGetObjectUrlForAllProfilePics(
+          userProfilePicsUrl
+        );
+
+        const updatedComments = data.data.map((comment: CommentState) => {
+          const userId = comment.user.id;
+
+          const updatedUser = { ...comment.user };
+          const updatedComment = { ...comment, user: updatedUser };
+
+          const newProfilePicUrl = profilePicUrls?.find((url) => {
+            return url.includes(uniqueProfilePicUrls.get(userId));
+          });
+
+          if (newProfilePicUrl) updatedUser.profilePic = newProfilePicUrl;
+
+          return updatedComment;
+        });
+
+        dispatch(setComment(updatedComments));
       } catch (error) {
         if (error instanceof Error) toast.error(error.message);
       }
     },
-    [dispatch]
+    [dispatch, fetchGetObjectUrlForAllProfilePics]
   );
   return { fetchComments };
 };

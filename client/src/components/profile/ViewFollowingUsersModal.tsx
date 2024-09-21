@@ -37,7 +37,7 @@ const ViewFollowingUsersModal = React.memo(
       if (currentUserFollowing) {
         const initialFollowingState = currentUserFollowing.reduce(
           (acc, user) => {
-            acc[user.id] = true;
+            acc[user?.id] = true;
             return acc;
           },
           {} as Record<string, boolean>
@@ -85,7 +85,7 @@ const ViewFollowingUsersModal = React.memo(
                   const isFollowing = followingState[user?.id];
                   return (
                     <Box
-                      key={user.id}
+                      key={user?.id}
                       display={"flex"}
                       justifyContent={"space-between"}
                       alignItems={"center"}
@@ -98,19 +98,15 @@ const ViewFollowingUsersModal = React.memo(
                         <Avatar
                           size={"md"}
                           crossOrigin="anonymous"
-                          src={
-                            user?.profilePic
-                              ? `http://localhost:8000/uploads/profilePic/${user?.profilePic}`
-                              : undefined
-                          }
-                          name={user.userName}
+                          src={user.profilePic}
+                          name={user?.userName}
                         />
                         <Box mb={"8px"}>
                           <Text fontWeight={"bold"} fontSize={"1.3rem"}>
-                            {user.userName}
+                            {user?.userName}
                           </Text>
-                          {user.fullName && (
-                            <Text fontSize={"1rem"}>{user.fullName}</Text>
+                          {user?.fullName && (
+                            <Text fontSize={"1rem"}>{user?.fullName}</Text>
                           )}
                         </Box>
                       </Box>
@@ -119,7 +115,7 @@ const ViewFollowingUsersModal = React.memo(
                         onClick={() =>
                           handleFollowUnfollowClick(user.id, isFollowing)
                         }
-                        isLoading={loading[user.id]}
+                        isLoading={loading[user?.id]}
                       >
                         {isFollowing ? "Unfollow" : "Follow"}
                       </Button>
@@ -127,7 +123,9 @@ const ViewFollowingUsersModal = React.memo(
                   );
                 })
               ) : (
-                <Text textAlign={"center"}>you are not following anyone</Text>
+                <Text textAlign={"center"} m={"10px 0 30px 0"}>
+                  you are not following anyone
+                </Text>
               )}
             </Box>
           </ModalBody>

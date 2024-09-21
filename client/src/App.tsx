@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate } from "react-router-dom"; // Added Navigate for conditional redirect
+import { Routes, Route, Navigate } from "react-router-dom";
 import { Box } from "@chakra-ui/react";
 
 import Hero from "./pages/hero/Hero";
@@ -20,6 +20,8 @@ import NotificationsInMobile from "./pages/notifications/NotificationsInMobile";
 import ViewSelectedUsersPostInMobile from "./components/mobileComponents/selectedUsersProfileInMobile/ViewSelectedUsersPostInMobile";
 import MessagesComponent from "./components/mobileComponents/mobileMessages/MessagesComponent";
 import MessageContainerForMobile from "./components/mobileComponents/mobileMessages/MessageContainerForMobile";
+import MessageContainer from "./components/messages/MessageContainer";
+import MessageContainerBox from "./components/messages/MessageContainerBox";
 
 function App() {
   const currentUser = useAppSelector((state) => state.auth.currentUser);
@@ -49,15 +51,23 @@ function HeroRoutes() {
         <Route index element={<Home />} />
         <Route path="home" element={<Home />} />
         <Route path="usersprofile/:userId" element={<UsersProfile />} />
-        <Route path="messages" element={<Messages />} />
+
+        <Route path="messages" element={<Messages />}>
+          <Route index element={<MessageContainerBox />} />
+          <Route path=":conversationId" element={<MessageContainer />} />
+        </Route>
+
         <Route path="messagesinmobile" element={<MessagesComponent />} />
+
         <Route
-          path="messagecontainer"
+          path="messagecontainer/:conversationId"
           element={<MessageContainerForMobile />}
         />
+
         <Route path="search" element={<SearchInMobile />} />
         <Route path="notifications" element={<NotificationsInMobile />} />
         <Route path="profile" element={<Profile />} />
+
         <Route
           path="viewpost/:postId"
           element={<ViewCurrentUsersPostsInMobile />}

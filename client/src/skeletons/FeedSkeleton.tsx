@@ -74,7 +74,7 @@ const FeedSkeleton = () => {
           </Card>
         ))}
       </Box>
-      {feed.length === 0 && <Spinner />}
+      {feed?.length === 0 && <Spinner />}
     </>
   );
 };

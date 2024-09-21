@@ -66,6 +66,7 @@ const UserProfileSideBar = ({ onClose }: UserProfileSideBarProps) => {
       >
         {profileSideBarItems.map(({ to, label, icon: Icon, onClick }) => (
           <ListItem
+            key={label}
             mb={{ xs: "20px", md: "16px" }}
             width={"100%"}
             onClick={onClose}

@@ -26,6 +26,7 @@ import { setSelectedConversation } from "../../redux-store/features/messages/mes
 import useFetchCurrentUsersProfile from "../../hooks/profile/useFetchCurrentUsersProfile";
 import { setProfile } from "../../redux-store/features/profile/profileSlice";
 import UsersProfileDetailsSkeleton from "../../skeletons/UsersProfileDetailsSkeleton";
+import useFetchGetObjectProfilePicUrl from "../../hooks/profile/useFetchGetObjectProfilePicUrl";
 
 const UsersProfileDetails = () => {
   const dispatch = useDispatch();
@@ -67,12 +68,21 @@ const UsersProfileDetails = () => {
     }
   }, [selectedUserData, currentUsersFollowing]);
 
+  const { fetchGetObjectProfilePicUrl } = useFetchGetObjectProfilePicUrl();
+
   useEffect(() => {
     const fetchSelectedUsersData = async () => {
       setPageLoading(true);
       dispatch(clearSelecetedUsersData());
       try {
         const userdata = await fetchUsersProfile(userId);
+
+        const profilePicUrl = await fetchGetObjectProfilePicUrl(
+          userdata.data.profilePic
+        );
+
+        userdata.data.profilePic = profilePicUrl;
+
         dispatch(setSelectedUser(userdata.data));
       } catch (error) {
         toast.error(
@@ -87,7 +97,13 @@ const UsersProfileDetails = () => {
     if (!hasFetchedData.current) {
       fetchSelectedUsersData();
     }
-  }, [userId, dispatch, fetchUsersProfile, isFollowing]);
+  }, [
+    userId,
+    dispatch,
+    fetchUsersProfile,
+    isFollowing,
+    fetchGetObjectProfilePicUrl,
+  ]);
 
   const followOrUnfollowUserClick = useCallback(async () => {
     if (!selectedUserData) return;
@@ -125,14 +141,14 @@ const UsersProfileDetails = () => {
 
   const handleMessageClick = () => {
     const existingConversation = conversations.filter(
-      (conversation) => conversation.participants[0].id === selectedUserData?.id
+      (conversation) => conversation.participants.id === selectedUserData?.id
     );
 
     if (existingConversation.length > 0)
       dispatch(setSelectedConversation(existingConversation[0]));
     else dispatch(setSelectedUsersMessage(selectedUserData));
 
-    navigate("/app/messages");
+    navigate(`/app/messages/${existingConversation[0]?.id}`);
   };
 
   return pageLoading ? (
@@ -157,11 +173,7 @@ const UsersProfileDetails = () => {
             <Avatar
               size={"2xl"}
               crossOrigin="anonymous"
-              src={
-                selectedUserData?.profilePic
-                  ? `http://localhost:8000/uploads/profilePic/${selectedUserData?.profilePic}`
-                  : undefined
-              }
+              src={selectedUserData?.profilePic}
               name={selectedUserData?.userName}
             />
           </WrapItem>

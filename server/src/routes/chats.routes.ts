@@ -15,4 +15,10 @@ router.get(
   chatsController.getAllMessages
 );
 
+router.get(
+  "/conversation/:conversationId",
+  auth,
+  chatsController.getSingleConversation
+);
+
 export default router;

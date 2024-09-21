@@ -17,6 +17,7 @@ import {
   setSinglePost,
 } from "../../redux-store/features/post/postsSlice";
 import useFetchPostLikes from "../../hooks/post/useFetchPostLikes";
+import useFetchGetObjectPresignedUrls from "../../hooks/post/useFetchGetObjectPresignedUrls";
 
 interface propsType {
   isOpen: boolean;
@@ -24,27 +25,49 @@ interface propsType {
   id: string | null;
 }
 
+interface PostFiles {
+  id: string;
+  fileName: string;
+  type: string;
+}
+
 const ViewEachCurrentUserPost = ({ isOpen, onClose, id }: propsType) => {
   const dispatch = useAppDispatch();
 
   const { fetchPostById } = useFetchPost();
   const { fetchPostLikes } = useFetchPostLikes();
+  const { fetchGetObjectPresignedUrls } = useFetchGetObjectPresignedUrls();
 
   const fetchPost = useCallback(async () => {
     if (id && isOpen) {
       try {
-        const [data, postLikesData] = await Promise.all([
+        const [postData, postLikesData] = await Promise.all([
           fetchPostById(id),
           fetchPostLikes(id),
         ]);
 
-        dispatch(setSinglePost(data));
+        const postFiles = postData.files.map(
+          (file: PostFiles) => file.fileName
+        );
+
+        const preSignedUrls = await fetchGetObjectPresignedUrls(postFiles);
+
+        const newPostData = { ...postData, files: preSignedUrls };
+
+        dispatch(setSinglePost(newPostData));
         dispatch(setPostLikes(postLikesData.data));
       } catch (error) {
         toast.error("Failed to fetch post data. Please try again.");
       }
     }
-  }, [id, isOpen, fetchPostById, dispatch, fetchPostLikes]);
+  }, [
+    id,
+    isOpen,
+    fetchPostById,
+    dispatch,
+    fetchPostLikes,
+    fetchGetObjectPresignedUrls,
+  ]);
 
   useEffect(() => {
     fetchPost();

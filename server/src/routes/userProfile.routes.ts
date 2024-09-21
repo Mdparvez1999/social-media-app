@@ -1,7 +1,6 @@
 import express from "express";
 import { UserProfileController } from "../controllers/userProfile.controller";
 import { auth } from "../middlewares/auth.Middleware";
-import { profilePicUpload } from "../config/multer.config";
 
 const router: express.Router = express.Router();
 const userProfileController = new UserProfileController();
@@ -20,12 +19,7 @@ router.patch("/bio", auth, userProfileController.updateBio);
 
 router.patch("/gender", auth, userProfileController.updateGender);
 
-router.patch(
-  "/profilePic",
-  auth,
-  profilePicUpload.single("profilePic"),
-  userProfileController.updateProfilePic
-);
+router.patch("/profilePic", auth, userProfileController.updateProfilePic);
 
 router.put("/change-password", auth, userProfileController.changePassword);
 

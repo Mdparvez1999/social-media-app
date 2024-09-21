@@ -1,24 +1,20 @@
 import { Box } from "@chakra-ui/react";
 import CustomCarousel from "../layouts/general/CustomCarousel";
 
-interface FileType {
-  id: string | null;
-  fileName: string;
-  type: string;
+interface ContentProps {
+  files: string[];
 }
 
-interface ContentPropType {
-  file: FileType[] | null;
-}
-
-const Content = ({ file }: ContentPropType) => {
-  const imageFiles = file?.filter(({ type }) =>
-    ["image", "svg", "png", "jpeg", "jpg", "webp"].includes(type)
+const Content = ({ files }: ContentProps) => {
+  const imageFiles = files?.filter((file: string) =>
+    ["image", "svg", "png", "jpeg", "jpg", "webp"].some((ext) =>
+      file.includes(ext)
+    )
   );
 
   if (!imageFiles) return;
 
-  const videoFiles = file?.filter((file) => file.type === "video");
+  const videoFiles = files?.filter((file: string) => file.includes("mp4"));
 
   if (!videoFiles) return;
 
@@ -27,23 +23,16 @@ const Content = ({ file }: ContentPropType) => {
       <Box height={"230px"} width={"100%"} overflow={"hidden"}>
         {imageFiles && imageFiles.length > 0 && (
           <CustomCarousel
-            images={imageFiles.map(
-              ({ fileName }) =>
-                `http://localhost:8000/uploads/postFiles/${fileName}`
-            )}
+            images={imageFiles.map((file: string) => file)}
             height="230px"
             width="100%"
             objectFit="contain"
           />
         )}
-        {videoFiles?.map((file) => (
+        {videoFiles?.map((file: string) => (
           <video
-            key={file.id}
-            src={
-              file.fileName
-                ? `http://localhost:8000/uploads/postFiles/${file.fileName}`
-                : undefined
-            }
+            key={file}
+            src={file}
             width={"100%"}
             height={"100%"}
             controls

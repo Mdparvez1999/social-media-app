@@ -50,9 +50,7 @@ const FeedPostCommentsModal = ({
                   size={"sm"}
                   crossOrigin="anonymous"
                   src={
-                    post?.user?.profilePic
-                      ? `http://localhost:8000/uploads/profilePic/${post.user.profilePic}`
-                      : undefined
+                    post?.user?.profilePic ? post?.user?.profilePic : undefined
                   }
                   name={post?.user?.userName}
                 />
@@ -94,7 +92,7 @@ const FeedPostCommentsModal = ({
                     crossOrigin="anonymous"
                     src={
                       comment.user.profilePic
-                        ? `http://localhost:8000/uploads/profilePic/${comment.user.profilePic}`
+                        ? comment.user.profilePic
                         : undefined
                     }
                     name={comment.user.userName}

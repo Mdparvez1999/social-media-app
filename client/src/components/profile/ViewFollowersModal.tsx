@@ -50,12 +50,8 @@ const ViewFollowersModal = ({ isOpen, onClose }: ViewFollowersModalProps) => {
                     <Avatar
                       size={"md"}
                       crossOrigin="anonymous"
-                      src={
-                        follower.profilePic
-                          ? `http://localhost:8000/uploads/profilePic/${follower.profilePic}`
-                          : undefined
-                      }
-                      name={follower.userName}
+                      src={follower?.profilePic}
+                      name={follower?.userName}
                     />
                     <Box mb={"8px"}>
                       <Text fontWeight={"bold"} fontSize={"1.3rem"}>

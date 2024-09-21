@@ -12,49 +12,14 @@ import commentRouter from "./routes/comments.routes";
 import followRouter from "./routes/follow.routes";
 import notificationRouter from "./routes/notification.routes";
 import chatRouter from "./routes/chats.routes";
+import awsS3Router from "./routes/awsS3.routes";
 import { errorHandler } from "./middlewares/error.middleware";
-import { apiLimiter } from "./config/rate_Limit.cofig";
-import path from "path";
-import { fileURLToPath } from "url";
-import fs from "fs";
 
 // create express app
 export const app: Application = express();
 
-// Create __dirname equivalent in ESM
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-// Ensure the uploads directory exists
-const uploadsDir = path.join(__dirname, "uploads");
-if (!fs.existsSync(uploadsDir)) {
-  fs.mkdirSync(uploadsDir, { recursive: true });
-}
-
-// Serve the uploads directory
-app.use("/uploads", express.static(uploadsDir));
-
 // security middlewares
 app.use(helmet());
-
-// security middlewares with customized csp
-app.use(
-  helmet({
-    contentSecurityPolicy: {
-      directives: {
-        defaultSrc: ["'self'"],
-        scriptSrc: ["'self'"],
-        connectSrc: ["'self'"],
-        imgSrc: [
-          "'self'",
-          "'data:'",
-          "https://social-media-app-wbm2.onrender.com/uploads",
-        ],
-        styleSrc: ["'self'", "'unsafe-inline'"],
-      },
-    },
-  })
-);
 
 // database connection
 AppDataSource.initialize()
@@ -83,30 +48,16 @@ app.use(cookieParser());
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ limit: "50mb", extended: true }));
 
-// rate limiter
-app.use("/api", apiLimiter);
-
 // Routes
 app.use("/api/auth", authRouter);
 app.use("/api/user/profile", userProfileRouter);
 app.use("/api/admin", adminRouter);
+app.use("/api/aws-s3", awsS3Router);
 app.use("/api/users/post", postRouter);
 app.use("/api/post/comments", commentRouter);
 app.use("/api/users", followRouter);
 app.use("/api/notification", notificationRouter);
 app.use("/api/messages", chatRouter);
-
-const __dirnameReact = path.dirname(fileURLToPath(import.meta.url));
-
-// Serve static files from the client/dist directory
-app.use(express.static(path.join(__dirnameReact, "../../client/dist")));
-
-// Handle all other routes by serving the index.html file
-app.get("*", (req, res, next) => {
-  return res.sendFile(
-    path.join(__dirnameReact, "../../client/dist/index.html")
-  );
-});
 
 // 404 handler
 app.use((req: Request, res: Response, next: NextFunction) => {

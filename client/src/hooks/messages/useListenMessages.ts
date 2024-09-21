@@ -9,15 +9,15 @@ const useListenMessages = () => {
 
   const messages = useAppSelector((state) => state.messages.messages);
 
-  useEffect(() => {
-    socket?.on("newMessage", (message) => {
-      dispatch(setMessages([...messages, message.message]));
-    });
+  // useEffect(() => {
+  //   socket?.on("newMessage", (message) => {
+  //     dispatch(setMessages([...messages, message.message]));
+  //   });
 
-    return () => {
-      socket?.off("newMessage");
-    };
-  }, [socket, dispatch, messages]);
+  //   return () => {
+  //     socket?.off("newMessage");
+  //   };
+  // }, [socket, dispatch, messages]);
 };
 
 export default useListenMessages;

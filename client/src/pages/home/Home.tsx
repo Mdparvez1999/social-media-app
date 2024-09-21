@@ -3,17 +3,29 @@ import Feed from "../../components/feed/Feed";
 import Suggestion from "../../components/suggestions/Suggestion";
 import { useAppDispatch } from "../../hooks/hooks";
 import { useEffect } from "react";
-import { fetchUserFeed } from "../../redux-store/features/feed/feedSlice";
 import { AiOutlineMessage } from "react-icons/ai";
 import { useNavigate } from "react-router-dom";
+import useFetchFeedPosts from "../../hooks/feed/useFetchFeedPosts";
+import { setFeedPosts } from "../../redux-store/features/feed/feedSlice";
+import { toast } from "react-toastify";
 
 const Home = () => {
+  const { fetchFeedPosts } = useFetchFeedPosts();
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
   useEffect(() => {
-    dispatch(fetchUserFeed());
-  }, [dispatch]);
+    const fetchUserFeed = async () => {
+      try {
+        const feedData = await fetchFeedPosts();
+        dispatch(setFeedPosts(feedData));
+      } catch (error) {
+        if (error instanceof Error) toast.error(error.message);
+      }
+    };
+
+    fetchUserFeed();
+  }, [dispatch, fetchFeedPosts]);
 
   const handleMessageClick = () => {
     navigate("/app/messagesinmobile");

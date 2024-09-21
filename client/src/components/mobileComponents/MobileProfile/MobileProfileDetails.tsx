@@ -24,7 +24,11 @@ const MobileProfileDetails = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (userProfile) setLoading(false);
+    if (userProfile) {
+      setTimeout(() => {
+        setLoading(false);
+      }, 1000);
+    }
   }, [userProfile]);
 
   return loading ? (
@@ -51,11 +55,7 @@ const MobileProfileDetails = () => {
           <Avatar
             size={"lg"}
             crossOrigin="anonymous"
-            src={
-              userProfile?.profilePic
-                ? `http://localhost:8000/uploads/profilePic/${userProfile?.profilePic}`
-                : undefined
-            }
+            src={userProfile?.profilePic}
             name={userProfile?.userName}
           />
         </Box>

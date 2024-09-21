@@ -1,28 +1,76 @@
-import { Avatar, Box, Divider, Heading, Text } from "@chakra-ui/react";
+import {
+  Avatar,
+  Box,
+  Center,
+  Divider,
+  Heading,
+  Spinner,
+  Text,
+} from "@chakra-ui/react";
 import { IoCall } from "react-icons/io5";
 import { FaVideo } from "react-icons/fa6";
 import MessageBody from "./MessageBody";
 import MessaggeInput from "./MessaggeInput";
-import { useAppSelector } from "../../hooks/hooks";
-import { useMemo } from "react";
+import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
+import { useEffect, useMemo, useState } from "react";
+import { useParams } from "react-router-dom";
+import useFetchSingleConversation from "../../hooks/messages/useFetchSingleConversation";
+import { setSelectedConversation } from "../../redux-store/features/messages/messagesSlice";
+import { toast } from "react-toastify";
 
 const MessageContainer = () => {
+  const dispatch = useAppDispatch();
+
   const selectedConversation = useAppSelector(
     (state) => state.messages.selectedConversation
   );
+
+  const [loading, setLoading] = useState<boolean>(false);
+
+  const { fetchSingleConversation } = useFetchSingleConversation();
+
+  const conversationId = useParams().conversationId;
+
+  useEffect(() => {
+    const fetchSelectedConversation = async () => {
+      setLoading(true);
+      try {
+        const conversationData = await fetchSingleConversation(
+          conversationId as string
+        );
+        dispatch(setSelectedConversation(conversationData));
+      } catch (error) {
+        error instanceof Error
+          ? toast.error(error.message)
+          : toast.error("Something went wrong");
+      } finally {
+        setTimeout(() => {
+          setLoading(false);
+        }, 600);
+      }
+    };
+
+    if (!selectedConversation) {
+      fetchSelectedConversation();
+    }
+  }, [dispatch, fetchSingleConversation, selectedConversation, conversationId]);
 
   const memoizedConversation = useMemo(
     () => selectedConversation,
     [selectedConversation]
   );
 
-  const profilePicUrl = memoizedConversation?.participants[0].profilePic
-    ? `http://localhost:8000/uploads/profliePic/${memoizedConversation?.participants[0].profilePic}`
+  const profilePicUrl = memoizedConversation?.participants.profilePic
+    ? memoizedConversation?.participants.profilePic
     : undefined;
 
   return (
     <Box height={"100vh"} width={"100%"}>
-      {memoizedConversation ? (
+      {loading ? (
+        <Center height="100%">
+          <Spinner size="xl" />
+        </Center>
+      ) : memoizedConversation ? (
         <>
           <Box
             className="header"
@@ -33,12 +81,12 @@ const MessageContainer = () => {
           >
             <Box display={"flex"} gap={"14px"} alignItems={"center"}>
               <Avatar
-                name={memoizedConversation?.participants[0].userName}
+                name={memoizedConversation?.participants.userName}
                 src={profilePicUrl}
                 crossOrigin="anonymous"
               />
               <Text fontSize={"1.2rem"} fontWeight={"500"}>
-                {selectedConversation?.participants[0].userName}
+                {selectedConversation?.participants.userName}
               </Text>
             </Box>
             <Box
@@ -61,18 +109,16 @@ const MessageContainer = () => {
           </Box>
         </>
       ) : (
-        <>
-          <Box
-            display={"flex"}
-            flexDirection={"column"}
-            alignItems={"center"}
-            gap={"10px"}
-            pt={"250px"}
-          >
-            <Heading>Your messages</Heading>
-            <Text fontSize={"1.2rem"}>send a message to your friends</Text>
-          </Box>
-        </>
+        <Box
+          display={"flex"}
+          flexDirection={"column"}
+          alignItems={"center"}
+          gap={"10px"}
+          pt={"250px"}
+        >
+          <Heading>Your messages</Heading>
+          <Text fontSize={"1.2rem"}>Send a message to your friends</Text>
+        </Box>
       )}
     </Box>
   );

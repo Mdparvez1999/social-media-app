@@ -7,13 +7,13 @@ interface ParticipantsState {
   profilePic: string;
 }
 
-interface ConversationsState {
+export interface ConversationsState {
   id: string;
   isGroup: boolean;
   title: string;
   createdAt: Date;
   updatedAt: Date;
-  participants: ParticipantsState[];
+  participants: ParticipantsState;
 }
 
 interface EachMessageState {

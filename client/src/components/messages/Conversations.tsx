@@ -1,12 +1,11 @@
 import { Avatar, Box, Divider, Text } from "@chakra-ui/react";
-import { useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
 import {
-  setConversations,
+  ConversationsState,
   setSelectedConversation,
 } from "../../redux-store/features/messages/messagesSlice";
-import { toast } from "react-toastify";
 import { IoArrowBackOutline } from "react-icons/io5";
+import { useNavigate } from "react-router-dom";
 
 const Conversations = () => {
   const dispatch = useAppDispatch();
@@ -14,29 +13,13 @@ const Conversations = () => {
   const conversations = useAppSelector((state) => state.messages.conversations);
   const currentUser = useAppSelector((state) => state.auth.currentUser);
 
-  useEffect(() => {
-    const fetchConversations = async () => {
-      try {
-        const response = await fetch("/api/messages/conversations", {
-          method: "GET",
-          credentials: "include",
-        });
+  const navigate = useNavigate();
 
-        const data = await response.json();
-
-        if (data.status === "error" || data.status === "fail")
-          throw new Error(data.message);
-
-        dispatch(setConversations(data.data));
-      } catch (error) {
-        toast.error(
-          error instanceof Error ? error.message : "Something went wrong"
-        );
-      }
-    };
-
-    fetchConversations();
-  }, [dispatch]);
+  const handleConversationClick = (conversation: ConversationsState) => {
+    if (!conversation) return;
+    dispatch(setSelectedConversation(conversation));
+    navigate(`/app/messages/${conversation.id}`);
+  };
 
   return (
     <Box
@@ -70,20 +53,20 @@ const Conversations = () => {
               gap={"18px"}
               mb={"24px"}
               cursor={"pointer"}
-              onClick={() => dispatch(setSelectedConversation(conversation))}
+              onClick={() => handleConversationClick(conversation)}
             >
               <Avatar
                 size={{ xs: "lg", md: "md" }}
-                name={conversation.participants[0]?.userName}
+                name={conversation.participants.userName}
                 src={
-                  conversation.participants[0]?.profilePic !== null
-                    ? `https://localhost:8000/uploads/profliePic/${conversation.participants[0]?.profilePic}`
+                  conversation.participants?.profilePic !== null
+                    ? conversation.participants?.profilePic
                     : undefined
                 }
                 crossOrigin="anonymous"
               />
               <Text fontSize={{ xs: "1.4rem", md: "1.2rem" }} pt={"12px"}>
-                {conversation.participants[0]?.userName}
+                {conversation.participants?.userName}
               </Text>
             </Box>
           ))

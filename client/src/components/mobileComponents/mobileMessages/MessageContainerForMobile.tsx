@@ -1,20 +1,57 @@
 import { IoArrowBackOutline, IoCall } from "react-icons/io5";
 import { useAppDispatch, useAppSelector } from "../../../hooks/hooks";
-import { clearConversation } from "../../../redux-store/features/messages/messagesSlice";
-import { Avatar, Box, Divider, Heading, Text } from "@chakra-ui/react";
+import {
+  clearConversation,
+  setSelectedConversation,
+} from "../../../redux-store/features/messages/messagesSlice";
+import { Avatar, Box, Divider, Heading, Text, Spinner } from "@chakra-ui/react";
 import { FaVideo } from "react-icons/fa";
 import MessageBody from "../../messages/MessageBody";
 import MessaggeInput from "../../messages/MessaggeInput";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import useFetchSingleConversation from "../../../hooks/messages/useFetchSingleConversation";
+import { toast } from "react-toastify";
 
 const MessageContainerForMobile = () => {
   const dispatch = useAppDispatch();
+  
   const selectedConversation = useAppSelector(
     (state) => state.messages.selectedConversation
   );
 
+  const [loading, setLoading] = useState<boolean>(false);
+
+  const { fetchSingleConversation } = useFetchSingleConversation();
+
   const navigate = useNavigate();
   const location = useLocation();
+
+  const conversationId = useParams().conversationId;
+
+  useEffect(() => {
+    const fetchSelectedConversation = async () => {
+      setLoading(true);
+      try {
+        const conversationData = await fetchSingleConversation(
+          conversationId as string
+        );
+        dispatch(setSelectedConversation(conversationData));
+      } catch (error) {
+        error instanceof Error
+          ? toast.error(error.message)
+          : toast.error("Something went wrong");
+      } finally {
+        setTimeout(() => {
+          setLoading(false);
+        }, 600);
+      }
+    };
+
+    if (!selectedConversation) {
+      fetchSelectedConversation();
+    }
+  }, [dispatch, fetchSingleConversation, selectedConversation, conversationId]);
 
   const handleBackClick = () => {
     dispatch(clearConversation());
@@ -24,9 +61,20 @@ const MessageContainerForMobile = () => {
       navigate(-1);
     }
   };
+
   return (
     <Box height={"100vh"} width={"100%"}>
-      {selectedConversation ? (
+      {loading ? (
+        // Display a spinner while loading
+        <Box
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+          height="100%"
+        >
+          <Spinner size="xl" />
+        </Box>
+      ) : selectedConversation ? (
         <>
           <Box
             className="header"
@@ -44,14 +92,14 @@ const MessageContainerForMobile = () => {
               <Avatar
                 crossOrigin="anonymous"
                 src={
-                  selectedConversation?.participants[0].profilePic !== null
-                    ? `http://localhost:8000/uploads/profilePic/${selectedConversation?.participants[0].profilePic}`
+                  selectedConversation?.participants.profilePic !== null
+                    ? selectedConversation?.participants.profilePic
                     : undefined
                 }
-                name={selectedConversation?.participants[0].userName}
+                name={selectedConversation?.participants.userName}
               />
               <Text fontSize={"1.2rem"} fontWeight={"500"}>
-                {selectedConversation?.participants[0].userName}
+                {selectedConversation?.participants.userName}
               </Text>
             </Box>
             <Box
@@ -83,7 +131,7 @@ const MessageContainerForMobile = () => {
             pt={"250px"}
           >
             <Heading>Your messages</Heading>
-            <Text fontSize={"1.2rem"}>send a message to your friends</Text>
+            <Text fontSize={"1.2rem"}>Send a message to your friends</Text>
           </Box>
         </>
       )}

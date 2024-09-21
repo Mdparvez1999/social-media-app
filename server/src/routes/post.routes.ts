@@ -1,19 +1,13 @@
 import express from "express";
 import { auth } from "../middlewares/auth.Middleware";
 import { PostControllers } from "../controllers/post.controllers";
-import { postFilesUpload } from "../config/multer.config";
 
 const router: express.Router = express.Router();
 const postController = new PostControllers();
 
 router.get("/feed", auth, postController.userFeed);
 
-router.post(
-  "/create",
-  auth,
-  postFilesUpload.array("files"),
-  postController.createPost
-);
+router.post("/create", auth, postController.createPost);
 
 router.get("/get-all", auth, postController.getAllPosts);
 

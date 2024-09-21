@@ -1,10 +1,4 @@
-import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
-
-interface File {
-  id: string;
-  fileName: string;
-  type: string;
-}
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface PostLikes {
   postLikeId: string;
@@ -17,12 +11,12 @@ interface PostLikes {
   };
 }
 
-interface FeedState {
+export interface FeedState {
   id: string;
   caption: string;
   commentCount: number;
   likeCount: number;
-  files: File[];
+  files: string[];
   postlikes: PostLikes[];
   user: {
     id: string;
@@ -64,40 +58,14 @@ const initialState: FeedSliceState = {
   error: null,
 };
 
-// Fetch user feed
-export const fetchUserFeed = createAsyncThunk<
-  FeedState[],
-  void,
-  { rejectValue: string }
->("fetchUserFeed", async (_, { rejectWithValue }) => {
-  try {
-    const response = await fetch("/api/users/post/feed", {
-      method: "GET",
-      credentials: "include",
-    });
-
-    if (!response.ok) throw new Error(response.statusText);
-
-    const { data } = await response.json();
-
-    if (data.status === "fail" || data.status === "error") {
-      throw new Error(data.message);
-    }
-
-    return data;
-  } catch (error) {
-    if (error instanceof Error) {
-      return rejectWithValue(error.message);
-    }
-
-    return rejectWithValue("Something went wrong");
-  }
-});
-
 const feedSlice = createSlice({
   name: "feed",
   initialState,
   reducers: {
+    setFeedPosts(state, action: PayloadAction<FeedState[]>) {
+      state.posts = action.payload;
+    },
+
     setFeedSinglePost(state, action: PayloadAction<FeedState | null>) {
       state.singlePost = action.payload;
     },
@@ -148,26 +116,10 @@ const feedSlice = createSlice({
       }
     },
   },
-  extraReducers: (builder) => {
-    builder.addCase(fetchUserFeed.pending, (state) => {
-      state.loading = true;
-      state.error = null;
-    });
-    builder.addCase(
-      fetchUserFeed.fulfilled,
-      (state, action: PayloadAction<FeedState[]>) => {
-        state.loading = false;
-        state.posts = action.payload;
-      }
-    );
-    builder.addCase(fetchUserFeed.rejected, (state, action) => {
-      state.loading = false;
-      state.error = action.payload as string;
-    });
-  },
 });
 
 export const {
+  setFeedPosts,
   setFeedSinglePost,
   setFeedPostComments,
   addCommentToFeedPost,

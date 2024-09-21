@@ -6,6 +6,8 @@ import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
 import { useCallback, useEffect } from "react";
 import { setFeedPostComments } from "../../redux-store/features/feed/feedSlice";
 import { toast } from "react-toastify";
+import useFetchGetObjectUrlForAllProfilePics from "../../hooks/usersprofile/useFetchGetObjectUrlForAllProfilePics";
+import { CommentState } from "../../redux-store/features/comments/commentsSlice";
 
 interface FeedPostCommentsProps {
   postId: string;
@@ -13,6 +15,9 @@ interface FeedPostCommentsProps {
 
 const FeedPostComments = ({ postId }: FeedPostCommentsProps) => {
   const dispatch = useAppDispatch();
+
+  const { fetchGetObjectUrlForAllProfilePics } =
+    useFetchGetObjectUrlForAllProfilePics();
 
   const post = useAppSelector((state) =>
     state.feed.posts.find((post) => post.id === postId)
@@ -32,13 +37,42 @@ const FeedPostComments = ({ postId }: FeedPostCommentsProps) => {
       if (data.status === "fail" || data.status === "error")
         throw new Error(data.message);
 
-      dispatch(setFeedPostComments(data.data));
+      const commentsData = data.data;
+
+      const uniqueProfilePicUrls = new Map();
+
+      commentsData.forEach((comment: CommentState) => {
+        const { id: userId, profilePic: profilePicUrl } = comment.user;
+
+        if (!uniqueProfilePicUrls.has(userId)) {
+          uniqueProfilePicUrls.set(userId, profilePicUrl);
+        }
+      });
+
+      const profilePicUrls = await fetchGetObjectUrlForAllProfilePics([
+        ...uniqueProfilePicUrls.values(),
+      ]);
+
+      const updatedComments = commentsData.map((comment: CommentState) => {
+        const userId: string = comment.user.id;
+        const updatedComment = { ...comment };
+        const newProfilePic = profilePicUrls?.find((url) => {
+          return url.includes(uniqueProfilePicUrls.get(userId));
+        });
+
+        if (newProfilePic) updatedComment.user.profilePic = newProfilePic;
+        return updatedComment;
+      });
+
+      console.log(updatedComments);
+
+      dispatch(setFeedPostComments(updatedComments));
     } catch (error) {
       const errorMsg =
         error instanceof Error ? error.message : "something went wrong";
       toast.error(errorMsg);
     }
-  }, [post, dispatch]);
+  }, [post, dispatch, fetchGetObjectUrlForAllProfilePics]);
 
   useEffect(() => {
     if (isOpen) {

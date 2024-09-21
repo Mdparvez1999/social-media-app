@@ -10,9 +10,9 @@ const useFetchCurrentUsersProfile = () => {
 
       const data = await response.json();
 
-      if (data.status === "fail" || data.status === "error") {
+      if (data.status === "fail" || data.status === "error")
         throw new Error(data.message);
-      }
+
       return data.data;
     } catch (error) {
       if (error instanceof Error) {

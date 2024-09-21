@@ -1,12 +1,6 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
-interface File {
-  id: string;
-  fileName: string;
-  type: string;
-}
-
-interface PostLikes {
+export interface PostLikes {
   postLikeId: string;
   likedAt: Date;
   postId: string;
@@ -22,8 +16,8 @@ export interface PostState {
   caption: string;
   commentCount: number;
   likeCount: number;
-  files: File[];
-  postlikes: PostLikes[];
+  files: string[];
+  postLikes: PostLikes[];
   user: {
     id: string;
     profilePic: string;
@@ -66,13 +60,13 @@ const postSlice = createSlice({
     },
     setPostLikes: (state, action: PayloadAction<PostLikes[]>) => {
       if (state.singlePost) {
-        state.singlePost.postlikes = action.payload;
+        state.singlePost.postLikes = action.payload;
       }
     },
     likePostAction: (state, action: PayloadAction<PostLikes>) => {
       if (state.singlePost && state.singlePost.id === action.payload.postId) {
-        state.singlePost.postlikes = [
-          ...state.singlePost.postlikes,
+        state.singlePost.postLikes = [
+          ...state.singlePost.postLikes,
           action.payload,
         ];
         state.singlePost.likeCount = state.singlePost.likeCount + 1;
@@ -83,7 +77,7 @@ const postSlice = createSlice({
       action: PayloadAction<{ postId: string; userId: string }>
     ) => {
       if (state.singlePost && state.singlePost.id === action.payload.postId) {
-        state.singlePost.postlikes = state.singlePost.postlikes?.filter(
+        state.singlePost.postLikes = state.singlePost.postLikes?.filter(
           (like) => like.user.id !== action.payload.userId
         );
         state.singlePost.likeCount = state.singlePost.likeCount - 1;

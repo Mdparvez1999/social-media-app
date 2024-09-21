@@ -1,7 +1,6 @@
 import { Users } from "../entities/user.entity";
 import { AppDataSource } from "../config/DB_Connection";
 import { Notifications } from "../entities/notification.entity";
-import { UserUtils } from "./user.utils";
 import { AppError } from "./AppError";
 
 export class NotificationUtils {

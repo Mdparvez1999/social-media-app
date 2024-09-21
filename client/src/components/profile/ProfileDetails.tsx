@@ -25,7 +25,11 @@ const ProfileDetails = () => {
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    if (userProfile) setLoading(false);
+    if (userProfile) {
+      setTimeout(() => {
+        setLoading(false);
+      }, 1000);
+    }
   }, [userProfile]);
 
   return loading ? (
@@ -45,11 +49,7 @@ const ProfileDetails = () => {
             <Avatar
               size={"2xl"}
               crossOrigin="anonymous"
-              src={
-                userProfile?.profilePic
-                  ? `http://localhost:8000/uploads/profilePic/${userProfile?.profilePic}`
-                  : undefined
-              }
+              src={userProfile?.profilePic}
             />
           </WrapItem>
         </Box>

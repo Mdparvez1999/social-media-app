@@ -139,25 +139,29 @@ export class ChatsController {
         .orderBy("conversation.updatedAt", "DESC")
         .getMany();
 
-      // if (!conversations || conversations.length === 0) {
-      //   return next(new AppError("No conversations found", 404));
-      // }
+      const serializedConversations = conversations.map((conversation) => {
+        const participants = conversation.participants.filter((participant) => {
+          return participant.id !== currentUserId;
+        });
 
-      const serializedConversations = conversations.map((conversation) => ({
-        id: conversation.id,
-        title: conversation.title,
-        createdAt: conversation.createdAt,
-        updatedAt: conversation.updatedAt,
-        isGroup: conversation.isGroup,
-        participants: conversation.participants
-          .map((participant) => ({
-            id: participant.id,
-            userName: participant.userName,
-            fullName: participant.fullName,
-            profilePic: participant.profilePic,
-          }))
-          .filter((participant) => participant.id !== currentUserId),
-      }));
+        const singleParticipant = participants[0];
+
+        return {
+          id: conversation.id,
+          title: conversation.title,
+          createdAt: conversation.createdAt,
+          updatedAt: conversation.updatedAt,
+          isGroup: conversation.isGroup,
+          participants: singleParticipant
+            ? {
+                id: singleParticipant.id,
+                userName: singleParticipant.userName,
+                fullName: singleParticipant.fullName,
+                profilePic: singleParticipant.profilePic,
+              }
+            : null,
+        };
+      });
 
       res.status(200).json({
         success: true,
@@ -166,6 +170,60 @@ export class ChatsController {
             ? "Conversations found"
             : "No conversations found",
         data: serializedConversations || [],
+      });
+    }
+  );
+
+  public getSingleConversation = asyncHandler(
+    async (req: Request, res: Response, next: NextFunction) => {
+      const currentUserId: string = res.locals.user.id;
+
+      const currentUser: Users = await UserUtils.findUserById(currentUserId);
+
+      const conversationId: string = req.params.conversationId;
+
+      const conversation = await this.conversationRepository
+        .createQueryBuilder("conversation")
+        .leftJoinAndSelect("conversation.participants", "participants")
+        .innerJoin(
+          "conversation.participants",
+          "currentUser",
+          "currentUser.id = :id",
+          { id: currentUser.id }
+        )
+        .where("conversation.id = :conversationId", { conversationId })
+        .getOne();
+
+      if (!conversation) {
+        return next(new AppError("Conversation not found", 404));
+      }
+
+      const participants = conversation.participants.filter((participant) => {
+        return participant.id !== currentUserId;
+      });
+
+      const singleParticipant = participants[0];
+
+      const serializedConversation = {
+        id: conversation.id,
+        title: conversation.title,
+        createdAt: conversation.createdAt,
+        updatedAt: conversation.updatedAt,
+        isGroup: conversation.isGroup,
+        participants: singleParticipant
+          ? {
+              id: singleParticipant.id,
+              userName: singleParticipant.userName,
+              fullName: singleParticipant.fullName,
+              profilePic: singleParticipant.profilePic,
+            }
+          : null,
+      };
+
+      res.status(200).json({
+        success: true,
+        message: "Conversation found",
+        data: serializedConversation,
       });
     }
   );

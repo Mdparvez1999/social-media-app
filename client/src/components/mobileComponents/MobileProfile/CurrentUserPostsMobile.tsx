@@ -10,6 +10,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import CustomCarouselForMobile from "../../layouts/general/CustomCarouselForMobile";
 import PostsMobileSkeleton from "../../../mobileComponentSkeletons/PostsMobileSkeleton";
+import useFetchGetObjectPresignedUrls from "../../../hooks/post/useFetchGetObjectPresignedUrls";
 
 const CurrentUserPostsMobile = () => {
   const dispatch = useAppDispatch();
@@ -18,6 +19,8 @@ const CurrentUserPostsMobile = () => {
   const currentUserPosts = useAppSelector((state) => state.posts.posts);
 
   const [loading, setLoading] = useState<boolean>(true);
+
+  const { fetchGetObjectPresignedUrls } = useFetchGetObjectPresignedUrls();
 
   useEffect(() => {
     const fetchCurrentUserPosts = async () => {
@@ -28,22 +31,43 @@ const CurrentUserPostsMobile = () => {
           credentials: "include",
         });
 
-        const data = await response.json();
+        const postsData = await response.json();
 
-        if (data.status === "fail" || data.status === "error") {
-          throw new Error(data.message);
+        if (postsData.status === "fail" || postsData.status === "error") {
+          throw new Error(postsData.message);
         }
 
-        dispatch(setPosts(data.data));
+        dispatch(setPosts(postsData.data));
+
+        const postFiles = postsData.data.flatMap(
+          (post: PostState) => post.files
+        );
+
+        const preSignedUrlsData = await fetchGetObjectPresignedUrls(postFiles);
+
+        const updatedPosts = postsData.data.map((post: PostState) => ({
+          ...post,
+          files: post.files.map((file: string) => {
+            const url = preSignedUrlsData?.find((url: string) =>
+              url.includes(file)
+            );
+            return url;
+          }),
+        }));
+
+        dispatch(setPosts(updatedPosts));
       } catch (error) {
         toast.error(
           error instanceof Error ? error.message : "Something went wrong"
         );
       } finally {
-        setLoading(false);
+        setTimeout(() => {
+          setLoading(false);
+        }, 1000);
       }
     };
     fetchCurrentUserPosts();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch]);
 
   const handleViewEachPost = (post: PostState) => {
@@ -74,9 +98,7 @@ const CurrentUserPostsMobile = () => {
           onClick={() => handleViewEachPost(post)}
         >
           <CustomCarouselForMobile
-            images={post.files.map(
-              (file) => `http://localhost:8000/uploads/postFiles/${file}`
-            )}
+            images={post.files.map((file) => file)}
             width={"500px"}
             height={"85px"}
           />

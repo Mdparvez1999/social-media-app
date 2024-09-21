@@ -2,14 +2,15 @@ import { Box, Grid, Text } from "@chakra-ui/react";
 import { useAppDispatch, useAppSelector } from "../../../hooks/hooks";
 import { useEffect, useState } from "react";
 import {
+  PostState,
   setSelectedUsersPosts,
   setSelectedUsersSinglePost,
 } from "../../../redux-store/features/users/userSlice";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import CustomCarouselForMobile from "../../layouts/general/CustomCarouselForMobile";
-import { PostState } from "../../../redux-store/features/post/postsSlice";
 import PostsMobileSkeleton from "../../../mobileComponentSkeletons/PostsMobileSkeleton";
+import useFetchGetObjectPresignedUrls from "../../../hooks/post/useFetchGetObjectPresignedUrls";
 
 const SelectedUsersAllPostsInMobile = () => {
   const dispatch = useAppDispatch();
@@ -20,6 +21,8 @@ const SelectedUsersAllPostsInMobile = () => {
   );
 
   const [loading, setLoading] = useState<boolean>(false);
+
+  const { fetchGetObjectPresignedUrls } = useFetchGetObjectPresignedUrls();
 
   useEffect(() => {
     const fetchCurrentUserPosts = async () => {
@@ -33,25 +36,47 @@ const SelectedUsersAllPostsInMobile = () => {
           }
         );
 
-        const data = await response.json();
+        const postData = await response.json();
 
-        if (data.status === "fail" || data.status === "error") {
-          throw new Error(data.message);
+        if (postData.status === "fail" || postData.status === "error") {
+          throw new Error(postData.message);
         }
 
-        dispatch(setSelectedUsersPosts(data.data));
+        dispatch(setSelectedUsersPosts(postData.data));
+
+        const postFiles = postData.data.flatMap(
+          (post: PostState) => post.files
+        );
+
+        const preSignedUrls = await fetchGetObjectPresignedUrls(postFiles);
+
+        const updatedPosts = postData.data.map((post: PostState) => ({
+          ...post,
+          files: post.files.map((file: string) => {
+            const url = preSignedUrls?.find((url: string) =>
+              url.includes(file)
+            );
+            return url;
+          }),
+          postLikes: post.postLikes || [],
+        }));
+
+        dispatch(setSelectedUsersPosts(updatedPosts));
       } catch (error) {
         toast.error(
           error instanceof Error ? error.message : "Something went wrong"
         );
       } finally {
-        setLoading(false);
+        setTimeout(() => {
+          setLoading(false);
+        }, 1000);
       }
     };
 
     if (selectedUser?.id) {
       fetchCurrentUserPosts();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch, selectedUser?.id]);
 
   const navigate = useNavigate();
@@ -80,9 +105,7 @@ const SelectedUsersAllPostsInMobile = () => {
               onClick={() => handleViewEachPost(post)}
             >
               <CustomCarouselForMobile
-                images={post.files.map(
-                  (file) => `http://localhost:8000/uploads/postFiles/${file}`
-                )}
+                images={post.files.map((file) => `${file}`)}
                 width={"500px"}
                 height={"85px"}
               />

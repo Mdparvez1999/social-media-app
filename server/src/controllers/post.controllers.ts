@@ -12,6 +12,7 @@ import { PostUtils } from "../utils/post.utils";
 import { NotificationUtils } from "../utils/notification.utils";
 import { Follower } from "../entities/follower.entity";
 import { In } from "typeorm";
+import { AwsS3Utils } from "../utils/awsS3.utils";
 
 export class PostControllers {
   private get postRepository() {
@@ -42,15 +43,9 @@ export class PostControllers {
     ): Promise<Response | void> => {
       const { error, value } = postSchema.validate(req.body);
 
-      const files = req.files as Express.Multer.File[];
-
-      if (!files || files.length === 0) {
-        return next(new AppError("please write something", 400));
-      }
-
       if (error) return next(error);
 
-      const { caption } = value;
+      const { caption, files } = value;
 
       const userId: string = res.locals.user.id;
 
@@ -65,17 +60,21 @@ export class PostControllers {
 
       await this.postRepository.save(newPost);
 
-      const postFiles = files.map((file) => {
-        const postFile = new PostFile();
+      if (files && files.length > 0) {
+        const postFiles = files.map((file: string) => {
+          const sanitizedFile = file.replace(/[\s-_]/g, "");
 
-        postFile.fileName = file.filename;
-        postFile.type = file.mimetype.split("/")[1];
-        postFile.post = newPost;
+          const postFile = new PostFile();
 
-        return postFile;
-      });
+          postFile.fileName = sanitizedFile;
+          postFile.type = sanitizedFile.split(".").pop() || "unknown";
+          postFile.post = newPost;
 
-      await this.postFileRepository.save(postFiles);
+          return postFile;
+        });
+
+        await this.postFileRepository.save(postFiles);
+      }
 
       return res.status(201).json({
         success: true,
@@ -154,7 +153,13 @@ export class PostControllers {
 
       const allPosts = await this.postRepository.find({
         where: { user: { id: userId } },
-        relations: ["files", "postlikes", "user", "postlikes.user"],
+        relations: [
+          "files",
+          "files.post",
+          "postlikes",
+          "user",
+          "postlikes.user",
+        ],
       });
 
       const posts = allPosts.map((post) => {
@@ -478,7 +483,7 @@ export class PostControllers {
           caption: post.caption,
           likeCount: post.likeCount,
           commentCount: post.commentCount,
-          files: post.files,
+          files: post.files.map((file) => file.fileName),
           postlikes: post.postlikes.map((like) => ({
             postLikeId: like.id,
             likedAt: like.liked_at,

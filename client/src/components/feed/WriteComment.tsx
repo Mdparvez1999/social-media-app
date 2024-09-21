@@ -53,7 +53,7 @@ const WriteComment = ({ postId }: { postId: string }) => {
   return (
     <Box width={"100%"} display={"flex"} justifyContent={"space-between"}>
       <Input
-        width={{ xs: "75%", md: "80%" }}
+        width={{ xs: "73%", md: "80%" }}
         placeholder="Write a comment"
         name="comment"
         borderRadius={"10px"}

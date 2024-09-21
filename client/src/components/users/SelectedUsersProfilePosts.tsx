@@ -14,12 +14,31 @@ import { useEffect, useState } from "react";
 import { setSelectedUsersPosts } from "../../redux-store/features/users/userSlice";
 import { toast } from "react-toastify";
 import PostsSkeleton from "../../skeletons/profile/PostsSkeleton";
+import useFetchGetObjectPresignedUrls from "../../hooks/post/useFetchGetObjectPresignedUrls";
+
+interface PostState {
+  id: string;
+  caption: string;
+  commentCount: number;
+  likeCount: number;
+  files: string[];
+  createdAt: string;
+  updatedAt: string;
+  user: {
+    id: string;
+    username: string;
+    profilePic: string;
+  };
+  postLikes: string[];
+}
 
 const SelectedUsersProfilePosts = () => {
   const dispatch = useAppDispatch();
   const selectedUser = useAppSelector((state) => state.users.selectedUser);
 
   const [loading, setLoading] = useState<boolean>(false);
+
+  const { fetchGetObjectPresignedUrls } = useFetchGetObjectPresignedUrls();
 
   useEffect(() => {
     const fetchSelectedUserPosts = async () => {
@@ -33,25 +52,46 @@ const SelectedUsersProfilePosts = () => {
           }
         );
 
-        const { data } = await response.json();
+        const postData = await response.json();
 
-        if (data.status === "fail" || data.status === "error") {
-          throw new Error(data.message);
+        if (postData.status === "fail" || postData.status === "error") {
+          throw new Error(postData.message);
         }
 
-        dispatch(setSelectedUsersPosts(data));
+        dispatch(setSelectedUsersPosts(postData.data));
+
+        const postFiles = postData.data.flatMap(
+          (post: PostState) => post.files
+        );
+
+        const preSignedUrls = await fetchGetObjectPresignedUrls(postFiles);
+
+        const updatedPosts = postData.data.map((post: PostState) => ({
+          ...post,
+          files: post.files.map((file: string) => {
+            const url = preSignedUrls?.find((url: string) =>
+              url.includes(file)
+            );
+            return url;
+          }),
+        }));
+
+        dispatch(setSelectedUsersPosts(updatedPosts));
       } catch (error) {
         toast.error(
           error instanceof Error ? error.message : "Something went wrong"
         );
       } finally {
-        setLoading(false);
+        setTimeout(() => {
+          setLoading(false);
+        }, 1000);
       }
     };
 
     if (selectedUser?.id) {
       fetchSelectedUserPosts();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch, selectedUser?.id]);
 
   return (

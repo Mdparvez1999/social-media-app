@@ -13,11 +13,18 @@ import { setSelectedUsersSinglePost } from "../../redux-store/features/users/use
 import SelectedUsersPostImage from "./SelectedUsersPostImage";
 import useFetchSelectedusersPost from "../../hooks/usersprofile/useFetchSelectedusersPost";
 import SelectedUsersPostDetails from "./SelectedUsersPostDetails";
+import useFetchGetObjectPresignedUrls from "../../hooks/post/useFetchGetObjectPresignedUrls";
 
 interface PropsType {
   isOpen: boolean;
   onClose: () => void;
   id: string | null;
+}
+
+interface PostFiles {
+  id: string;
+  fileName: string;
+  type: string;
 }
 
 const ViewSelectedUsersPost = ({ isOpen, onClose, id }: PropsType) => {
@@ -26,14 +33,24 @@ const ViewSelectedUsersPost = ({ isOpen, onClose, id }: PropsType) => {
 
   const dispatch = useAppDispatch();
   const { fetchSelectedUsersPost } = useFetchSelectedusersPost();
+  const { fetchGetObjectPresignedUrls } = useFetchGetObjectPresignedUrls();
 
   useEffect(() => {
     if (!isOpen || !userId || !id) return;
 
     const fetchPost = async () => {
       try {
-        const data = await fetchSelectedUsersPost({ postId: id, userId });
-        dispatch(setSelectedUsersSinglePost(data));
+        const postData = await fetchSelectedUsersPost({ postId: id, userId });
+
+        const postFiles = postData.files.map(
+          (file: PostFiles) => file.fileName
+        );
+
+        const presignedUrls = await fetchGetObjectPresignedUrls(postFiles);
+
+        const updatedPostData = { ...postData, files: presignedUrls };
+
+        dispatch(setSelectedUsersSinglePost(updatedPostData));
       } catch (error) {
         toast.error("Failed to load the post. Please try again.");
       }
@@ -42,7 +59,14 @@ const ViewSelectedUsersPost = ({ isOpen, onClose, id }: PropsType) => {
     if (isOpen && id) {
       fetchPost();
     }
-  }, [dispatch, fetchSelectedUsersPost, id, isOpen, userId]);
+  }, [
+    dispatch,
+    fetchSelectedUsersPost,
+    id,
+    isOpen,
+    userId,
+    fetchGetObjectPresignedUrls,
+  ]);
 
   return (
     <>

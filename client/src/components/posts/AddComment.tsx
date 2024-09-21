@@ -3,6 +3,7 @@ import { ChangeEvent, useState } from "react";
 import { toast } from "react-toastify";
 import { useAppDispatch } from "../../hooks/hooks";
 import { addComment } from "../../redux-store/features/comments/commentsSlice";
+import useFetchGetObjectProfilePicUrl from "../../hooks/profile/useFetchGetObjectProfilePicUrl";
 
 interface PropsType {
   postId: string | undefined;
@@ -18,6 +19,8 @@ const AddComment = ({ postId }: PropsType) => {
     const { value } = e.target;
     setComment(value);
   };
+
+  const { fetchGetObjectProfilePicUrl } = useFetchGetObjectProfilePicUrl();
 
   const handleWriteComment = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
@@ -40,7 +43,19 @@ const AddComment = ({ postId }: PropsType) => {
       if (data.status === "error" || data.status === "fail")
         throw new Error(data.message);
 
-      dispatch(addComment(data.data));
+      const newComment = data.data;
+
+      const profilePicUrl = await fetchGetObjectProfilePicUrl(
+        newComment.user.profilePic
+      );
+
+      const updatedComment = {
+        ...newComment,
+        user: { ...newComment.user, profilePic: profilePicUrl },
+      };
+
+      setComment("");
+      dispatch(addComment(updatedComment));
     } catch (error) {
       console.log(error);
       if (error instanceof Error) toast.error(error.message);
@@ -62,12 +77,14 @@ const AddComment = ({ postId }: PropsType) => {
         placeholder="write a comment"
         name="comment"
         borderRadius={"10px"}
+        value={comment}
         onChange={handleChange}
       />
       <Button
         borderRadius={"10px"}
         onClick={handleWriteComment}
         isLoading={loading}
+        disabled={!comment.trim()}
       >
         write
       </Button>

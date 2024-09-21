@@ -10,42 +10,12 @@ import useLikePostHook from "../../../hooks/post/useLikePost";
 import useUnlikePost from "../../../hooks/post/useUnlikePost";
 import {
   likePostAction,
+  PostState,
   unlikePostAction,
 } from "../../../redux-store/features/post/postsSlice";
 import { toast } from "react-toastify";
 
-interface File {
-  id: string;
-  fileName: string;
-  type: string;
-}
-
-interface PostLikes {
-  postLikeId: string;
-  likedAt: Date;
-  postId: string;
-  user: {
-    id: string;
-    profilePic: string;
-    userName: string;
-  };
-}
-interface Post {
-  id: string;
-  caption: string;
-  commentCount: number;
-  likeCount: number;
-  files: File[];
-  postlikes: PostLikes[];
-  user: {
-    id: string;
-    profilePic: string;
-    userName: string;
-  };
-  createdAt: Date;
-  updatedAt: Date;
-}
-const LikeAndComments = ({ post }: { post: Post }) => {
+const LikeAndComments = ({ post }: { post: PostState }) => {
   const dispatch = useAppDispatch();
   const { isOpen, onOpen, onClose } = useDisclosure();
 
@@ -59,7 +29,7 @@ const LikeAndComments = ({ post }: { post: Post }) => {
 
   useEffect(() => {
     if (post && currentUser) {
-      const userHasLiked = post.postlikes?.some(
+      const userHasLiked = post.postLikes?.some(
         (like) => like.user.id === currentUser.id
       );
 

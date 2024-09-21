@@ -70,6 +70,7 @@ const CreatePost = ({ isOpen, onClose }: createPostProps) => {
         files.forEach((file) => {
           formData.append("files", file);
         });
+        
         formData.append("caption", caption);
 
         await createPost(formData);

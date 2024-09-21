@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../../hooks/hooks";
 import {
+  ConversationsState,
   setConversations,
   setSelectedConversation,
 } from "../../../redux-store/features/messages/messagesSlice";
@@ -9,22 +10,7 @@ import { Avatar, Box, Divider, Text } from "@chakra-ui/react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { IoArrowBackOutline } from "react-icons/io5";
 import ConversationsInMobileSkeleton from "../../../mobileComponentSkeletons/ConversationsInMobileSkeleton";
-
-interface ParticipantsState {
-  id: string;
-  userName: string;
-  fullName: string;
-  profilePic: string;
-}
-
-interface ConversationsState {
-  id: string;
-  isGroup: boolean;
-  title: string;
-  createdAt: Date;
-  updatedAt: Date;
-  participants: ParticipantsState[];
-}
+import useFetchConversations from "../../../hooks/messages/useFetchConversations";
 
 const ConversationsInMobile = () => {
   const dispatch = useAppDispatch();
@@ -34,20 +20,14 @@ const ConversationsInMobile = () => {
   const conversations = useAppSelector((state) => state.messages.conversations);
   const currentUser = useAppSelector((state) => state.auth.currentUser);
 
+  const { fetchConversations } = useFetchConversations();
+
   useEffect(() => {
-    const fetchConversations = async () => {
+    const fetchUserConversations = async () => {
       setLoading(true);
       try {
-        const response = await fetch("/api/messages/conversations", {
-          method: "GET",
-          credentials: "include",
-        });
-
-        const data = await response.json();
-
-        if (data.status === "error" || data.status === "fail") return;
-
-        dispatch(setConversations(data.data));
+        const conversationData = await fetchConversations();
+        dispatch(setConversations(conversationData));
       } catch (error) {
         toast.error(
           error instanceof Error ? error.message : "Something went wrong"
@@ -57,15 +37,17 @@ const ConversationsInMobile = () => {
       }
     };
 
-    fetchConversations();
-  }, [dispatch]);
+    fetchUserConversations();
+  }, [dispatch, fetchConversations]);
 
   const location = useLocation();
   const navigate = useNavigate();
 
   const handleConversationClick = (conversation: ConversationsState) => {
     dispatch(setSelectedConversation(conversation));
-    navigate("/app/messagecontainer", { state: { from: location } });
+    navigate(`/app/messagecontainer/${conversation.id}`, {
+      state: { from: location },
+    });
   };
 
   const handleBackClick = () => {
@@ -103,33 +85,52 @@ const ConversationsInMobile = () => {
         fontWeight={"500"}
         p={"10px 24px"}
       >
-        <Text>messages</Text>
+        <Text>Messages</Text>
       </Box>
       <Box maxHeight={"100vh"} width={"100%"} p={"10px 22px"}>
-        {conversations?.map((conversation) => (
+        {conversations.length === 0 ? (
           <Box
-            key={conversation.id}
-            display={"flex"}
-            gap={"18px"}
-            mb={"24px"}
-            cursor={"pointer"}
-            onClick={() => handleConversationClick(conversation)}
+            display="flex"
+            flexDirection="column"
+            alignItems="center"
+            justifyContent="center"
+            height="60vh"
+            textAlign="center"
+            padding="20px"
           >
-            <Avatar
-              size={{ xs: "lg", md: "md" }}
-              name={conversation.participants[0]?.userName}
-              src={
-                conversation.participants[0]?.profilePic !== null
-                  ? `https://localhost:8000/uploads/profilePic/${conversation.participants[0]?.profilePic}`
-                  : undefined
-              }
-              crossOrigin="anonymous"
-            />
-            <Text fontSize={{ xs: "1.4rem", md: "1.2rem" }} pt={"12px"}>
-              {conversation.participants[0]?.userName}
+            <Text fontSize="1.2rem" fontWeight="600" mb="10px">
+              No Conversations Yet
+            </Text>
+            <Text fontSize="1.1rem" color="gray.600">
+              Start a new conversation by following users or sending a message.
             </Text>
           </Box>
-        ))}
+        ) : (
+          conversations.map((conversation) => (
+            <Box
+              key={conversation.id}
+              display={"flex"}
+              gap={"18px"}
+              mb={"24px"}
+              cursor={"pointer"}
+              onClick={() => handleConversationClick(conversation)}
+            >
+              <Avatar
+                size={{ xs: "lg", md: "md" }}
+                name={conversation.participants?.userName}
+                src={
+                  conversation.participants?.profilePic !== null
+                    ? conversation.participants?.profilePic
+                    : undefined
+                }
+                crossOrigin="anonymous"
+              />
+              <Text fontSize={{ xs: "1.4rem", md: "1.2rem" }} pt={"12px"}>
+                {conversation.participants?.userName}
+              </Text>
+            </Box>
+          ))
+        )}
       </Box>
     </Box>
   );

@@ -55,9 +55,7 @@ const ViewCurrentUsersPostsInMobile = () => {
       </Box>
       <Box>
         <CustomCarouselForMobile
-          images={currentUserPost?.files.map(
-            (file) => `http://localhost:8000/uploads/postFiles/${file}`
-          )}
+          images={currentUserPost?.files.map((file) => file)}
           width={"100%"}
           height={"240px"}
           objectFit="contain"

@@ -1,6 +1,5 @@
 import { FollowRequest } from "../entities/followRequest.entity";
 import { AppDataSource } from "../config/DB_Connection";
-import { Users } from "../entities/user.entity";
 import { AppError } from "./AppError";
 import { Follower } from "../entities/follower.entity";
 

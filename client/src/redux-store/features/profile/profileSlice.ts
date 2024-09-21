@@ -17,7 +17,7 @@ interface ProfileState {
   password: string;
 }
 
-interface FollowersAndFollowingState {
+export interface FollowersAndFollowingState {
   id: string;
   userName: string;
   fullName: string;

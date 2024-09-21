@@ -39,7 +39,7 @@ const SelectedUsersFollowers = ({
   const loadUsersData = useCallback(async () => {
     try {
       const followersData = await fetchSelectedUsersFollowers();
-      dispatch(setSelectedUsersFollowers(followersData.data));
+      dispatch(setSelectedUsersFollowers(followersData));
       hasFetched.current = true;
     } catch (error) {
       toast.error(
@@ -89,11 +89,7 @@ const SelectedUsersFollowers = ({
                       <Avatar
                         size={"md"}
                         crossOrigin="anonymous"
-                        src={
-                          user?.profilePic
-                            ? `http://localhost:8000/uploads/profilePic/${user.profilePic}`
-                            : undefined
-                        }
+                        src={user?.profilePic}
                         name={user?.userName}
                       />
                       <Box mb={"8px"}>

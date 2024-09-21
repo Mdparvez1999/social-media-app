@@ -241,16 +241,16 @@ export class UserProfileController {
   );
 
   public updateProfilePic = asyncHandler(
-    async (req: updateProfileRequest, res: Response, next: NextFunction) => {
+    async (req: Request, res: Response, next: NextFunction) => {
       const userId: string = res.locals.user.id;
 
-      const fileName = req.file?.filename;
-
-      await this.userRepsitory.update({ id: userId }, { profilePic: fileName });
+      const fileName: string = req.body.profilePic;
 
       const user: Users | null = await this.userRepsitory.findOneBy({
         id: userId,
       });
+
+      await this.userRepsitory.update({ id: userId }, { profilePic: fileName });
 
       res.status(200).json({
         success: true,
