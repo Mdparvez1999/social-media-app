@@ -2,7 +2,6 @@ import { Box, Grid, Text } from "@chakra-ui/react";
 import { useAppDispatch, useAppSelector } from "../../../hooks/hooks";
 import { useEffect, useState } from "react";
 import {
-  PostState,
   setSelectedUsersPosts,
   setSelectedUsersSinglePost,
 } from "../../../redux-store/features/users/userSlice";
@@ -11,6 +10,7 @@ import { useNavigate } from "react-router-dom";
 import CustomCarouselForMobile from "../../layouts/general/CustomCarouselForMobile";
 import PostsMobileSkeleton from "../../../mobileComponentSkeletons/PostsMobileSkeleton";
 import useFetchGetObjectPresignedUrls from "../../../hooks/post/useFetchGetObjectPresignedUrls";
+import { PostState } from "../../../redux-store/features/post/postsSlice";
 
 const SelectedUsersAllPostsInMobile = () => {
   const dispatch = useAppDispatch();

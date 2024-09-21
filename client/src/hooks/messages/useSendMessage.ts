@@ -19,7 +19,7 @@ const useSendMessage = () => {
 
     try {
       const response = await fetch(
-        `/api/messages/send-message/${selectedConversation?.participants[0].id}`,
+        `/api/messages/send-message/${selectedConversation?.participants.id}`,
         {
           method: "POST",
           credentials: "include",

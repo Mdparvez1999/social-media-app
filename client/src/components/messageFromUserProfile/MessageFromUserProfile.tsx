@@ -28,7 +28,7 @@ const MessageFromUserProfile = () => {
               <Avatar />
               <Text fontSize="1.2rem" fontWeight="500">
                 {selectedConversation
-                  ? selectedConversation.participants[0].userName
+                  ? selectedConversation.participants.userName
                   : selectedUsersMessage.userName}
               </Text>
             </Box>

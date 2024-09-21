@@ -65,10 +65,7 @@ const EditPost = ({ isOpen, onClose }: CreatePostProps) => {
             <Box width={{ xs: "100%", md: "65%" }} height={"100%"} mb={"10px"}>
               {post?.files && (
                 <CustomCarousel
-                  images={post?.files.map(
-                    (file) =>
-                      `http://localhost:8000/uploads/postFiles/${file.fileName}`
-                  )}
+                  images={post?.files.map((file) => file)}
                   width={"100%"}
                   height={"100%"}
                   objectFit={"contain"}
