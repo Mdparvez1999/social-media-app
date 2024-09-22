@@ -10,9 +10,12 @@ const useLogout = () => {
 
   const logoutUser = async () => {
     try {
-      const response = await fetch("/api/auth/logout", {
-        method: "POST",
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_BACKEND_API_BASE_URL}/api/auth/logout`,
+        {
+          method: "POST",
+        }
+      );
 
       const data = await response.json();
 

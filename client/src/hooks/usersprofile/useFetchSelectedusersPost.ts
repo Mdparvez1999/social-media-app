@@ -7,10 +7,12 @@ interface PropsType {
 const useFetchSelectedusersPost = () => {
   const fetchSelectedUsersPost = async ({ postId, userId }: PropsType) => {
     if (!postId && !userId) return;
-    
+
     try {
       const response = await fetch(
-        `/api/users/post/user/${postId}?userId=${userId}`,
+        `${
+          import.meta.env.VITE_BACKEND_API_BASE_URL
+        }/api/users/post/user/${postId}?userId=${userId}`,
         {
           method: "GET",
           credentials: "include",

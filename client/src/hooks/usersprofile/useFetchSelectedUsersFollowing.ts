@@ -13,10 +13,15 @@ const useFetchSelectedUsersFollowing = () => {
     if (!selectedUser) return;
 
     try {
-      const response = await fetch(`/api/users/following/${selectedUser?.id}`, {
-        method: "GET",
-        credentials: "include",
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_BACKEND_API_BASE_URL}/api/users/following/${
+          selectedUser?.id
+        }`,
+        {
+          method: "GET",
+          credentials: "include",
+        }
+      );
 
       if (!response.ok) throw new Error(response.statusText);
 

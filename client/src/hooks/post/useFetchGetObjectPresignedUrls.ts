@@ -5,14 +5,19 @@ const useFetchGetObjectPresignedUrls = () => {
 
   const fetchGetObjectPresignedUrls = async (files: string[]) => {
     try {
-      const response = await fetch("/api/aws-s3/create-get-object-url", {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(files),
-      });
+      const response = await fetch(
+        `${
+          import.meta.env.VITE_BACKEND_API_BASE_URL
+        }/api/aws-s3/create-get-object-url`,
+        {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(files),
+        }
+      );
 
       const presignedUrlData = await response.json();
 

@@ -4,10 +4,15 @@ const useFetchSentRequests = () => {
   const fetchSentRequests = async (id: string | undefined) => {
     if (!id) return;
     try {
-      const response = await fetch(`/api/users/sent-requests/${id}`, {
-        method: "GET",
-        credentials: "include",
-      });
+      const response = await fetch(
+        `${
+          import.meta.env.VITE_BACKEND_API_BASE_URL
+        }/api/users/sent-requests/${id}`,
+        {
+          method: "GET",
+          credentials: "include",
+        }
+      );
 
       const data = await response.json();
 

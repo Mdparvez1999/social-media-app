@@ -12,10 +12,15 @@ const UseFetchSelectedUsersFollowers = () => {
   const fetchSelectedUsersFollowers = async () => {
     if (!selectedUser) return;
     try {
-      const response = await fetch(`/api/users/followers/${selectedUser.id}`, {
-        method: "GET",
-        credentials: "include",
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_BACKEND_API_BASE_URL}/api/users/followers/${
+          selectedUser.id
+        }`,
+        {
+          method: "GET",
+          credentials: "include",
+        }
+      );
 
       if (!response.ok) throw new Error(response.statusText);
 

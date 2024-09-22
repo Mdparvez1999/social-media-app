@@ -17,11 +17,14 @@ const useLogin = () => {
     try {
       setLoading(true);
 
-      const response = await fetch("/api/auth/login", {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify(logindata),
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_BACKEND_API_BASE_URL}/api/auth/login`,
+        {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify(logindata),
+        }
+      );
 
       const data = await response.json();
 

@@ -3,10 +3,13 @@ import { toast } from "react-toastify";
 const useFetchCurrentUsersProfile = () => {
   const fetchCurrentUserProfile = async () => {
     try {
-      const response = await fetch("/api/user/profile", {
-        method: "GET",
-        credentials: "include",
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_BACKEND_API_BASE_URL}/api/user/profile`,
+        {
+          method: "GET",
+          credentials: "include",
+        }
+      );
 
       const data = await response.json();
 

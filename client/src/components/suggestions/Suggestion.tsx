@@ -17,10 +17,15 @@ const Suggestion = () => {
     const fetchSuggestions = async () => {
       setLoading(true);
       try {
-        const response = await fetch("/api/user/profile/suggested-users", {
-          method: "GET",
-          credentials: "include",
-        });
+        const response = await fetch(
+          `${
+            import.meta.env.VITE_BACKEND_API_BASE_URL
+          }/api/user/profile/suggested-users`,
+          {
+            method: "GET",
+            credentials: "include",
+          }
+        );
 
         if (!response.ok) {
           throw new Error("Failed to fetch suggested users");

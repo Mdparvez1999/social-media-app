@@ -5,16 +5,21 @@ const useEditPost = () => {
     if (!id) return;
 
     try {
-      const response = await fetch(`/api/users/post/update/${id}`, {
-        method: "PUT",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          caption,
-        }),
-      });
+      const response = await fetch(
+        `${
+          import.meta.env.VITE_BACKEND_API_BASE_URL
+        }/api/users/post/update/${id}`,
+        {
+          method: "PUT",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            caption,
+          }),
+        }
+      );
 
       const data = await response.json();
 

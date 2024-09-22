@@ -66,14 +66,17 @@ const useCreatePost = (): useCreatePostReturnType => {
         files: uploadResults,
       };
 
-      const createPostResponse = await fetch("/api/users/post/create", {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(createPostBody),
-      });
+      const createPostResponse = await fetch(
+        `${import.meta.env.VITE_BACKEND_API_BASE_URL}/api/users/post/create`,
+        {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(createPostBody),
+        }
+      );
 
       const createPostResponseData = await createPostResponse.json();
 

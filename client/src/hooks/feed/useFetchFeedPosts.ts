@@ -10,10 +10,13 @@ const useFetchFeedPosts = () => {
   const { fetchGetObjectPresignedUrls } = useFetchGetObjectPresignedUrls();
   const fetchFeedPosts = async () => {
     try {
-      const response = await fetch("/api/users/post/feed", {
-        method: "GET",
-        credentials: "include",
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_BACKEND_API_BASE_URL}/api/users/post/feed`,
+        {
+          method: "GET",
+          credentials: "include",
+        }
+      );
 
       const data = await response.json();
 

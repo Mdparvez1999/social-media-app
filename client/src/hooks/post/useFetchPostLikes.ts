@@ -5,7 +5,9 @@ const useFetchPostLikes = () => {
     if (!id) return;
     try {
       const response = await fetch(
-        `http://localhost:8000/api/users/post/post-likes/${id}`,
+        `${
+          import.meta.env.VITE_BACKEND_API_BASE_URL
+        }/api/users/post/post-likes/${id}`,
         {
           method: "GET",
           credentials: "include",

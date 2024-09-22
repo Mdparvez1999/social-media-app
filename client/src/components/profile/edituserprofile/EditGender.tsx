@@ -18,14 +18,17 @@ const EditGender = () => {
   const handleUpdateGender = async () => {
     setLoading(true);
     try {
-      const response = await fetch("/api/user/profile/gender", {
-        method: "PATCH",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ gender }),
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_BACKEND_API_BASE_URL}/api/user/profile/gender`,
+        {
+          method: "PATCH",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ gender }),
+        }
+      );
 
       if (!response.ok) throw new Error(response.statusText);
 

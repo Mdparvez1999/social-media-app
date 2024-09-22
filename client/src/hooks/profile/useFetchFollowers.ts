@@ -11,10 +11,15 @@ const useFetchFollowers = () => {
   const fetchFollowers = async () => {
     if (!currentUser) return;
     try {
-      const response = await fetch(`/api/users/followers/${currentUser.id}`, {
-        method: "GET",
-        credentials: "include",
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_BACKEND_API_BASE_URL}/api/users/followers/${
+          currentUser.id
+        }`,
+        {
+          method: "GET",
+          credentials: "include",
+        }
+      );
 
       if (!response.ok) throw new Error(response.statusText);
 

@@ -40,17 +40,22 @@ const ChangePasswordModal = ({ isOpen, onClose }: ChangePasswordModalProps) => {
 
     setLoading(true);
     try {
-      const response = await fetch("/api/user/profile/change-password", {
-        method: "PUT",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          oldPassword,
-          newPassword,
-        }),
-      });
+      const response = await fetch(
+        `${
+          import.meta.env.VITE_BACKEND_API_BASE_URL
+        }/api/user/profile/change-password`,
+        {
+          method: "PUT",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            oldPassword,
+            newPassword,
+          }),
+        }
+      );
 
       if (!response.ok) throw new Error(response.statusText);
 

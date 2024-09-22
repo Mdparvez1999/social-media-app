@@ -44,7 +44,9 @@ const FollowRequestNotificationsInMobile = () => {
   const handleNotificationRead = async (notification: NotificationState) => {
     try {
       const response = await fetch(
-        `/api/notification/read/${notification?.id}`,
+        `${import.meta.env.VITE_BACKEND_API_BASE_URL}/api/notification/read/${
+          notification?.id
+        }`,
         {
           method: "PUT",
           credentials: "include",

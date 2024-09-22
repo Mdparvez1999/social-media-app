@@ -7,10 +7,15 @@ const useFetchFeedComments = () => {
     if (!postId) return;
     setLoading(true);
     try {
-      const response = await fetch(`/api/post/comments/get-all/${postId}`, {
-        method: "GET",
-        credentials: "include",
-      });
+      const response = await fetch(
+        `${
+          import.meta.env.VITE_BACKEND_API_BASE_URL
+        }/api/post/comments/get-all/${postId}`,
+        {
+          method: "GET",
+          credentials: "include",
+        }
+      );
 
       const data = await response.json();
 

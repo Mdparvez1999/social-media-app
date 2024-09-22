@@ -5,10 +5,13 @@ const useFetchUsersProfile = () => {
     if (!id) return;
 
     try {
-      const response = await fetch(`/api/users/profile/${id}`, {
-        method: "GET",
-        credentials: "include",
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_BACKEND_API_BASE_URL}/api/users/profile/${id}`,
+        {
+          method: "GET",
+          credentials: "include",
+        }
+      );
 
       if (!response.ok) throw new Error(response.statusText);
 

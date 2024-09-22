@@ -9,10 +9,15 @@ const useDeclineFollowRequest = () => {
     if (!id) return;
     setDeclineRequestLoading(true);
     try {
-      const response = await fetch(`/api/users/decline-request/${id}`, {
-        method: "DELETE",
-        credentials: "include",
-      });
+      const response = await fetch(
+        `${
+          import.meta.env.VITE_BACKEND_API_BASE_URL
+        }/api/users/decline-request/${id}`,
+        {
+          method: "DELETE",
+          credentials: "include",
+        }
+      );
 
       const data = await response.json();
 

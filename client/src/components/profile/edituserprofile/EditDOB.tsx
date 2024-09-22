@@ -19,14 +19,17 @@ const EditDOB = () => {
   const handleUpdateDOB = async () => {
     setLoading(true);
     try {
-      const response = await fetch("/api/user/profile/DOB", {
-        method: "PATCH",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ DOB }),
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_BACKEND_API_BASE_URL}/api/user/profile/DOB`,
+        {
+          method: "PATCH",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ DOB }),
+        }
+      );
 
       const data = await response.json();
 

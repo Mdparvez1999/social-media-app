@@ -29,7 +29,9 @@ const SelectedUsersAllPostsInMobile = () => {
       setLoading(true);
       try {
         const response = await fetch(
-          `/api/users/post/get-all/${selectedUser?.id}`,
+          `${
+            import.meta.env.VITE_BACKEND_API_BASE_URL
+          }/api/users/post/get-all/${selectedUser?.id}`,
           {
             method: "GET",
             credentials: "include",

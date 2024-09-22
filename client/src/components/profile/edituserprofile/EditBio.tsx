@@ -19,14 +19,17 @@ const EditBio = () => {
   const handleUpdateBio = async () => {
     setLoading(true);
     try {
-      const response = await fetch("/api/user/profile/bio", {
-        method: "PATCH",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ bio }),
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_BACKEND_API_BASE_URL}/api/user/profile/bio`,
+        {
+          method: "PATCH",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ bio }),
+        }
+      );
 
       const data = await response.json();
 

@@ -42,7 +42,9 @@ const CancelFollowRequest = ({
     setLoading(true);
     try {
       const response = await fetch(
-        `/api/users/cancel-request/${sentRequestId}`,
+        `${
+          import.meta.env.VITE_BACKEND_API_BASE_URL
+        }/api/users/cancel-request/${sentRequestId}`,
         {
           method: "DELETE",
           credentials: "include",

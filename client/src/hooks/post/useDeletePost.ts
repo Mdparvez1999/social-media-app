@@ -4,10 +4,15 @@ const useDeletePost = () => {
   const deletePost = async (id: string | undefined) => {
     if (!id) return;
     try {
-      const response = await fetch(`/api/users/post/delete/${id}`, {
-        method: "DELETE",
-        credentials: "include",
-      });
+      const response = await fetch(
+        `${
+          import.meta.env.VITE_BACKEND_API_BASE_URL
+        }/api/users/post/delete/${id}`,
+        {
+          method: "DELETE",
+          credentials: "include",
+        }
+      );
 
       if (!response.ok) throw new Error(response.statusText);
 

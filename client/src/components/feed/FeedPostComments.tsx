@@ -27,10 +27,15 @@ const FeedPostComments = ({ postId }: FeedPostCommentsProps) => {
   const fetchFeedPostComments = useCallback(async () => {
     if (!post) return;
     try {
-      const response = await fetch(`/api/post/comments/get-all/${post.id}`, {
-        method: "GET",
-        credentials: "include",
-      });
+      const response = await fetch(
+        `${
+          import.meta.env.VITE_BACKEND_API_BASE_URL
+        }/api/post/comments/get-all/${post.id}`,
+        {
+          method: "GET",
+          credentials: "include",
+        }
+      );
 
       const data = await response.json();
 

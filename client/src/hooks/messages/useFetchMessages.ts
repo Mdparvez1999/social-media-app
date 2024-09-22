@@ -11,7 +11,9 @@ const useFetchMessages = () => {
       if (!conversationId) return;
       try {
         const response = await fetch(
-          `/api/messages/all-messages/${conversationId}`,
+          `${
+            import.meta.env.VITE_BACKEND_API_BASE_URL
+          }/api/messages/all-messages/${conversationId}`,
           {
             method: "GET",
             credentials: "include",

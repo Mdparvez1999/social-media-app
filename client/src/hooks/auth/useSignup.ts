@@ -23,13 +23,16 @@ const useSignup = (): useSignupReturnType => {
 
     try {
       setLoading(true);
-      const response = await fetch("/api/auth/register", {
-        method: "POST",
-        body: JSON.stringify(signupData),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_BACKEND_API_BASE_URL}/api/auth/register`,
+        {
+          method: "POST",
+          body: JSON.stringify(signupData),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
       const data = await response.json();
 

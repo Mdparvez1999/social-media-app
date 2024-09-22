@@ -4,7 +4,9 @@ const useFetchSingleConversation = () => {
   const fetchSingleConversation = async (conversationId: string) => {
     try {
       const response = await fetch(
-        `/api/messages/conversation/${conversationId}`,
+        `${
+          import.meta.env.VITE_BACKEND_API_BASE_URL
+        }/api/messages/conversation/${conversationId}`,
         {
           method: "GET",
           credentials: "include",

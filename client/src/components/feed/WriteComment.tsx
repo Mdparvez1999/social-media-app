@@ -22,14 +22,19 @@ const WriteComment = ({ postId }: { postId: string }) => {
 
     try {
       setLoading(true);
-      const response = await fetch(`/api/post/comments/write/${postId}`, {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ comment }),
-      });
+      const response = await fetch(
+        `${
+          import.meta.env.VITE_BACKEND_API_BASE_URL
+        }/api/post/comments/write/${postId}`,
+        {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ comment }),
+        }
+      );
 
       if (!response.ok) throw new Error(response.statusText);
 

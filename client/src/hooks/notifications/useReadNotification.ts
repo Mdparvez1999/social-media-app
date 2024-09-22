@@ -5,10 +5,15 @@ const useReadNotification = () => {
     if (!notificationId) return;
 
     try {
-      const response = await fetch(`/api/notification/read/${notificationId}`, {
-        method: "PUT",
-        credentials: "include",
-      });
+      const response = await fetch(
+        `${
+          import.meta.env.VITE_BACKEND_API_BASE_URL
+        }/api/notification/read/${notificationId}`,
+        {
+          method: "PUT",
+          credentials: "include",
+        }
+      );
 
       if (!response.ok) throw new Error("Failed to read notification");
 

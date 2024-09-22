@@ -22,10 +22,13 @@ const NotificationsInMobile = () => {
 
     const handleNotifications = async () => {
       try {
-        const response = await fetch("/api/notification", {
-          method: "GET",
-          credentials: "include",
-        });
+        const response = await fetch(
+          `${import.meta.env.VITE_BACKEND_API_BASE_URL}/api/notification`,
+          {
+            method: "GET",
+            credentials: "include",
+          }
+        );
 
         if (!response.ok) {
           throw new Error("Failed to fetch notifications");

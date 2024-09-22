@@ -24,7 +24,9 @@ const MessageInputForUsersProfile = () => {
     setLoading(true);
     try {
       const response = await fetch(
-        `/api/messages/send-message/${selectedUsersMessage?.id}`,
+        `${
+          import.meta.env.VITE_BACKEND_API_BASE_URL
+        }/api/messages/send-message/${selectedUsersMessage?.id}`,
         {
           method: "POST",
           credentials: "include",

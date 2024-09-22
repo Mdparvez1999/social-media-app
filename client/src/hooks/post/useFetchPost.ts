@@ -4,10 +4,13 @@ export const useFetchPost = () => {
   const fetchPostById = async (id: string | null) => {
     if (id) {
       try {
-        const response = await fetch(`/api/users/post/${id}`, {
-          method: "GET",
-          credentials: "include",
-        });
+        const response = await fetch(
+          `${import.meta.env.VITE_BACKEND_API_BASE_URL}/api/users/post/${id}`,
+          {
+            method: "GET",
+            credentials: "include",
+          }
+        );
 
         const data = await response.json();
 

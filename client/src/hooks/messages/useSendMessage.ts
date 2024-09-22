@@ -19,7 +19,9 @@ const useSendMessage = () => {
 
     try {
       const response = await fetch(
-        `/api/messages/send-message/${selectedConversation?.participants.id}`,
+        `${
+          import.meta.env.VITE_BACKEND_API_BASE_URL
+        }/api/messages/send-message/${selectedConversation?.participants.id}`,
         {
           method: "POST",
           credentials: "include",

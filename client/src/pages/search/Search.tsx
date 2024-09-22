@@ -42,10 +42,15 @@ const Search = ({ isOpen, onClose }: SearchProps) => {
 
     try {
       setLoading(true);
-      const response = await fetch(`/api/users/search?userName=${searchTerm}`, {
-        method: "GET",
-        credentials: "include",
-      });
+      const response = await fetch(
+        `${
+          import.meta.env.VITE_BACKEND_API_BASE_URL
+        }/api/users/search?userName=${searchTerm}`,
+        {
+          method: "GET",
+          credentials: "include",
+        }
+      );
 
       if (!response.ok) {
         throw new Error(response.statusText);

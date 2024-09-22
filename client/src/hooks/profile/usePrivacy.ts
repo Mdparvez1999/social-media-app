@@ -6,13 +6,16 @@ const usePrivacy = () => {
   const dispatch = useAppDispatch();
   const makePrivate = async () => {
     try {
-      const response = await fetch("/api/user/profile/private", {
-        method: "PATCH",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_BACKEND_API_BASE_URL}/api/user/profile/private`,
+        {
+          method: "PATCH",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
       if (!response.ok) throw new Error(response.statusText);
 
       const data = await response.json();

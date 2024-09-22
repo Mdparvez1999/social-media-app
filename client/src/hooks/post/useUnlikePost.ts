@@ -3,10 +3,15 @@ const useUnlikePost = () => {
     if (!postId) return;
 
     try {
-      const response = await fetch(`/api/users/post/unlike/${postId}`, {
-        method: "POST",
-        credentials: "include",
-      });
+      const response = await fetch(
+        `${
+          import.meta.env.VITE_BACKEND_API_BASE_URL
+        }/api/users/post/unlike/${postId}`,
+        {
+          method: "POST",
+          credentials: "include",
+        }
+      );
 
       if (!response.ok) throw new Error(response.statusText);
 

@@ -24,13 +24,18 @@ const ConfirmDeactivateAccount = () => {
   const handleDeactivate = async () => {
     setLoading(true);
     try {
-      const response = await fetch("/api/user/profile/deactivate", {
-        method: "PATCH",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await fetch(
+        `${
+          import.meta.env.VITE_BACKEND_API_BASE_URL
+        }/api/user/profile/deactivate`,
+        {
+          method: "PATCH",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
       if (!response.ok) throw new Error(response.statusText);
 

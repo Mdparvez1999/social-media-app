@@ -5,14 +5,19 @@ const useFetchPutObjectPresignedUrls = () => {
     fileData: { name: string; type: string }[]
   ) => {
     try {
-      const response = await fetch("/api/aws-s3/create-put-object-url", {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ files: fileData }),
-      });
+      const response = await fetch(
+        `${
+          import.meta.env.VITE_BACKEND_API_BASE_URL
+        }/api/aws-s3/create-put-object-url`,
+        {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ files: fileData }),
+        }
+      );
 
       const presignedUrlData = await response.json();
 

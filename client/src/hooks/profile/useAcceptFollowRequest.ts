@@ -9,10 +9,15 @@ const useAcceptFollowRequest = () => {
     if (!id) return;
     setAcceptRequestLoading(true);
     try {
-      const response = await fetch(`/api/users/accept-request/${id}`, {
-        method: "POST",
-        credentials: "include",
-      });
+      const response = await fetch(
+        `${
+          import.meta.env.VITE_BACKEND_API_BASE_URL
+        }/api/users/accept-request/${id}`,
+        {
+          method: "POST",
+          credentials: "include",
+        }
+      );
 
       const data = await response.json();
 

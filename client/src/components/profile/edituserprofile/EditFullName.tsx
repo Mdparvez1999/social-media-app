@@ -18,14 +18,19 @@ const EditFullName = () => {
   const handleUpdateFullName = async () => {
     setLoading(true);
     try {
-      const response = await fetch("/api/user/profile/fullname", {
-        method: "PATCH",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ fullName }),
-      });
+      const response = await fetch(
+        `${
+          import.meta.env.VITE_BACKEND_API_BASE_URL
+        }/api/user/profile/fullname`,
+        {
+          method: "PATCH",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ fullName }),
+        }
+      );
 
       if (!response.ok) throw new Error(response.statusText);
 

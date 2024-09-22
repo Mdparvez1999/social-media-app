@@ -8,10 +8,15 @@ const useFetchConversations = () => {
     useFetchGetObjectUrlForAllProfilePics();
   const fetchConversations = useCallback(async () => {
     try {
-      const response = await fetch("/api/messages/conversations", {
-        method: "GET",
-        credentials: "include",
-      });
+      const response = await fetch(
+        `${
+          import.meta.env.VITE_BACKEND_API_BASE_URL
+        }/api/messages/conversations`,
+        {
+          method: "GET",
+          credentials: "include",
+        }
+      );
 
       const data = await response.json();
 

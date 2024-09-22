@@ -4,7 +4,9 @@ const useFetchGetObjectProfilePicUrl = () => {
 
     const cloudFrontUrl = import.meta.env.VITE_CLOUDFRONT_BASE_URL;
     const response = await fetch(
-      "/api/aws-s3/create-get-object-url-profile-pic",
+      `${
+        import.meta.env.VITE_BACKEND_API_BASE_URL
+      }/api/aws-s3/create-get-object-url-profile-pic`,
       {
         method: "POST",
         credentials: "include",

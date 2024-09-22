@@ -13,10 +13,13 @@ const useFollowUser = () => {
     if (!id) return;
 
     try {
-      const response = await fetch(`/api/users/follow/${id}`, {
-        method: "POST",
-        credentials: "include",
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_BACKEND_API_BASE_URL}/api/users/follow/${id}`,
+        {
+          method: "POST",
+          credentials: "include",
+        }
+      );
 
       const data = await response.json();
 

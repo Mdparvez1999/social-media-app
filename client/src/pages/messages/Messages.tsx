@@ -9,8 +9,6 @@ const Messages = () => {
     (state) => state.users.selectedUsersMessage
   );
 
-  console.log("selectedUsersMessage in messages", selectedUsersMessage);
-
   const navigate = useNavigate();
 
   if (selectedUsersMessage) {

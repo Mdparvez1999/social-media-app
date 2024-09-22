@@ -37,10 +37,13 @@ const CurrentUserPosts = () => {
     const fetchCurrentUserPosts = async () => {
       setLoading(true);
       try {
-        const response = await fetch("/api/users/post/get-all", {
-          method: "GET",
-          credentials: "include",
-        });
+        const response = await fetch(
+          `${import.meta.env.VITE_BACKEND_API_BASE_URL}/api/users/post/get-all`,
+          {
+            method: "GET",
+            credentials: "include",
+          }
+        );
 
         const postsData = await response.json();
 

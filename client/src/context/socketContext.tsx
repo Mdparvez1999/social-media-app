@@ -23,7 +23,7 @@ export const SocketContextProvider = ({
 
   useEffect(() => {
     if (currentUser) {
-      const newSocket: Socket = io("http://localhost:8000", {
+      const newSocket: Socket = io(import.meta.env.VITE_BACKEND_API_BASE_URL, {
         query: { userId: currentUser.id },
       });
       newSocket.on("connect_error", (error) => {

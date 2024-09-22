@@ -10,7 +10,9 @@ const useEditProfilePic = () => {
     };
 
     const preSignedUrl = await fetch(
-      "/api/aws-s3/create-put-object-url-profile-pic",
+      `${
+        import.meta.env.VITE_BACKEND_API_BASE_URL
+      }/api/aws-s3/create-put-object-url-profile-pic`,
       {
         method: "POST",
         credentials: "include",
@@ -40,16 +42,21 @@ const useEditProfilePic = () => {
       throw new Error("something went wrong");
     }
 
-    const editProfilePicResponse = await fetch("/api/user/profile/profilePic", {
-      method: "PATCH",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        profilePic: preSignedUrlData.data.key,
-      }),
-    });
+    const editProfilePicResponse = await fetch(
+      `${
+        import.meta.env.VITE_BACKEND_API_BASE_URL
+      }/api/user/profile/profilePic`,
+      {
+        method: "PATCH",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          profilePic: preSignedUrlData.data.key,
+        }),
+      }
+    );
 
     const editProfilePicData = await editProfilePicResponse.json();
 
