@@ -5,8 +5,8 @@
   "main": "dist/server.js",
   "scripts": {
     "start-dev": "nodemon",
-    "start": "NODE_ENV=production&& node dist/server.js",
-    "build": "npm install && tsc  && node add-js-extension.js "
+    "start": "set NODE_ENV=production&& node dist/server.js",
+    "build": "npm install && tsc && node add-js-extension.js "
   },
   "type": "module",
   "author": "MD Parvez",

@@ -12,3 +12,6 @@ dist/
 
 # Ignore uploads folder
 src/uploads/
+
+# Ignore file
+nodemon.json

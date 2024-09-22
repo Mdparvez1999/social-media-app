@@ -42,7 +42,7 @@ io.on("connection", (socket) => {
 const PORT: number = parseInt(process.env.PORT || "8000", 10);
 
 server.listen(PORT, () => {
-  console.log(`Server is running on port http://localhost:${PORT}`);
+  console.log(`Server is running...`);
 });
 
 process.on("SIGTERM", () => {
