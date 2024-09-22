@@ -33,7 +33,9 @@ const Suggestion = () => {
           error instanceof Error ? error.message : "Something went wrong"
         );
       } finally {
-        setLoading(false);
+        setTimeout(() => {
+          setLoading(false);
+        }, 900);
       }
     };
 

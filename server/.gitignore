@@ -2,7 +2,7 @@
 node_modules/
 
 # Ignore dist directory (compiled files)
-server/dist/
+dist/
 
 # Ignore environment variables
 .env
@@ -11,4 +11,4 @@ server/dist/
 *.log
 
 # Ignore uploads folder
-server/src/uploads/
+src/uploads/

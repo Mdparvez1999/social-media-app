@@ -33,7 +33,7 @@ AppDataSource.initialize()
 // global middlewares
 app.use(
   CORS({
-    origin: "http://localhost:5173",
+    origin: "https://social-media-app-livid-ten.vercel.app",
     credentials: true,
   })
 );

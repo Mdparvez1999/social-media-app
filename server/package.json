@@ -6,7 +6,7 @@
   "scripts": {
     "start-dev": "nodemon",
     "start": "set NODE_ENV=production&& node server/dist/server.js",
-    "build": "npm install && tsc  && node server/add-js-extension.js && npm install --prefix client && npm run build --prefix client"
+    "build": "npm install && tsc  && node server/add-js-extension.js "
   },
   "type": "module",
   "author": "MD Parvez",

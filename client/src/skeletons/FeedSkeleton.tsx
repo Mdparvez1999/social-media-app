@@ -8,7 +8,6 @@ import {
   Skeleton,
   SkeletonCircle,
   SkeletonText,
-  Spinner,
 } from "@chakra-ui/react";
 import { useAppSelector } from "../hooks/hooks";
 
@@ -74,7 +73,6 @@ const FeedSkeleton = () => {
           </Card>
         ))}
       </Box>
-      {feed?.length === 0 && <Spinner />}
     </>
   );
 };
