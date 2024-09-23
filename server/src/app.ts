@@ -30,18 +30,29 @@ AppDataSource.initialize()
     console.log(error);
   });
 
+// Define allowed origins
+const allowedOrigins = [
+  "http://localhost:5173", // Local development
+  "https://social-media-app-livid-ten.vercel.app", // Deployed frontend
+];
+
 // global middlewares
 app.use(
   CORS({
-    origin: "https://social-media-app-livid-ten.vercel.app",
+    origin: (origin, cb) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        cb(null, true);
+      } else {
+        cb(new Error("Not allowed by CORS"));
+      }
+    },
     credentials: true,
   })
 );
 
 const isProduction = process.env.NODE_ENV === "production";
-
 // set trust proxy
-app.set("trust proxy", isProduction ? true : false);
+// app.set("trust proxy", isProduction ? true : false);
 
 // data parsing Middlewares
 app.use(cookieParser());
