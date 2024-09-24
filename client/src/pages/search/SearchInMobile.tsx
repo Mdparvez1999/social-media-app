@@ -2,10 +2,14 @@ import { Avatar, Box, Button, Divider, Input, Text } from "@chakra-ui/react";
 import { BiSearch } from "react-icons/bi";
 import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
 import { useState } from "react";
-import { setUsers } from "../../redux-store/features/users/userSlice";
+import {
+  setUsers,
+  UserState,
+} from "../../redux-store/features/users/userSlice";
 import { toast } from "react-toastify";
 import { IoArrowBack } from "react-icons/io5";
 import { useLocation, useNavigate } from "react-router-dom";
+import useFetchGetObjectUrlForAllProfilePics from "../../hooks/usersprofile/useFetchGetObjectUrlForAllProfilePics";
 
 const SearchInMobile = () => {
   const dispatch = useAppDispatch();
@@ -13,6 +17,9 @@ const SearchInMobile = () => {
   const navigate = useNavigate();
 
   const searchedUsers = useAppSelector((state) => state.users.users);
+
+  const { fetchGetObjectUrlForAllProfilePics } =
+    useFetchGetObjectUrlForAllProfilePics();
 
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [searchResultVisible, setSearchResultVisible] = useState(false);
@@ -31,7 +38,10 @@ const SearchInMobile = () => {
         }/api/users/search?userName=${searchTerm}`,
         {
           method: "GET",
-          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
         }
       );
 
@@ -44,7 +54,33 @@ const SearchInMobile = () => {
       if (data.status === "error" || data.status === "fail")
         throw new Error(data.message);
 
-      dispatch(setUsers(data.data));
+      const searchedUsersData = data.data;
+
+      const uniqueUrls = new Map();
+
+      searchedUsersData.forEach((user: UserState) => {
+        const { id: userId, profilePic } = user;
+
+        if (!uniqueUrls.has(userId)) {
+          uniqueUrls.set(userId, profilePic);
+        }
+      });
+
+      const profilePicUrls: string[] | undefined =
+        await fetchGetObjectUrlForAllProfilePics([...uniqueUrls.values()]);
+
+      const updatedSearchedUsersData = searchedUsersData.map(
+        (user: UserState) => {
+          return {
+            ...user,
+            profilePic: profilePicUrls?.find((url: string) => {
+              return url.includes(uniqueUrls.get(user.id));
+            }),
+          };
+        }
+      );
+
+      dispatch(setUsers(updatedSearchedUsersData));
       setSearchResultVisible(true);
     } catch (error) {
       toast.error(
@@ -103,11 +139,7 @@ const SearchInMobile = () => {
               >
                 <Avatar
                   crossOrigin="anonymous"
-                  src={
-                    user.profilePic
-                      ? `http://localhost:8000/uploads/profilePic/${user.profilePic}`
-                      : undefined
-                  }
+                  src={user.profilePic ? user.profilePic : undefined}
                   name={user.userName}
                 />
                 <Text fontSize={"1.1rem"} fontWeight={"500"}>

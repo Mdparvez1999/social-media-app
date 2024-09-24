@@ -11,9 +11,9 @@ const useEditPost = () => {
         }/api/users/post/update/${id}`,
         {
           method: "PUT",
-          credentials: "include",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
           body: JSON.stringify({
             caption,

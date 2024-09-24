@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { PostLikes, PostState } from "../post/postsSlice";
 
-interface UserState {
+export interface UserState {
   id: string;
   userName: string;
   profilePic: string;

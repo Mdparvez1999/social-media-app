@@ -9,9 +9,9 @@ const useFetchGetObjectProfilePicUrl = () => {
       }/api/aws-s3/create-get-object-url-profile-pic`,
       {
         method: "POST",
-        credentials: "include",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
         body: JSON.stringify({ key }),
       }

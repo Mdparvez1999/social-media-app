@@ -11,7 +11,10 @@ const useReadNotification = () => {
         }/api/notification/read/${notificationId}`,
         {
           method: "PUT",
-          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
         }
       );
 

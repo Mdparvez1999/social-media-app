@@ -15,7 +15,10 @@ const useDeclineFollowRequest = () => {
         }/api/users/decline-request/${id}`,
         {
           method: "DELETE",
-          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
         }
       );
 

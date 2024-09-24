@@ -15,7 +15,10 @@ const useFetchSelectedusersPost = () => {
         }/api/users/post/user/${postId}?userId=${userId}`,
         {
           method: "GET",
-          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
         }
       );
 

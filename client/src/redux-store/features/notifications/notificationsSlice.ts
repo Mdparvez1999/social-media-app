@@ -6,7 +6,7 @@ interface UserInfo {
   profilePic: string;
 }
 
-interface NotificationState {
+export interface NotificationState {
   id: string;
   message: string;
   type: string;

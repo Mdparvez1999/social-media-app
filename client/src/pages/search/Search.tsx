@@ -15,9 +15,13 @@ import {
 import { BiSearch } from "react-icons/bi";
 import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
 import { useState } from "react";
-import { setUsers } from "../../redux-store/features/users/userSlice";
+import {
+  setUsers,
+  UserState,
+} from "../../redux-store/features/users/userSlice";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import useFetchGetObjectUrlForAllProfilePics from "../../hooks/usersprofile/useFetchGetObjectUrlForAllProfilePics";
 
 interface SearchProps {
   isOpen: boolean;
@@ -29,6 +33,9 @@ const Search = ({ isOpen, onClose }: SearchProps) => {
   const navigate = useNavigate();
 
   const searchedUsers = useAppSelector((state) => state.users.users);
+
+  const { fetchGetObjectUrlForAllProfilePics } =
+    useFetchGetObjectUrlForAllProfilePics();
 
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [loading, setLoading] = useState(false);
@@ -48,7 +55,10 @@ const Search = ({ isOpen, onClose }: SearchProps) => {
         }/api/users/search?userName=${searchTerm}`,
         {
           method: "GET",
-          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
         }
       );
 
@@ -61,7 +71,33 @@ const Search = ({ isOpen, onClose }: SearchProps) => {
       if (data.status === "error" || data.status === "fail")
         throw new Error(data.message);
 
-      dispatch(setUsers(data.data));
+      const searchedUsersData = data.data;
+
+      const uniqueUrls = new Map();
+
+      searchedUsersData.forEach((user: UserState) => {
+        const { id: userId, profilePic } = user;
+
+        if (!uniqueUrls.has(userId)) {
+          uniqueUrls.set(userId, profilePic);
+        }
+      });
+
+      const profilePicUrls: string[] | undefined =
+        await fetchGetObjectUrlForAllProfilePics([...uniqueUrls.values()]);
+
+      const updatedSearchedUsersData = searchedUsersData.map(
+        (user: UserState) => {
+          return {
+            ...user,
+            profilePic: profilePicUrls?.find((url: string) => {
+              return url.includes(uniqueUrls.get(user.id));
+            }),
+          };
+        }
+      );
+
+      dispatch(setUsers(updatedSearchedUsersData));
       setSearchResultVisible(true);
     } catch (error) {
       toast.error(
@@ -121,11 +157,7 @@ const Search = ({ isOpen, onClose }: SearchProps) => {
                     >
                       <Avatar
                         crossOrigin="anonymous"
-                        src={
-                          user.profilePic
-                            ? `http://localhost:8000/uploads/profilePic/${user.profilePic}`
-                            : undefined
-                        }
+                        src={user.profilePic ? user.profilePic : undefined}
                         name={user.userName}
                       />
 

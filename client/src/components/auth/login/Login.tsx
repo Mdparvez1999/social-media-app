@@ -53,7 +53,7 @@ const Login = () => {
         return;
       }
 
-      dispatch(setCurrentUser(userData?.user));
+      dispatch(setCurrentUser({ user: userData.user, token: userData.token }));
       navigate("/app/home");
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "";

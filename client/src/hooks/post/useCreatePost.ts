@@ -70,9 +70,9 @@ const useCreatePost = (): useCreatePostReturnType => {
         `${import.meta.env.VITE_BACKEND_API_BASE_URL}/api/users/post/create`,
         {
           method: "POST",
-          credentials: "include",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
           body: JSON.stringify(createPostBody),
         }

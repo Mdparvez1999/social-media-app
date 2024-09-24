@@ -13,9 +13,9 @@ const useFetchGetObjectUrlForAllProfilePics = () => {
         }/api/aws-s3/create-get-object-url-all-profile-pics`,
         {
           method: "POST",
-          credentials: "include",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
           body: JSON.stringify(keys),
         }

@@ -64,7 +64,7 @@ const Feed = () => {
 
   if (loading) return <FeedSkeleton />;
 
-  if (feed.length === 0)
+  if (feed?.length === 0)
     return (
       <Text fontSize={"1.2rem"} textAlign={"center"} mt={"20px"}>
         Welcome! There are no posts in your feed yet. Start following users to

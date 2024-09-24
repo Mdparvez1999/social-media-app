@@ -30,9 +30,9 @@ const ConfirmDeactivateAccount = () => {
         }/api/user/profile/deactivate`,
         {
           method: "PATCH",
-          credentials: "include",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         }
       );

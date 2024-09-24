@@ -79,7 +79,7 @@ const AllNotificationsInMobile = () => {
                   name={notification.sentBy.username}
                   src={
                     notification.sentBy.profilePic !== null
-                      ? `http://localhost:8000/uploads/profilePic/${notification.sentBy.profilePic}`
+                      ? notification.sentBy.profilePic
                       : undefined
                   }
                 />

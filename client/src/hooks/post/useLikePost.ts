@@ -11,7 +11,10 @@ const useLikePostHook = () => {
         }/api/users/post/like/${postId}`,
         {
           method: "POST",
-          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
         }
       );
 

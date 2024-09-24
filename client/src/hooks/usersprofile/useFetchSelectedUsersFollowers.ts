@@ -18,7 +18,10 @@ const UseFetchSelectedUsersFollowers = () => {
         }`,
         {
           method: "GET",
-          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
         }
       );
 

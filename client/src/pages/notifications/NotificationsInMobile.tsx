@@ -1,7 +1,10 @@
 import { Box, Button, Divider, Text } from "@chakra-ui/react";
 import { useAppDispatch } from "../../hooks/hooks";
 import { useEffect, useState } from "react";
-import { setNotifications } from "../../redux-store/features/notifications/notificationsSlice";
+import {
+  NotificationState,
+  setNotifications,
+} from "../../redux-store/features/notifications/notificationsSlice";
 import { toast } from "react-toastify";
 import { IoArrowBack } from "react-icons/io5";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -9,6 +12,7 @@ import { SlUserFollow } from "react-icons/sl";
 import { IoIosNotifications } from "react-icons/io";
 import AllNotificationsInMobile from "../../components/notifications/AllNotificationsInMobile";
 import FollowRequestNotificationsInMobile from "../../components/notifications/FollowRequestNotificationsInMobile";
+import useFetchGetObjectUrlForAllProfilePics from "../../hooks/usersprofile/useFetchGetObjectUrlForAllProfilePics";
 
 const NotificationsInMobile = () => {
   const dispatch = useAppDispatch();
@@ -16,6 +20,9 @@ const NotificationsInMobile = () => {
   const navigate = useNavigate();
 
   const [isAllNotifications, setIsAllNotifications] = useState<boolean>(true);
+
+  const { fetchGetObjectUrlForAllProfilePics } =
+    useFetchGetObjectUrlForAllProfilePics();
 
   useEffect(() => {
     let isMounted = true;
@@ -26,7 +33,10 @@ const NotificationsInMobile = () => {
           `${import.meta.env.VITE_BACKEND_API_BASE_URL}/api/notification`,
           {
             method: "GET",
-            credentials: "include",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
           }
         );
 
@@ -34,14 +44,46 @@ const NotificationsInMobile = () => {
           throw new Error("Failed to fetch notifications");
         }
 
-        const { data } = await response.json();
+        const data = await response.json();
 
         if (data.status === "error" || data.status === "fail") {
           throw new Error(data.message);
         }
 
+        const notificationData = data.data;
+
+        const uniqueUrls = new Map();
+
+        notificationData.forEach((notification: NotificationState) => {
+          const { id: userId, profilePic } = notification.sentBy;
+
+          if (!uniqueUrls.has(profilePic)) {
+            uniqueUrls.set(userId, profilePic);
+          }
+        });
+
+        const profilePicUrls = await fetchGetObjectUrlForAllProfilePics([
+          ...uniqueUrls.values(),
+        ]);
+
+        const updatedNotificationData = notificationData.map(
+          (notification: NotificationState) => {
+            const updatedSentBy = { ...notification.sentBy };
+
+            return {
+              ...notification,
+              sentBy: {
+                ...updatedSentBy,
+                profilePic: profilePicUrls?.find((url) => {
+                  return url.includes(uniqueUrls.get(updatedSentBy.id));
+                }),
+              },
+            };
+          }
+        );
+
         if (isMounted) {
-          dispatch(setNotifications(data));
+          dispatch(setNotifications(updatedNotificationData));
         }
       } catch (error) {
         if (error instanceof Error) toast.error(error.message);

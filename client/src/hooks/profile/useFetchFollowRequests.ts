@@ -9,7 +9,10 @@ const useFetchFollowRequests = () => {
         }/api/users/follow-requests`,
         {
           method: "GET",
-          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
         }
       );
 

@@ -18,7 +18,10 @@ const AllNotifications = () => {
         }/api/notification/read/${id}`,
         {
           method: "PUT",
-          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
         }
       );
 
@@ -73,7 +76,7 @@ const AllNotifications = () => {
                   name={notification.sentBy.username}
                   src={
                     notification.sentBy.profilePic !== null
-                      ? `http://localhost:8000/uploads/profilePic/${notification.sentBy.profilePic}`
+                      ? notification.sentBy.profilePic
                       : undefined
                   }
                 />

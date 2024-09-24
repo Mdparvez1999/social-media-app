@@ -85,7 +85,7 @@ export class AuthController {
         return next(new AppError("Invalid credentials", 400));
       }
 
-      genrateToken(user.id, res);
+      const token = genrateToken(user.id, res);
 
       return res.status(200).json({
         success: true,
@@ -95,6 +95,7 @@ export class AuthController {
           userName: user.userName,
           isActive: user.isActive,
         },
+        token,
       });
     }
   );

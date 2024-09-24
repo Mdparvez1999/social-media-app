@@ -24,9 +24,9 @@ const EditFullName = () => {
         }/api/user/profile/fullname`,
         {
           method: "PATCH",
-          credentials: "include",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
           body: JSON.stringify({ fullName }),
         }

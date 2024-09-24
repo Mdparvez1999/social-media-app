@@ -47,7 +47,10 @@ const CancelFollowRequest = ({
         }/api/users/cancel-request/${sentRequestId}`,
         {
           method: "DELETE",
-          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
         }
       );
 

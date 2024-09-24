@@ -9,7 +9,10 @@ const useUnlikePost = () => {
         }/api/users/post/unlike/${postId}`,
         {
           method: "POST",
-          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
         }
       );
 

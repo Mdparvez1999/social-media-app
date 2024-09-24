@@ -24,9 +24,9 @@ const useSendMessage = () => {
         }/api/messages/send-message/${selectedConversation?.participants.id}`,
         {
           method: "POST",
-          credentials: "include",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
           body: JSON.stringify({ message }),
         }

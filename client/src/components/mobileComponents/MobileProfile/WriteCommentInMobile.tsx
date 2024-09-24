@@ -26,9 +26,9 @@ const WriteCommentInMobile = ({ postId }: { postId: string }) => {
         }/api/post/comments/write/${postId}`,
         {
           method: "POST",
-          credentials: "include",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
           body: JSON.stringify({ comment }),
         }

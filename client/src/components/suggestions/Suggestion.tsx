@@ -1,9 +1,13 @@
 import { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
-import { setSuggestedUsers } from "../../redux-store/features/suggestedUsers/suggestedUsersSlice";
+import {
+  setSuggestedUsers,
+  SuggestedUsersState,
+} from "../../redux-store/features/suggestedUsers/suggestedUsersSlice";
 import { toast } from "react-toastify";
 import { Avatar, Box, Button, Text, Spinner } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
+import useFetchGetObjectUrlForAllProfilePics from "../../hooks/usersprofile/useFetchGetObjectUrlForAllProfilePics";
 
 const Suggestion = () => {
   const dispatch = useAppDispatch();
@@ -11,7 +15,11 @@ const Suggestion = () => {
   const suggestedUsers = useAppSelector(
     (state) => state.suggestedUsers.suggestedUsers
   );
+
   const [loading, setLoading] = useState<boolean>(false);
+
+  const { fetchGetObjectUrlForAllProfilePics } =
+    useFetchGetObjectUrlForAllProfilePics();
 
   useEffect(() => {
     const fetchSuggestions = async () => {
@@ -23,7 +31,10 @@ const Suggestion = () => {
           }/api/user/profile/suggested-users`,
           {
             method: "GET",
-            credentials: "include",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
           }
         );
 
@@ -31,8 +42,36 @@ const Suggestion = () => {
           throw new Error("Failed to fetch suggested users");
         }
 
-        const { data } = await response.json();
-        dispatch(setSuggestedUsers(data));
+        const data = await response.json();
+
+        if (data.status === "error" || data.status === "fail")
+          throw new Error(data.message);
+
+        const uniqueUrls = new Map();
+
+        data.data.forEach((user: SuggestedUsersState) => {
+          const { id: userId, profilePic } = user;
+
+          if (!uniqueUrls.has(userId)) {
+            uniqueUrls.set(userId, profilePic);
+          }
+        });
+
+        const profilePicUrls: string[] | undefined =
+          await fetchGetObjectUrlForAllProfilePics([...uniqueUrls.values()]);
+
+        const updatedSuggestedUsers = data.data.map(
+          (user: SuggestedUsersState) => {
+            return {
+              ...user,
+              profilePic: profilePicUrls?.find((url) =>
+                url.includes(uniqueUrls.get(user.id))
+              ),
+            };
+          }
+        );
+
+        dispatch(setSuggestedUsers(updatedSuggestedUsers));
       } catch (error) {
         toast.error(
           error instanceof Error ? error.message : "Something went wrong"
@@ -87,15 +126,11 @@ const Suggestion = () => {
               >
                 <Avatar
                   name={user.userName}
-                  src={
-                    user.profilePic
-                      ? `http://localhost:8000/uploads/profilePic/${user.profilePic}`
-                      : undefined
-                  }
+                  src={user?.profilePic ? user?.profilePic : undefined}
                   crossOrigin="anonymous"
                 />
                 <Text fontWeight={"medium"} fontSize={"1.2rem"} mb={"10px"}>
-                  {user.userName}
+                  {user?.userName}
                 </Text>
               </Box>
               <Button>Follow</Button>

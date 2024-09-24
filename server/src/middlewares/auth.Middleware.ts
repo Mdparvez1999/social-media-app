@@ -7,10 +7,10 @@ import { AppError } from "../utils/AppError";
 
 export const auth = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
-    const token = req.cookies.jwt;
+    const token = req.headers.authorization?.split(" ")[1];
 
     if (!token) {
-      return next(new AppError("unauthorized", 401));
+      return next(new AppError("here is the issue", 401));
     }
 
     try {

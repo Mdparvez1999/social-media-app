@@ -13,7 +13,6 @@ import { useAppSelector } from "../hooks/hooks";
 
 const FeedSkeleton = () => {
   const feed = useAppSelector((state) => state.feed.posts);
-
   return (
     <>
       <Box padding={"10px 20px"} borderRadius={"10px"}>

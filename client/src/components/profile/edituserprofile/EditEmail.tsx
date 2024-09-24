@@ -22,9 +22,9 @@ const EditEmail = () => {
         `${import.meta.env.VITE_BACKEND_API_BASE_URL}/api/user/profile/email`,
         {
           method: "PATCH",
-          credentials: "include",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
           body: JSON.stringify({ email }),
         }

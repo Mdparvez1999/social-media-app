@@ -50,7 +50,10 @@ const SelectedUsersProfilePosts = () => {
           }/api/users/post/get-all/${selectedUser?.id}`,
           {
             method: "GET",
-            credentials: "include",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
           }
         );
 

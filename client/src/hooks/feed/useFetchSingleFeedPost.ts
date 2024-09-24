@@ -11,7 +11,10 @@ const useFetchSingleFeedPost = () => {
         }/api/users/post/feed-post/${id}`,
         {
           method: "GET",
-          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
         }
       );
 

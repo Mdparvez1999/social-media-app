@@ -14,6 +14,11 @@ const useLogout = () => {
         `${import.meta.env.VITE_BACKEND_API_BASE_URL}/api/auth/logout`,
         {
           method: "POST",
+          headers: {
+            "content-type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+          credentials: "include",
         }
       );
 

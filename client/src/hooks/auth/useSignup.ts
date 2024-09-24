@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
 
 interface useSignupProps {
   userName: string;
@@ -14,8 +13,6 @@ interface useSignupReturnType {
 }
 const useSignup = (): useSignupReturnType => {
   const [loading, setLoading] = useState(false);
-
-  const navigate = useNavigate();
 
   const signUp = async (signupData: useSignupProps) => {
     const isValid = signUpValidation(signupData);
@@ -39,9 +36,7 @@ const useSignup = (): useSignupReturnType => {
       if (data.status === "fail" || data.status === "error")
         throw new Error(data.message);
 
-      localStorage.setItem("userData", JSON.stringify(data));
       toast.success("Signup successful!");
-      navigate("/app/home");
     } catch (error) {
       toast.error(
         error instanceof Error ? error.message : "Something went wrong"

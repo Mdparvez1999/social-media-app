@@ -6,7 +6,7 @@ interface JwtPayload {
   id: string;
 }
 
-export const genrateToken = (id: string, res: Response): void => {
+export const genrateToken = (id: string, res: Response): string => {
   try {
     const jwtPayload: JwtPayload = { id };
     const jwtSecret = process.env.JWT_SECRET as string;
@@ -20,12 +20,7 @@ export const genrateToken = (id: string, res: Response): void => {
 
     const token = jwt.sign(jwtPayload, jwtSecret, signOptions);
 
-    res.cookie("jwt", token, {
-      maxAge: 24 * 60 * 60 * 1000,
-      httpOnly: true,
-      sameSite: "none",
-      secure: true,
-    });
+    return token;
   } catch (error) {
     throw new AppError(
       error instanceof Error ? error.message : "Error generating token",

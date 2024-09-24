@@ -18,10 +18,10 @@ import ViewCurrentUsersPostsInMobile from "./components/mobileComponents/MobileP
 import SearchInMobile from "./pages/search/SearchInMobile";
 import NotificationsInMobile from "./pages/notifications/NotificationsInMobile";
 import ViewSelectedUsersPostInMobile from "./components/mobileComponents/selectedUsersProfileInMobile/ViewSelectedUsersPostInMobile";
-import MessagesComponent from "./components/mobileComponents/mobileMessages/MessagesComponent";
 import MessageContainerForMobile from "./components/mobileComponents/mobileMessages/MessageContainerForMobile";
 import MessageContainer from "./components/messages/MessageContainer";
 import MessageContainerBox from "./components/messages/MessageContainerBox";
+import MessageComponent from "./components/mobileComponents/mobileMessages/MessageComponent";
 
 function App() {
   const currentUser = useAppSelector((state) => state.auth.currentUser);
@@ -57,7 +57,7 @@ function HeroRoutes() {
           <Route path=":conversationId" element={<MessageContainer />} />
         </Route>
 
-        <Route path="messagesinmobile" element={<MessagesComponent />} />
+        <Route path="messagesinmobile" element={<MessageComponent />} />
 
         <Route
           path="messagecontainer/:conversationId"

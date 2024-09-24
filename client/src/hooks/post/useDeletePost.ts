@@ -10,7 +10,10 @@ const useDeletePost = () => {
         }/api/users/post/delete/${id}`,
         {
           method: "DELETE",
-          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
         }
       );
 

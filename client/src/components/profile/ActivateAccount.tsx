@@ -35,7 +35,10 @@ const ActivateAccount = ({ isOpen, onClose }: ActivateAccountProps) => {
         }/api/user/profile/activate`,
         {
           method: "PATCH",
-          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
         }
       );
 
