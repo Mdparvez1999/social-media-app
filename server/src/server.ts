@@ -8,7 +8,7 @@ export const io = new Server(server, {
   cors: {
     origin: [
       "http://localhost:5173",
-      "https://social-media-app-xi-henna.vercel.app",
+      "https://social-media-app-k6cr.onrender.com",
     ],
     methods: ["GET", "POST"],
     credentials: true,
