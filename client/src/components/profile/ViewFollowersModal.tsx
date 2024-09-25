@@ -66,7 +66,9 @@ const ViewFollowersModal = ({ isOpen, onClose }: ViewFollowersModalProps) => {
                 </Box>
               ))
             ) : (
-              <Text>No followers found.</Text>
+              <Text textAlign={"center"} m={"10px 0 30px 0"}>
+                No followers found.
+              </Text>
             )}
           </Box>
         </ModalBody>
