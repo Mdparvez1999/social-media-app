@@ -8,11 +8,11 @@ export const io = new Server(server, {
   cors: {
     origin: [
       "http://localhost:5173",
-      "https://social-media-app-livid-ten.vercel.app",
+      "https://social-media-app-xi-henna.vercel.app",
     ],
     methods: ["GET", "POST"],
     credentials: true,
-    allowedHeaders: ["*"],
+    allowedHeaders: ["content-type", "Authorization", "X-Requested-With"],
   },
 });
 

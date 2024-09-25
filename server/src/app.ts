@@ -33,7 +33,7 @@ AppDataSource.initialize()
 // Define allowed origins
 const allowedOrigins = [
   "http://localhost:5173", // Local development
-  "https://social-media-app-livid-ten.vercel.app", // Deployed frontend
+  "https://social-media-app-xi-henna.vercel.app", // Deployed frontend
 ];
 
 // global middlewares
@@ -47,6 +47,7 @@ app.use(
       }
     },
     credentials: true,
+    allowedHeaders: ["content-type", "Authorization", "X-Requested-With"],
   })
 );
 
