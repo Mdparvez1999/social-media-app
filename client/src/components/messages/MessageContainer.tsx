@@ -60,8 +60,10 @@ const MessageContainer = () => {
     [selectedConversation]
   );
 
-  const profilePicUrl = memoizedConversation?.participants.profilePic
-    ? memoizedConversation?.participants.profilePic
+  if (!selectedConversation) return;
+
+  const profilePicUrl = memoizedConversation?.participant.profilePic
+    ? memoizedConversation?.participant.profilePic
     : undefined;
 
   return (
@@ -81,12 +83,12 @@ const MessageContainer = () => {
           >
             <Box display={"flex"} gap={"14px"} alignItems={"center"}>
               <Avatar
-                name={memoizedConversation?.participants.userName}
+                name={memoizedConversation?.participant.userName}
                 src={profilePicUrl}
                 crossOrigin="anonymous"
               />
               <Text fontSize={"1.2rem"} fontWeight={"500"}>
-                {selectedConversation?.participants.userName}
+                {selectedConversation?.participant.userName}
               </Text>
             </Box>
             <Box

@@ -91,36 +91,50 @@ const SelectedUsersAllPostsInMobile = () => {
     navigate(`/app/viewselecteduserspost/${post.id}`);
   };
 
-  return loading ? (
-    <PostsMobileSkeleton />
-  ) : (
-    <Grid templateColumns={"repeat(3, 1fr)"} gap={1} margin={"5px"}>
-      {selectedUserPosts.length > 0 ? (
-        selectedUserPosts
-          .slice()
-          .sort(
-            (a, b) =>
-              new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-          )
-          .map((post) => (
-            <Box
-              height={"100%"}
-              key={post.id}
-              cursor={"pointer"}
-              onClick={() => handleViewEachPost(post)}
-            >
-              <CustomCarouselForMobile
-                images={post.files.map((file) => `${file}`)}
-                width={"500px"}
-                height={"85px"}
-              />
-            </Box>
-          ))
-      ) : (
-        <Text fontSize="2xl" m={"60px 0 0 300px"} w={"100%"}>
-          No posts
+  if (loading) return <PostsMobileSkeleton />;
+
+  if (selectedUserPosts.length === 0) {
+    return (
+      <Box
+        width={"100%"}
+        height={"100%"}
+        display={"flex"}
+        justifyContent={"center"}
+        alignItems={"center"}
+        textAlign={"center"}
+        flexDirection={"column"}
+        py={10}
+        mt={5}
+      >
+        <Text fontSize="xl" fontWeight="bold">
+          user haven't created any posts yet!
         </Text>
-      )}
+      </Box>
+    );
+  }
+
+  return (
+    <Grid templateColumns={"repeat(3, 1fr)"} gap={1} margin={"5px"}>
+      {selectedUserPosts
+        .slice()
+        .sort(
+          (a, b) =>
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        )
+        .map((post) => (
+          <Box
+            height={"100%"}
+            key={post.id}
+            cursor={"pointer"}
+            onClick={() => handleViewEachPost(post)}
+          >
+            <CustomCarouselForMobile
+              images={post.files.map((file) => `${file}`)}
+              width={"500px"}
+              height={"85px"}
+            />
+          </Box>
+        ))}
     </Grid>
   );
 };

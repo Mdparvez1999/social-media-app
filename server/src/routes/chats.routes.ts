@@ -9,6 +9,12 @@ router.get("/conversations", auth, chatsController.getAllConversations);
 
 router.post("/send-message/:recieverId", auth, chatsController.sendMessage);
 
+router.post(
+  "/create-conversation/:recieverId",
+  auth,
+  chatsController.createConversation
+);
+
 router.get(
   "/all-messages/:conversationId",
   auth,

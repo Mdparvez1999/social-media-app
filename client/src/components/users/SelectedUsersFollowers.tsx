@@ -106,7 +106,9 @@ const SelectedUsersFollowers = ({
                 ) : null
               )
             ) : (
-              <Text textAlign={"center"}>No users found.</Text>
+              <Text textAlign={"center"} m={"10px 0 30px 0"}>
+                No users found.
+              </Text>
             )}
           </Box>
         </ModalBody>

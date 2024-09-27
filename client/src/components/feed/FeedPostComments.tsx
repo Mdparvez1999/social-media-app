@@ -72,8 +72,6 @@ const FeedPostComments = ({ postId }: FeedPostCommentsProps) => {
         return updatedComment;
       });
 
-      console.log(updatedComments);
-
       dispatch(setFeedPostComments(updatedComments));
     } catch (error) {
       const errorMsg =

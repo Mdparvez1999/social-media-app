@@ -127,7 +127,7 @@ const userSlice = createSlice({
         state.selectedUsersSinglePost.id === action.payload.postId
       ) {
         state.selectedUsersSinglePost.postLikes = [
-          ...state.selectedUsersSinglePost.postLikes,
+          ...(state.selectedUsersSinglePost.postLikes || []),
           action.payload,
         ];
         state.selectedUsersSinglePost.likeCount =

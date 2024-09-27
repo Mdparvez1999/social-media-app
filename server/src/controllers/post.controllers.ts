@@ -12,7 +12,6 @@ import { PostUtils } from "../utils/post.utils";
 import { NotificationUtils } from "../utils/notification.utils";
 import { Follower } from "../entities/follower.entity";
 import { In } from "typeorm";
-import { AwsS3Utils } from "../utils/awsS3.utils";
 
 export class PostControllers {
   private get postRepository() {
@@ -156,9 +155,9 @@ export class PostControllers {
         relations: [
           "files",
           "files.post",
-          "postlikes",
+          "postLikes",
           "user",
-          "postlikes.user",
+          "postLikes.user",
         ],
       });
 
@@ -166,7 +165,7 @@ export class PostControllers {
         return {
           ...post,
           files: post.files.map((file) => file.fileName),
-          postlikes: post.postlikes.map((like) => ({
+          postLikes: post.postLikes.map((like) => ({
             postLikeId: like.id,
             likedAt: like.liked_at,
             postId: post.id,
@@ -201,14 +200,14 @@ export class PostControllers {
 
       const allPosts = await this.postRepository.find({
         where: { user: { id: userId } },
-        relations: ["files", "user", "postlikes", "postlikes.user"],
+        relations: ["files", "user", "postLikes", "postLikes.user"],
       });
 
       const posts = allPosts.map((post) => {
         return {
           ...post,
           files: post.files.map((file) => file.fileName),
-          postlikes: post.postlikes.map((like) => ({
+          postLikes: post.postLikes.map((like) => ({
             postLikeId: like.id,
             likedAt: like.liked_at,
             postId: post.id,
@@ -254,7 +253,7 @@ export class PostControllers {
         likeCount: post.likeCount,
         commentCount: post.commentCount,
         files: post.files,
-        postlikes: post.postlikes.map((like) => ({
+        postLikes: post.postLikes.map((like) => ({
           postLikeId: like.id,
           likedAt: like.liked_at,
           postId: post.id,
@@ -297,7 +296,7 @@ export class PostControllers {
         likeCount: post.likeCount,
         commentCount: post.commentCount,
         files: post.files,
-        postlikes: post.postlikes.map((like) => ({
+        postLikes: post.postLikes.map((like) => ({
           postLikeId: like.id,
           likedAt: like.liked_at,
           postId: post.id,
@@ -343,10 +342,7 @@ export class PostControllers {
       });
 
       if (alreadyLiked) {
-        return res.status(200).json({
-          success: true,
-          message: "You have already liked this post",
-        });
+        return next(new AppError("you have already liked this post", 400));
       }
 
       // Create a new PostLike instance
@@ -361,16 +357,18 @@ export class PostControllers {
       post.likeCount = post.likeCount + 1;
       await this.postRepository.save(post);
 
-      // Create a notification for the post owner
-      const type = "like";
-      const message = `${user?.userName} liked your post`;
+      if (post.user.id !== userId) {
+        // Create a notification for the post owner
+        const type = "like";
+        const message = `${user?.userName} liked your post`;
 
-      await NotificationUtils.createNotification(
-        type,
-        message,
-        user, // sentBy
-        post.user // receivedBy
-      );
+        await NotificationUtils.createNotification(
+          type,
+          message,
+          user, // sentBy
+          post.user // receivedBy
+        );
+      }
 
       return res.status(200).json({
         success: true,
@@ -473,7 +471,7 @@ export class PostControllers {
 
       const post = await this.postRepository.find({
         where: { user: { id: In(followingUsersIds) } },
-        relations: ["user", "files", "postlikes", "postlikes.user"],
+        relations: ["user", "files", "postLikes", "postLikes.user"],
         order: { createdAt: "DESC" },
       });
 
@@ -484,7 +482,7 @@ export class PostControllers {
           likeCount: post.likeCount,
           commentCount: post.commentCount,
           files: post.files.map((file) => file.fileName),
-          postlikes: post.postlikes.map((like) => ({
+          postLikes: post.postLikes.map((like) => ({
             postLikeId: like.id,
             likedAt: like.liked_at,
             postId: post.id,
@@ -530,7 +528,7 @@ export class PostControllers {
         likeCount: feedPost.likeCount,
         commentCount: feedPost.commentCount,
         files: feedPost.files,
-        postlikes: feedPost.postlikes.map((like) => ({
+        postLikes: feedPost.postLikes.map((like) => ({
           postLikeId: like.id,
           likedAt: like.liked_at,
           postId: post.id,

@@ -58,6 +58,8 @@ const LikeAndComments = ({ post }: { post: PostState }) => {
         dispatch(likePostAction(postLikedData.data));
       }
     } catch (error) {
+      console.log("error in like post", error);
+
       toast.error("Something went wrong");
     }
   };

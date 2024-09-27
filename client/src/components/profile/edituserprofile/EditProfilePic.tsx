@@ -79,8 +79,8 @@ const EditProfilePic = () => {
           </Heading>
         </Box>
         <Box>
-          <Button onClick={fileInputClick}>
-            {loading ? <Spinner size="sm" /> : "Change Photo"}
+          <Button onClick={fileInputClick} width={"75px"}>
+            {loading ? <Spinner size="sm" /> : "update"}
             <Input
               type="file"
               ref={fileInputRef}

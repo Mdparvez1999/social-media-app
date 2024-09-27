@@ -46,16 +46,18 @@ export class CommentsController {
       post.commentCount += 1;
       await this.postRepository.save(post);
 
-      // Create a notification for the post owner
-      const type = "comment";
-      const message = `${user?.userName} commented on your post`;
+      if (post.user.id !== userId) {
+        // Create a notification for the post owner
+        const type = "comment";
+        const message = `${user?.userName} commented on your post`;
 
-      await NotificationUtils.createNotification(
-        type,
-        message,
-        user, // sentBy
-        post.user // receivedBy
-      );
+        await NotificationUtils.createNotification(
+          type,
+          message,
+          user, // sentBy
+          post.user // receivedBy
+        );
+      }
 
       res.status(201).json({
         success: true,

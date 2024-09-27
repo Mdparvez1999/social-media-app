@@ -97,13 +97,13 @@ export class ChatsController {
           title: conversation.title,
           createdAt: conversation.createdAt,
           updatedAt: conversation.updatedAt,
-          participants: conversation.participants
+          participant: conversation.participants
             .map((participant) => ({
               id: participant.id,
               userName: participant.userName,
               profilePic: participant.profilePic,
             }))
-            .filter((participant) => participant.id !== senderId),
+            .find((participant) => participant.id !== senderId),
         };
       }
 
@@ -116,6 +116,54 @@ export class ChatsController {
 
       res.status(200).json({
         success: true,
+        data: responseData,
+      });
+    }
+  );
+
+  public createConversation = asyncHandler(
+    async (req: Request, res: Response, next: NextFunction) => {
+      const senderId: string = res.locals.user.id;
+      const recieverId: string = req.params.recieverId;
+
+      const senderUser: Users = await UserUtils.findUserById(senderId);
+
+      const recieverUser: Users = await UserUtils.findUserById(recieverId);
+
+      const conversation = new Conversations();
+
+      conversation.participants = [senderUser, recieverUser];
+      conversation.messages = [];
+
+      await this.conversationRepository.save(conversation);
+
+      if (!conversation) {
+        return next(new AppError("Conversation not created", 400));
+      }
+
+      const participant = conversation.participants
+        .map((participant) => ({
+          id: participant.id,
+          userName: participant.userName,
+          fullName: participant.fullName,
+          profilePic: participant.profilePic,
+        }))
+        .find((participant) => participant.id === recieverId);
+
+      const responseData = {
+        conversation: {
+          id: conversation.id,
+          isGroup: conversation.isGroup,
+          title: conversation.title,
+          createdAt: conversation.createdAt,
+          updatedAt: conversation.updatedAt,
+          participant: participant,
+        },
+      };
+
+      res.status(200).json({
+        success: true,
+        message: "Conversation created successfully",
         data: responseData,
       });
     }
@@ -152,7 +200,7 @@ export class ChatsController {
           createdAt: conversation.createdAt,
           updatedAt: conversation.updatedAt,
           isGroup: conversation.isGroup,
-          participants: singleParticipant
+          participant: singleParticipant
             ? {
                 id: singleParticipant.id,
                 userName: singleParticipant.userName,
@@ -210,7 +258,7 @@ export class ChatsController {
         createdAt: conversation.createdAt,
         updatedAt: conversation.updatedAt,
         isGroup: conversation.isGroup,
-        participants: singleParticipant
+        participant: singleParticipant
           ? {
               id: singleParticipant.id,
               userName: singleParticipant.userName,
@@ -250,10 +298,6 @@ export class ChatsController {
       }
 
       const messages = conversation.messages;
-
-      if (!messages || messages.length === 0) {
-        return next(new AppError("No messages found", 404));
-      }
 
       const serializedMessages = messages.map((message) => ({
         id: message.id,

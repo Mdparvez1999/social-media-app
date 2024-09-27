@@ -19,7 +19,7 @@ export class PostLike {
   @CreateDateColumn()
   liked_at!: Date;
 
-  @ManyToOne(() => Post, (post) => post.postlikes, {
+  @ManyToOne(() => Post, (post) => post.postLikes, {
     onDelete: "CASCADE",
   })
   @Index()

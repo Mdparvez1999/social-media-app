@@ -25,8 +25,7 @@ const useFetchMessages = () => {
 
         const data = await response.json();
 
-        if (data.status === "fail" || data.status === "error")
-          throw new Error(data.message);
+        if (data.status === "fail" || data.status === "error") return;
 
         dispatch(setMessages(data.data));
       } catch (error) {

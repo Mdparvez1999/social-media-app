@@ -30,8 +30,13 @@ const commentSlice = createSlice({
     addComment: (state, ation) => {
       state.comments = [ation.payload, ...state.comments];
     },
+    removeComment: (state, action) => {
+      state.comments = state.comments.filter(
+        (comment) => comment.id !== action.payload
+      );
+    },
   },
 });
 
-export const { setComment, addComment } = commentSlice.actions;
+export const { setComment, addComment, removeComment } = commentSlice.actions;
 export default commentSlice.reducer;

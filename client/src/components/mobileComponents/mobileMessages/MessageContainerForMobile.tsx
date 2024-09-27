@@ -9,7 +9,7 @@ import { FaVideo } from "react-icons/fa";
 import MessageBody from "../../messages/MessageBody";
 import MessaggeInput from "../../messages/MessaggeInput";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import useFetchSingleConversation from "../../../hooks/messages/useFetchSingleConversation";
 import { toast } from "react-toastify";
 
@@ -62,6 +62,17 @@ const MessageContainerForMobile = () => {
     }
   };
 
+  const memoizedConversation = useMemo(
+    () => selectedConversation,
+    [selectedConversation]
+  );
+
+  if (!selectedConversation) return;
+
+  const profilePicUrl = memoizedConversation?.participant.profilePic
+    ? memoizedConversation?.participant.profilePic
+    : undefined;
+
   return (
     <Box height={"100vh"} width={"100%"}>
       {loading ? (
@@ -91,15 +102,11 @@ const MessageContainerForMobile = () => {
               />
               <Avatar
                 crossOrigin="anonymous"
-                src={
-                  selectedConversation?.participants.profilePic !== null
-                    ? selectedConversation?.participants.profilePic
-                    : undefined
-                }
-                name={selectedConversation?.participants.userName}
+                src={profilePicUrl}
+                name={selectedConversation?.participant.userName}
               />
               <Text fontSize={"1.2rem"} fontWeight={"500"}>
-                {selectedConversation?.participants.userName}
+                {selectedConversation?.participant.userName}
               </Text>
             </Box>
             <Box

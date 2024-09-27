@@ -66,7 +66,7 @@ const postSlice = createSlice({
     likePostAction: (state, action: PayloadAction<PostLikes>) => {
       if (state.singlePost && state.singlePost.id === action.payload.postId) {
         state.singlePost.postLikes = [
-          ...state.singlePost.postLikes,
+          ...(state.singlePost.postLikes || []),
           action.payload,
         ];
         state.singlePost.likeCount = state.singlePost.likeCount + 1;

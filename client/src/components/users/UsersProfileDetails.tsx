@@ -15,18 +15,21 @@ import useFetchUsersProfile from "../../hooks/usersprofile/useFetchUsersProfile"
 import {
   clearSelecetedUsersData,
   setSelectedUser,
-  setSelectedUsersMessage,
 } from "../../redux-store/features/users/userSlice";
 import { useNavigate, useParams } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import useUnfollowUser from "../../hooks/usersprofile/useUnfollowUser";
 import SelectedUsersFollowers from "./SelectedUsersFollowers";
 import SelectedUsersFollowing from "./SelectedUsersFollowing";
-import { setSelectedConversation } from "../../redux-store/features/messages/messagesSlice";
+import {
+  addConversation,
+  setSelectedConversation,
+} from "../../redux-store/features/messages/messagesSlice";
 import useFetchCurrentUsersProfile from "../../hooks/profile/useFetchCurrentUsersProfile";
 import { setProfile } from "../../redux-store/features/profile/profileSlice";
 import UsersProfileDetailsSkeleton from "../../skeletons/UsersProfileDetailsSkeleton";
 import useFetchGetObjectProfilePicUrl from "../../hooks/profile/useFetchGetObjectProfilePicUrl";
+import useFetchCreateConversation from "../../hooks/messages/useFetchCreateConversation";
 
 const UsersProfileDetails = () => {
   const dispatch = useDispatch();
@@ -139,16 +142,29 @@ const UsersProfileDetails = () => {
     dispatch,
   ]);
 
-  const handleMessageClick = () => {
-    const existingConversation = conversations.filter(
-      (conversation) => conversation.participants.id === selectedUserData?.id
+  const { createConversation } = useFetchCreateConversation();
+
+  const handleMessageClick = async () => {
+    const existingConversation = conversations.find(
+      (conversation) => conversation.participant.id === selectedUserData?.id
     );
 
-    if (existingConversation.length > 0)
-      dispatch(setSelectedConversation(existingConversation[0]));
-    else dispatch(setSelectedUsersMessage(selectedUserData));
+    if (existingConversation) {
+      dispatch(setSelectedConversation(existingConversation));
+      navigate(`/app/messages/${existingConversation?.id}`);
+    } else {
+      try {
+        const conversation = await createConversation(
+          selectedUserData?.id as string
+        );
 
-    navigate(`/app/messages/${existingConversation[0]?.id}`);
+        dispatch(setSelectedConversation(conversation));
+        dispatch(addConversation(conversation));
+        navigate(`/app/messages/${conversation?.id}`);
+      } catch (error) {
+        toast.error("Something went wrong");
+      }
+    }
   };
 
   return pageLoading ? (

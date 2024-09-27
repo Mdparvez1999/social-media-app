@@ -1,4 +1,4 @@
-import { Box, Grid } from "@chakra-ui/react";
+import { Box, Grid, Text } from "@chakra-ui/react";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "react-toastify";
 import { useAppDispatch, useAppSelector } from "../../../hooks/hooks";
@@ -91,6 +91,28 @@ const CurrentUserPostsMobile = () => {
         ),
     [currentUserPosts]
   );
+
+  if (currentUserPosts.length === 0) {
+    return (
+      <Box
+        width={"90%"}
+        height={"100%"}
+        display={"flex"}
+        justifyContent={"center"}
+        alignItems={"center"}
+        textAlign={"center"}
+        flexDirection={"column"}
+        py={10}
+      >
+        <Text fontSize="l" fontWeight="bold">
+          You haven't created any posts yet!
+        </Text>
+        <Text fontSize="sm" color="gray.500" mt={2}>
+          Start sharing your thoughts and moments by creating a post.
+        </Text>
+      </Box>
+    );
+  }
 
   return loading ? (
     <PostsMobileSkeleton />

@@ -86,7 +86,7 @@ const AllNotificationsInMobile = () => {
               </Box>
               <Box display={"flex"} flexDirection={"row"} ml={"12px"}>
                 <Text
-                  fontSize={"1.3rem"}
+                  fontSize={"1.2rem"}
                   fontWeight={notification.isRead ? "normal" : "500"}
                 >
                   {notification.message}.{" "}

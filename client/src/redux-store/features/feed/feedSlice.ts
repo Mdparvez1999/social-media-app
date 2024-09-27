@@ -77,6 +77,11 @@ const feedSlice = createSlice({
     addCommentToFeedPost(state, action: PayloadAction<CommentState>) {
       state.comments = [action.payload, ...state.comments];
     },
+    removeFeedPostComment(state, action: PayloadAction<string>) {
+      state.comments = state.comments.filter(
+        (comment) => comment.id !== action.payload
+      );
+    },
 
     clearFeed(state) {
       state.posts = [];
@@ -123,6 +128,7 @@ export const {
   setFeedSinglePost,
   setFeedPostComments,
   addCommentToFeedPost,
+  removeFeedPostComment,
   clearFeed,
   setSelectedFeedLikes,
   likeSelectedFeedAction,

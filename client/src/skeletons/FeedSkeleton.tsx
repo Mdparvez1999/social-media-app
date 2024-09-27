@@ -8,11 +8,20 @@ import {
   Skeleton,
   SkeletonCircle,
   SkeletonText,
+  Spinner,
 } from "@chakra-ui/react";
 import { useAppSelector } from "../hooks/hooks";
 
 const FeedSkeleton = () => {
   const feed = useAppSelector((state) => state.feed.posts);
+
+  if (feed.length === 0)
+    return (
+      <Box mt={"300px"}>
+        <Spinner />
+      </Box>
+    );
+
   return (
     <>
       <Box padding={"10px 20px"} borderRadius={"10px"}>

@@ -26,6 +26,11 @@ import { setProfile } from "../../../redux-store/features/profile/profileSlice";
 import useFetchCurrentUsersProfile from "../../../hooks/profile/useFetchCurrentUsersProfile";
 import SelectedUsersProfileDetailsInMobileSkeleton from "../../../mobileComponentSkeletons/SelectedUsersProfileDetailsInMobileSkeleton";
 import useFetchGetObjectProfilePicUrl from "../../../hooks/profile/useFetchGetObjectProfilePicUrl";
+import useFetchCreateConversation from "../../../hooks/messages/useFetchCreateConversation";
+import {
+  addConversation,
+  setSelectedConversation,
+} from "../../../redux-store/features/messages/messagesSlice";
 
 const SelectedUsersProfileDetailsInMobile = React.memo(() => {
   const dispatch = useDispatch();
@@ -100,9 +105,11 @@ const SelectedUsersProfileDetailsInMobile = React.memo(() => {
 
   const { fetchCurrentUserProfile } = useFetchCurrentUsersProfile();
 
+  const [followLoading, setFollowLoading] = useState<boolean>(false);
+
   const followOrUnfollowUserClick = useCallback(async () => {
     if (!selectedUserData) return;
-
+    setFollowLoading(true);
     try {
       if (isFollowing) {
         await unfollowUser(selectedUserData.id);
@@ -119,7 +126,7 @@ const SelectedUsersProfileDetailsInMobile = React.memo(() => {
     } catch (error) {
       toast.error("Something went wrong");
     } finally {
-      setLoading(false);
+      setFollowLoading(false);
     }
   }, [
     selectedUserData,
@@ -134,10 +141,36 @@ const SelectedUsersProfileDetailsInMobile = React.memo(() => {
 
   const navigate = useNavigate();
   const location = useLocation();
+  const conversations = useAppSelector((state) => state.messages.conversations);
 
-  const handleMessageClick = useCallback(() => {
-    navigate("/app/messagesinmobile", { state: { from: location } });
-  }, [navigate, location]);
+  const { createConversation } = useFetchCreateConversation();
+
+  const handleMessageClick = async () => {
+    const existingConversation = conversations.find(
+      (conversation) => conversation.participant.id === selectedUserData?.id
+    );
+
+    if (existingConversation) {
+      dispatch(setSelectedConversation(existingConversation));
+      navigate(`/app/messagecontainer/${existingConversation?.id}`, {
+        state: { from: location },
+      });
+    } else {
+      try {
+        const conversation = await createConversation(
+          selectedUserData?.id as string
+        );
+
+        dispatch(setSelectedConversation(conversation));
+        dispatch(addConversation(conversation));
+        navigate(`/app/messagecontainer/${conversation?.id}`, {
+          state: { from: location },
+        });
+      } catch (error) {
+        toast.error("Something went wrong");
+      }
+    }
+  };
 
   return loading ? (
     <SelectedUsersProfileDetailsInMobileSkeleton />
@@ -241,7 +274,7 @@ const SelectedUsersProfileDetailsInMobile = React.memo(() => {
       >
         <Button
           onClick={followOrUnfollowUserClick}
-          isLoading={loading}
+          isLoading={followLoading}
           width={"160px"}
         >
           {isFollowing ? "Unfollow" : "Follow"}

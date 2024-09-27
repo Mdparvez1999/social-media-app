@@ -1,20 +1,9 @@
 import { Box } from "@chakra-ui/react";
 import Conversations from "../../components/messages/Conversations";
-import { useAppSelector } from "../../hooks/hooks";
 import useListenMessages from "../../hooks/messages/useListenMessages";
-import { Outlet, useNavigate } from "react-router-dom";
+import { Outlet } from "react-router-dom";
 
 const Messages = () => {
-  const selectedUsersMessage = useAppSelector(
-    (state) => state.users.selectedUsersMessage
-  );
-
-  const navigate = useNavigate();
-
-  if (selectedUsersMessage) {
-    navigate(`/app/messages/${selectedUsersMessage.id}`);
-  }
-
   useListenMessages();
 
   return (

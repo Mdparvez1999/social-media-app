@@ -64,13 +64,28 @@ const Feed = () => {
 
   if (loading) return <FeedSkeleton />;
 
-  if (feed?.length === 0)
+  if (feed?.length === 0) {
     return (
-      <Text fontSize={"1.2rem"} textAlign={"center"} mt={"20px"}>
-        Welcome! There are no posts in your feed yet. Start following users to
-        see their posts here.
-      </Text>
+      <Box
+        width={"90%"}
+        height={"100%"}
+        display={"flex"}
+        justifyContent={"center"}
+        alignItems={"center"}
+        textAlign={"center"}
+        flexDirection={"column"}
+        py={10}
+        mt={"200px"}
+      >
+        <Text fontSize={{ xs: "1.2rem", md: "2xl" }} fontWeight="bold">
+          Welcome! There are no posts in your feed yet
+        </Text>
+        <Text fontSize="xl" color="gray.500" mt={2}>
+          Start following users to see their posts here.
+        </Text>
+      </Box>
     );
+  }
 
   return (
     <Box padding={"10px 20px"} borderRadius={"10px"}>
@@ -109,7 +124,7 @@ const Feed = () => {
                 {formatCreatedAtTime(post.createdAt)}
               </Text>
             </Box>
-            <Button>
+            <Button variant="ghost" _hover={{ bgColor: "none" }}>
               <PiDotsThreeOutlineVertical />
             </Button>
           </CardHeader>

@@ -45,7 +45,7 @@ export class Post {
   files!: Relation<PostFile>[];
 
   @OneToMany(() => PostLike, (postlike) => postlike.post, { cascade: true })
-  postlikes!: Relation<PostLike>[];
+  postLikes!: Relation<PostLike>[];
 
   @OneToMany(() => Comments, (comments) => comments.post, { cascade: true })
   comments!: Relation<Comments>[];

@@ -10,9 +10,13 @@ import {
   ModalHeader,
   ModalOverlay,
   Text,
+  useDisclosure,
 } from "@chakra-ui/react";
 import { useAppSelector } from "../../hooks/hooks";
 import { formatCreatedAtTime } from "../../utils/formatTimes.utils";
+import { PiDotsThreeBold } from "react-icons/pi";
+import { useState } from "react";
+import DeleteFeedCommentModal from "./DeleteFeedCommentModal";
 
 interface PostCommentsPropsType {
   isOpen: boolean;
@@ -25,13 +29,22 @@ const FeedPostCommentsModal = ({
   onClose,
   postId,
 }: PostCommentsPropsType) => {
-  const comments = useAppSelector((state) => state.feed.comments);
+  const deleteCommentProps = useDisclosure();
 
+  const currenUser = useAppSelector((state) => state.profile.profile);
+  const comments = useAppSelector((state) => state.feed.comments);
   const post = useAppSelector((state) =>
     state.feed.posts.find((post) => post.id === postId)
   );
 
+  const [commentToDelete, setCommentToDelete] = useState<string>("");
+
   if (!post) return null;
+
+  const handleCommentToDelete = (commentId: string) => {
+    setCommentToDelete(commentId);
+    deleteCommentProps.onOpen();
+  };
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
@@ -104,10 +117,18 @@ const FeedPostCommentsModal = ({
                       </Heading>
                       <Text pt={"3px"}>{comment.comment}</Text>
                     </Box>
-                    <Box>
+                    <Box display={"flex"} gap={"10px"}>
                       <Text fontSize={"0.9rem"} color={"gray.700"}>
                         {formatCreatedAtTime(comment.commentedAt)}
                       </Text>
+                      <Box mt={"5px"} cursor={"pointer"}>
+                        {(comment.user.id === currenUser?.id ||
+                          post.user.id === currenUser?.id) && (
+                          <PiDotsThreeBold
+                            onClick={() => handleCommentToDelete(comment.id)}
+                          />
+                        )}
+                      </Box>
                     </Box>
                   </Box>
                 </Box>
@@ -116,6 +137,11 @@ const FeedPostCommentsModal = ({
           </Box>
         </ModalBody>
       </ModalContent>
+      <DeleteFeedCommentModal
+        isOpen={deleteCommentProps.isOpen}
+        onClose={deleteCommentProps.onClose}
+        commentId={commentToDelete}
+      />
     </Modal>
   );
 };

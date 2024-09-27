@@ -117,16 +117,16 @@ const ConversationsInMobile = () => {
             >
               <Avatar
                 size={{ xs: "lg", md: "md" }}
-                name={conversation.participants?.userName}
+                name={conversation.participant?.userName}
                 src={
-                  conversation.participants?.profilePic !== null
-                    ? conversation.participants?.profilePic
+                  conversation.participant?.profilePic !== null
+                    ? conversation.participant?.profilePic
                     : undefined
                 }
                 crossOrigin="anonymous"
               />
               <Text fontSize={{ xs: "1.4rem", md: "1.2rem" }} pt={"12px"}>
-                {conversation.participants?.userName}
+                {conversation.participant?.userName}
               </Text>
             </Box>
           ))

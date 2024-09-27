@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-interface ParticipantsState {
+interface ParticipantState {
   id: string;
   userName: string;
   fullName: string;
@@ -13,7 +13,7 @@ export interface ConversationsState {
   title: string;
   createdAt: Date;
   updatedAt: Date;
-  participants: ParticipantsState;
+  participant: ParticipantState;
 }
 
 interface EachMessageState {

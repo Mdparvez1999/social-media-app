@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import {
   Avatar,
   Box,
@@ -11,6 +11,7 @@ import {
   DrawerOverlay,
   Heading,
   Text,
+  useDisclosure,
 } from "@chakra-ui/react";
 import { useAppSelector } from "../../../hooks/hooks";
 import { useComment } from "../../../hooks/comments/useComment";
@@ -18,6 +19,8 @@ import { toast } from "react-toastify";
 import { formatCreatedAtTime } from "../../../utils/formatTimes.utils";
 import WriteCommentInMobile from "./WriteCommentInMobile";
 import { PostState } from "../../../redux-store/features/post/postsSlice";
+import { PiDotsThreeBold } from "react-icons/pi";
+import DeleteCommentModal from "../../posts/DeleteCommentModal";
 
 interface PostCommentsInMobileProps {
   post: PostState;
@@ -30,9 +33,13 @@ const PostCommentsInMobile = ({
   isOpen,
   onClose,
 }: PostCommentsInMobileProps) => {
+  const currentUser = useAppSelector((state) => state.auth.currentUser);
   const comments = useAppSelector((state) => state.comments.comments);
 
   const { fetchComments } = useComment();
+  const deleteCommentProps = useDisclosure();
+
+  const [commentToDelete, setCommentToDelete] = useState<string>("");
 
   useEffect(() => {
     const getComments = async () => {
@@ -49,6 +56,13 @@ const PostCommentsInMobile = ({
   }, [post, fetchComments]);
 
   if (!post || !comments) return null;
+
+  const handleCommentToDelete = (commentId: string) => {
+    if (commentId) {
+      setCommentToDelete(commentId);
+      deleteCommentProps.onOpen();
+    }
+  };
 
   const noPostAndComments = post?.caption === "" && comments.length === 0;
 
@@ -118,10 +132,17 @@ const PostCommentsInMobile = ({
                       </Heading>
                       <Text>{comment?.comment}</Text>
                     </Box>
-                    <Box>
+                    <Box display={"flex"} gap={"10px"}>
                       <Text fontSize={"0.9rem"} color={"gray.700"}>
                         {formatCreatedAtTime(comment?.commentedAt)}
                       </Text>
+                      <Box mt={"8px"} cursor={"pointer"}>
+                        {comment?.user?.id === currentUser?.id && (
+                          <PiDotsThreeBold
+                            onClick={() => handleCommentToDelete(comment.id)}
+                          />
+                        )}
+                      </Box>
                     </Box>
                   </Box>
                 </Box>
@@ -135,6 +156,11 @@ const PostCommentsInMobile = ({
           </Box>
         </DrawerBody>
       </DrawerContent>
+      <DeleteCommentModal
+        isOpen={deleteCommentProps.isOpen}
+        onClose={deleteCommentProps.onClose}
+        commentId={commentToDelete}
+      />
     </Drawer>
   );
 };

@@ -103,7 +103,9 @@ const SelectedUsersFollowing = ({
                 </Box>
               ))
             ) : (
-              <Text textAlign={"center"}>You are not following anyone.</Text>
+              <Text textAlign={"center"} m={"10px 0 30px 0"}>
+                You are not following anyone.
+              </Text>
             )}
           </Box>
         </ModalBody>

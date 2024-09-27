@@ -63,7 +63,7 @@ export class PostUtils {
 
     const post = await this.postRepository.findOne({
       where: { id: postId, user: { id: userId } },
-      relations: ["files", "postlikes", "user", "postlikes.user"],
+      relations: ["files", "postLikes", "user", "postLikes.user"],
     });
 
     if (!post) {

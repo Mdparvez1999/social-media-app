@@ -21,7 +21,7 @@ const useSendMessage = () => {
       const response = await fetch(
         `${
           import.meta.env.VITE_BACKEND_API_BASE_URL
-        }/api/messages/send-message/${selectedConversation?.participants.id}`,
+        }/api/messages/send-message/${selectedConversation?.participant.id}`,
         {
           method: "POST",
           headers: {

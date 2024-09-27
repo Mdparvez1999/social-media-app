@@ -1,18 +1,24 @@
-import { Avatar, Box, Heading } from "@chakra-ui/react";
+import { Avatar, Box, Heading, useDisclosure } from "@chakra-ui/react";
 import { useComment } from "../../hooks/comments/useComment";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { toast } from "react-toastify";
 import { useAppSelector } from "../../hooks/hooks";
 import { formatCreatedAtTime } from "../../utils/formatTimes.utils";
+import { PiDotsThreeBold } from "react-icons/pi";
+import DeleteCommentModal from "./DeleteCommentModal";
 
 interface propsType {
   postId: string | undefined;
 }
 const Comments = ({ postId }: propsType) => {
+  const { isOpen, onOpen, onClose } = useDisclosure();
   const { fetchComments } = useComment();
 
   const comments = useAppSelector((state) => state.comments.comments);
   const post = useAppSelector((state) => state.posts.singlePost);
+  const currentUser = useAppSelector((state) => state.profile.profile);
+
+  const [commentToDelete, setCommentToDelete] = useState<string>("");
 
   useEffect(() => {
     const getComments = async () => {
@@ -34,6 +40,13 @@ const Comments = ({ postId }: propsType) => {
   );
 
   if (!comments) return null;
+
+  const handleCommentToDelete = (commentId: string) => {
+    if (commentId) {
+      setCommentToDelete(commentId);
+      onOpen();
+    }
+  };
 
   return (
     <Box
@@ -81,9 +94,19 @@ const Comments = ({ postId }: propsType) => {
                 <Heading fontSize={"1.1rem"} mb={"5px"}>
                   {comment?.user?.userName}
                 </Heading>
-                <Heading fontSize={"0.9rem"} fontWeight={"500"}>
-                  {comment.comment}
-                </Heading>
+                <Box display={"flex"} gap={"8px"}>
+                  <Heading fontSize={"0.9rem"} fontWeight={"500"}>
+                    {comment.comment}
+                  </Heading>
+                  <Box mt={"4px"} cursor={"pointer"}>
+                    {(comment.user.id === currentUser?.id ||
+                      post?.user.id === currentUser?.id) && (
+                      <PiDotsThreeBold
+                        onClick={() => handleCommentToDelete(comment.id)}
+                      />
+                    )}
+                  </Box>
+                </Box>
               </Box>
             </Box>
             <Box>
@@ -98,6 +121,12 @@ const Comments = ({ postId }: propsType) => {
           No comments yet
         </Heading>
       ) : null}
+
+      <DeleteCommentModal
+        isOpen={isOpen}
+        onClose={onClose}
+        commentId={commentToDelete}
+      />
     </Box>
   );
 };

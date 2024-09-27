@@ -31,13 +31,10 @@ const useFetchConversations = () => {
       const uniqueProfilePicUrls = new Map();
 
       conversationData.forEach((conversation: ConversationsState) => {
-        const userId = conversation.participants.id;
+        const userId = conversation.participant.id;
 
         if (!uniqueProfilePicUrls.has(userId)) {
-          uniqueProfilePicUrls.set(
-            userId,
-            conversation.participants.profilePic
-          );
+          uniqueProfilePicUrls.set(userId, conversation.participant.profilePic);
         }
       });
 
@@ -47,12 +44,12 @@ const useFetchConversations = () => {
 
       const upadatedConversations = conversationData.map(
         (conversation: ConversationsState) => {
-          const userId: string = conversation.participants.id;
+          const userId: string = conversation.participant.id;
 
-          const updatedParticipant = { ...conversation.participants };
+          const updatedParticipant = { ...conversation.participant };
           const upadatedConversation = {
             ...conversation,
-            participants: updatedParticipant,
+            participant: updatedParticipant,
           };
 
           const newProfilePic = profilePicUrls?.find((url) => {
