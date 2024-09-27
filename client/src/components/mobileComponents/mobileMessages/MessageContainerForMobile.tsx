@@ -4,7 +4,7 @@ import {
   clearConversation,
   setSelectedConversation,
 } from "../../../redux-store/features/messages/messagesSlice";
-import { Avatar, Box, Divider, Heading, Text, Spinner } from "@chakra-ui/react";
+import { Avatar, Box, Divider, Text, Spinner } from "@chakra-ui/react";
 import { FaVideo } from "react-icons/fa";
 import MessageBody from "../../messages/MessageBody";
 import MessaggeInput from "../../messages/MessaggeInput";
@@ -74,9 +74,8 @@ const MessageContainerForMobile = () => {
     : undefined;
 
   return (
-    <Box height={"100vh"} width={"100%"}>
+    <Box display="flex" flexDirection="column" height="100vh">
       {loading ? (
-        // Display a spinner while loading
         <Box
           display="flex"
           justifyContent="center"
@@ -120,27 +119,24 @@ const MessageContainerForMobile = () => {
             </Box>
           </Box>
           <Divider />
-          <Box maxHeight={"100%"}>
+          <Box flex="1" overflowY="auto">
             <MessageBody />
           </Box>
           <Divider />
-          <Box className="footer">
+          <Box className="footer" p={"10px"} bg="white">
             <MessaggeInput />
           </Box>
         </>
       ) : (
-        <>
-          <Box
-            display={"flex"}
-            flexDirection={"column"}
-            alignItems={"center"}
-            gap={"10px"}
-            pt={"250px"}
-          >
-            <Heading>Your messages</Heading>
-            <Text fontSize={"1.2rem"}>Send a message to your friends</Text>
-          </Box>
-        </>
+        <Box
+          display={"flex"}
+          flexDirection={"column"}
+          alignItems={"center"}
+          gap={"10px"}
+          pt={"250px"}
+        >
+          <Text fontSize={"1.2rem"}>Send a message to your friends</Text>
+        </Box>
       )}
     </Box>
   );
