@@ -53,7 +53,15 @@ const Login = () => {
         return;
       }
 
-      dispatch(setCurrentUser({ user: userData.user, token: userData.token }));
+      const expirationTime = new Date().getTime() + 24 * 60 * 60 * 1000;
+
+      dispatch(
+        setCurrentUser({
+          user: userData.user,
+          token: userData.token,
+          expirationTime,
+        })
+      );
       navigate("/app/home");
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "";

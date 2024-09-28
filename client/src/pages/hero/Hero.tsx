@@ -2,7 +2,7 @@ import { Outlet, useLocation } from "react-router-dom";
 import Navbar from "../../components/layouts/navbar/Navbar";
 import MobileNavbar from "../../components/mobileComponents/MobileNavbar/MobileNavbar";
 import { Box } from "@chakra-ui/react";
-import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
+import { useAppDispatch } from "../../hooks/hooks";
 import useFetchFollowers from "../../hooks/profile/useFetchFollowers";
 import useFetchFollowingUsers from "../../hooks/profile/useFetchFollowingUsers";
 import { useEffect } from "react";
@@ -12,11 +12,10 @@ import {
   setFollowingUsers,
   setFollowRequests,
   setProfile,
-  setSentRequests,
 } from "../../redux-store/features/profile/profileSlice";
 import useFetchCurrentUsersProfile from "../../hooks/profile/useFetchCurrentUsersProfile";
 import useFetchFollowRequests from "../../hooks/profile/useFetchFollowRequests";
-import useFetchSentRequests from "../../hooks/profile/useFetchSentRequests";
+// import useFetchSentRequests from "../../hooks/profile/useFetchSentRequests";
 import useFetchGetObjectProfilePicUrl from "../../hooks/profile/useFetchGetObjectProfilePicUrl";
 import useFetchConversations from "../../hooks/messages/useFetchConversations";
 import { setConversations } from "../../redux-store/features/messages/messagesSlice";
@@ -25,13 +24,13 @@ const Hero = () => {
   const dispatch = useAppDispatch();
   const location = useLocation();
 
-  const currentUser = useAppSelector((state) => state.auth.currentUser);
+  // const currentUser = useAppSelector((state) => state.auth.currentUser);
 
   const { fetchFollowers } = useFetchFollowers();
   const { fetchFollowingUsers } = useFetchFollowingUsers();
   const { fetchCurrentUserProfile } = useFetchCurrentUsersProfile();
   const { fetchFollowRequests } = useFetchFollowRequests();
-  const { fetchSentRequests } = useFetchSentRequests();
+  // const { fetchSentRequests } = useFetchSentRequests();
 
   const { fetchGetObjectProfilePicUrl } = useFetchGetObjectProfilePicUrl();
 
@@ -88,20 +87,20 @@ const Hero = () => {
     loadUsersData();
   }, [dispatch, fetchFollowers, fetchFollowingUsers]);
 
-  useEffect(() => {
-    const loadSentRequests = async () => {
-      try {
-        const sentRequestsData = await fetchSentRequests(currentUser?.id);
-        dispatch(setSentRequests(sentRequestsData.sentRequests || []));
-      } catch (error) {
-        toast.error(
-          error instanceof Error ? error.message : "Something went wrong"
-        );
-      }
-    };
+  // useEffect(() => {
+  //   const loadSentRequests = async () => {
+  //     try {
+  //       const sentRequestsData = await fetchSentRequests(currentUser?.id);
+  //       dispatch(setSentRequests(sentRequestsData.sentRequests || []));
+  //     } catch (error) {
+  //       toast.error(
+  //         error instanceof Error ? error.message : "Something went wrong"
+  //       );
+  //     }
+  //   };
 
-    loadSentRequests();
-  }, [dispatch, fetchSentRequests, currentUser?.id]);
+  //   loadSentRequests();
+  // }, [dispatch, fetchSentRequests, currentUser?.id]);
 
   const { fetchConversations } = useFetchConversations();
 

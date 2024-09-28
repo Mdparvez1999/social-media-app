@@ -22,10 +22,27 @@ import MessageContainerForMobile from "./components/mobileComponents/mobileMessa
 import MessageContainer from "./components/messages/MessageContainer";
 import MessageContainerBox from "./components/messages/MessageContainerBox";
 import MessageComponent from "./components/mobileComponents/mobileMessages/MessageComponent";
+import { useEffect } from "react";
 
 function App() {
   const currentUser = useAppSelector((state) => state.auth.currentUser);
   const userData = localStorage.getItem("currentUser");
+
+  useEffect(() => {
+    const expirationTime = localStorage.getItem("expirationTime");
+
+    if (expirationTime) {
+      const currentTime = new Date().getTime();
+      const expirationTimeObj = new Date(expirationTime);
+
+      if (currentTime > expirationTimeObj.getTime()) {
+        localStorage.removeItem("currentUser");
+        localStorage.removeItem("token");
+        localStorage.removeItem("expirationTime");
+        window.location.href = "/login"; // Redirect to login
+      }
+    }
+  }, []);
 
   return (
     <Box>

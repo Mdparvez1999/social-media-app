@@ -4,7 +4,7 @@ import {
   clearConversation,
   setSelectedConversation,
 } from "../../../redux-store/features/messages/messagesSlice";
-import { Avatar, Box, Divider, Text, Spinner } from "@chakra-ui/react";
+import { Avatar, Box, Divider, Heading, Text, Spinner } from "@chakra-ui/react";
 import { FaVideo } from "react-icons/fa";
 import MessageBody from "../../messages/MessageBody";
 import MessaggeInput from "../../messages/MessaggeInput";
@@ -74,7 +74,7 @@ const MessageContainerForMobile = () => {
     : undefined;
 
   return (
-    <Box display="flex" flexDirection="column" height="100vh">
+    <Box height={"100vh"} width={"100%"}>
       {loading ? (
         <Box
           display="flex"
@@ -119,11 +119,25 @@ const MessageContainerForMobile = () => {
             </Box>
           </Box>
           <Divider />
-          <Box flex="1" overflowY="auto">
+          <Box
+            flex="1"
+            overflowY="auto"
+            maxHeight="calc(100vh - 120px)"
+            p="10px"
+          >
             <MessageBody />
           </Box>
           <Divider />
-          <Box className="footer" p={"10px"} bg="white">
+          <Box
+            className="footer"
+            position="fixed"
+            bottom="0"
+            left="0"
+            width="100%"
+            bg="white"
+            p="10px"
+            boxShadow="0 -2px 10px rgba(0, 0, 0, 0.1)"
+          >
             <MessaggeInput />
           </Box>
         </>
@@ -135,6 +149,7 @@ const MessageContainerForMobile = () => {
           gap={"10px"}
           pt={"250px"}
         >
+          <Heading>Your messages</Heading>
           <Text fontSize={"1.2rem"}>Send a message to your friends</Text>
         </Box>
       )}

@@ -84,7 +84,7 @@ const Suggestion = () => {
     };
 
     fetchSuggestions();
-  }, [dispatch]);
+  }, [dispatch, fetchGetObjectUrlForAllProfilePics]);
 
   const navigate = useNavigate();
 
