@@ -4,7 +4,7 @@
   "description": "",
   "main": "dist/server.js",
   "scripts": {
-    "start-dev": "nodemon",
+    "start-dev": "nodemon src/server.ts",
     "start": "set NODE_ENV=production&& node dist/server.js",
     "build": "npm install && tsc && node add-js-extension.js "
   },

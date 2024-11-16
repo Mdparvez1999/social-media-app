@@ -64,7 +64,7 @@ const ConfirmDeleteAccount = () => {
         onClose={onClose}
       >
         <AlertDialogOverlay>
-          <AlertDialogContent maxWidth={{ xs: "350px", md: "35%" }}>
+          <AlertDialogContent maxWidth={{ xs: "350px", md: "40%" }}>
             <AlertDialogHeader fontSize="lg" fontWeight="bold">
               Delete Account
             </AlertDialogHeader>

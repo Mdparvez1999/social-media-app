@@ -17,9 +17,10 @@ import { setCurrentUser } from "../../redux-store/features/auth/authSlice";
 interface ActivateAccountProps {
   isOpen: boolean;
   onClose: () => void;
+  userId: string;
 }
 
-const ActivateAccount = ({ isOpen, onClose }: ActivateAccountProps) => {
+const ActivateAccount = ({ isOpen, onClose, userId }: ActivateAccountProps) => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
@@ -32,7 +33,7 @@ const ActivateAccount = ({ isOpen, onClose }: ActivateAccountProps) => {
       const response = await fetch(
         `${
           import.meta.env.VITE_BACKEND_API_BASE_URL
-        }/api/user/profile/activate`,
+        }/api/user/profile/activate?id=${userId}`,
         {
           method: "PATCH",
           headers: {
@@ -48,7 +49,16 @@ const ActivateAccount = ({ isOpen, onClose }: ActivateAccountProps) => {
         throw new Error(data.message);
       }
 
-      dispatch(setCurrentUser(data.user));
+      const expirationTime = new Date().getTime() + 24 * 60 * 60 * 1000;
+
+      dispatch(
+        setCurrentUser({
+          user: data.user,
+          token: data.token,
+          expirationTime,
+        })
+      );
+
       toast.success(data.message);
 
       navigate("/app/home");
@@ -68,7 +78,7 @@ const ActivateAccount = ({ isOpen, onClose }: ActivateAccountProps) => {
       onClose={onClose}
     >
       <AlertDialogOverlay>
-        <AlertDialogContent maxWidth={{ xs: "350px", md: "50%" }}>
+        <AlertDialogContent maxWidth={{ xs: "350px", md: "40%" }}>
           <AlertDialogHeader>Activate Your Account</AlertDialogHeader>
           <AlertDialogCloseButton />
           <AlertDialogBody>

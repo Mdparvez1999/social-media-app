@@ -14,6 +14,7 @@ import {
 import { comparePassword, hashPassword } from "../helpers/auth.helper";
 import { AppError } from "../utils/AppError";
 import { Not } from "typeorm";
+import { genrateToken } from "../../src/helpers/jwt.helpers";
 
 interface updateProfileRequest extends Request {
   body: {
@@ -394,11 +395,17 @@ export class UserProfileController {
 
   public reActivateProfile = asyncHandler(
     async (req: Request, res: Response, next: NextFunction) => {
-      const userId: string = res.locals.user.id;
+      const userId: string = String(req.query.id);
 
       await this.userRepsitory.update({ id: userId }, { isActive: true });
 
       const user = await this.userRepsitory.findOneBy({ id: userId });
+
+      if (!user) {
+        return next(new AppError("Invalid credentials", 400));
+      }
+
+      const token = genrateToken(user?.id, res);
 
       res.status(200).json({
         success: true,
@@ -408,6 +415,7 @@ export class UserProfileController {
           userName: user?.userName,
           isActive: user?.isActive,
         },
+        token,
       });
     }
   );

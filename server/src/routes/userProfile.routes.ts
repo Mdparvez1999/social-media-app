@@ -29,7 +29,7 @@ router.patch("/public", auth, userProfileController.publicProfile);
 
 router.patch("/deactivate", auth, userProfileController.deActivateProfile);
 
-router.patch("/activate", auth, userProfileController.reActivateProfile);
+router.patch("/activate", userProfileController.reActivateProfile);
 
 router.delete("/", auth, userProfileController.deleteProfile);
 

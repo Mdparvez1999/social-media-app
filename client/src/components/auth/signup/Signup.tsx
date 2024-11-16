@@ -7,7 +7,7 @@ import {
   Center,
   Link as ChakraLink,
 } from "@chakra-ui/react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FcGoogle } from "react-icons/fc";
 import { toast } from "react-toastify";
 import { ChangeEvent, FormEvent, useState } from "react";
@@ -31,6 +31,8 @@ const Signup = () => {
     setSignup((prevstate) => ({ ...prevstate, [name]: value }));
   };
 
+  const navigate = useNavigate();
+
   const { loading, signUp } = useSignup();
 
   const handleSubmit = async (e: FormEvent) => {
@@ -38,6 +40,7 @@ const Signup = () => {
     if (loading) return;
     try {
       await signUp(signup);
+      navigate("/login");
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "";
       toast.error(errorMessage);

@@ -28,6 +28,7 @@ const Login = () => {
     email: "",
     password: "",
   });
+  const [userId, setUserId] = useState("");
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -49,6 +50,7 @@ const Login = () => {
       if (!userData?.user) return;
 
       if (!userData.user?.isActive) {
+        setUserId(userData.user.id);
         onOpen();
         return;
       }
@@ -161,7 +163,7 @@ const Login = () => {
           </Button>
         </Box>
       </Box>
-      <ActivateAccount onClose={onClose} isOpen={isOpen} />
+      <ActivateAccount onClose={onClose} isOpen={isOpen} userId={userId} />
     </>
   );
 };

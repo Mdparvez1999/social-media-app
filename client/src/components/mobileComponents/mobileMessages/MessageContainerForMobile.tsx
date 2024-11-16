@@ -135,7 +135,7 @@ const MessageContainerForMobile = () => {
             left="0"
             width="100%"
             bg="white"
-            p="10px"
+            p="4px 0px"
             boxShadow="0 -2px 10px rgba(0, 0, 0, 0.1)"
           >
             <MessaggeInput />
