@@ -14,7 +14,7 @@ import {
 import { comparePassword, hashPassword } from "../helpers/auth.helper";
 import { AppError } from "../utils/AppError";
 import { Not } from "typeorm";
-import { genrateToken } from "../../src/helpers/jwt.helpers";
+import { genrateToken } from "../helpers/jwt.helpers";
 
 interface updateProfileRequest extends Request {
   body: {
