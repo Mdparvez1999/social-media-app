@@ -10,7 +10,7 @@ export const auth = asyncHandler(
     const token = req.headers.authorization?.split(" ")[1];
 
     if (!token) {
-      return next(new AppError("here is the issue", 401));
+      return next(new AppError("unauthorized", 401));
     }
 
     try {

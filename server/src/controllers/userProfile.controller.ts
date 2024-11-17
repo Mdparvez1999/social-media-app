@@ -251,7 +251,10 @@ export class UserProfileController {
         id: userId,
       });
 
-      await this.userRepsitory.update({ id: userId }, { profilePic: fileName });
+      if (!user) return next(new AppError("user not found", 404));
+
+      user.profilePic = fileName;
+      await this.userRepsitory.save(user);
 
       res.status(200).json({
         success: true,

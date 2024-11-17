@@ -50,6 +50,7 @@ const useEditProfilePic = () => {
         credentials: "include",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
         body: JSON.stringify({
           profilePic: preSignedUrlData.data.key,
@@ -59,7 +60,7 @@ const useEditProfilePic = () => {
 
     const editProfilePicData = await editProfilePicResponse.json();
 
-    if (!editProfilePicData) {
+    if (!editProfilePicData || editProfilePicData.status === "fail") {
       throw new Error("something went wrong");
     }
 
